@@ -42,11 +42,7 @@ jobs:
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
         run: |
-          tar \
-          --exclude .git \ 
-          --exclude .github \
-          --exclude node_modules \
-          -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
+          tar --exclude .git --exclude .github --exclude node_modules -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
 
       - if: steps.check_changes.outputs.changes_exist == 'false'
         uses: actions/upload-artifact@v3
