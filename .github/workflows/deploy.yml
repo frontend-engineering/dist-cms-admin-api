@@ -28,7 +28,7 @@ jobs:
           path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
 
       - run: |
-          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/cms
+          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/cms/cms-admin-api
 
       - uses: appleboy/ssh-action@master
         with:
@@ -36,6 +36,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cd ~/cms
+            cd ~/cms/cms-admin-api
             mkdir ${{ steps.my_vars.outputs.tar_name }}
             tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C ./${{ steps.my_vars.outputs.tar_name }}
