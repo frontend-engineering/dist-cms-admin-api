@@ -64,5 +64,7 @@ jobs:
             cd ~/cms/cms-admin-api/
             mkdir ${{ steps.my_vars.outputs.tar_name }}
             tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C ./${{ steps.my_vars.outputs.tar_name }}
+            unlink release/main.js
+            unlink release/main.js.map
             ln -s ${{ steps.my_vars.outputs.tar_name }}/main.js release/main.js
             ln -s ${{ steps.my_vars.outputs.tar_name }}/main.js.map release/main.js.map
