@@ -1,0 +1,41 @@
+name: Deploy
+on:
+  push:
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: my_vars
+        run: |
+          echo "::set-output name=tar_name::$(date +'%Y%m%dT%H%M%S')-$(echo $GITHUB_SHA | cut -c 1-7)"
+
+      - run: |
+          echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
+          chmod 600 ${{ runner.temp }}/private_key.pem
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
+          ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - run: tar -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz --exclude .git --exclude .github .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.my_vars.outputs.tar_name }}
+          path: ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz
+
+      - run: |
+          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/cms
+
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            cd ~/cms
+            mkdir ${{ steps.my_vars.outputs.tar_name }}
+            tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C ./${{ steps.my_vars.outputs.tar_name }}
