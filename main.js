@@ -527,48 +527,18 @@ exports.TaskController = TaskController;
 
 /***/ }),
 
-/***/ "./src/legacy-libs.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-/* eslint-disable @typescript-eslint/no-var-requires */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.COS = exports.WechatpayNodeV3 = exports.advancedFormat = exports.timezone = exports.utc = exports.dayjs = exports.WechatOAuth = exports.cuid = exports.WechatpayNodeV3FactorySymbol = exports.WechatpayNodeV3Symbol = exports.WechatOAuthFactorySymbol = exports.WechatOAuthSymbol = void 0;
-const cuid = __webpack_require__("cuid");
-exports.cuid = cuid;
-const WechatOAuth = __webpack_require__("wechat-oauth");
-exports.WechatOAuth = WechatOAuth;
-exports.WechatOAuthSymbol = Symbol.for('WechatOAuth');
-exports.WechatOAuthFactorySymbol = Symbol.for('WechatOAuthFactory');
-const dayjs = __webpack_require__("dayjs");
-exports.dayjs = dayjs;
-const utc = __webpack_require__("dayjs/plugin/utc");
-exports.utc = utc;
-const timezone = __webpack_require__("dayjs/plugin/timezone");
-exports.timezone = timezone;
-const advancedFormat = __webpack_require__("dayjs/plugin/advancedFormat");
-exports.advancedFormat = advancedFormat;
-const WechatpayNodeV3 = __webpack_require__("wechatpay-node-v3");
-exports.WechatpayNodeV3 = WechatpayNodeV3;
-exports.WechatpayNodeV3Symbol = Symbol.for('WechatpayNodeV3Symbol');
-exports.WechatpayNodeV3FactorySymbol = Symbol.for('WechatpayNodeV3FactorySymbol');
-const COS = __webpack_require__("cos-nodejs-sdk-v5");
-exports.COS = COS;
-
-
-/***/ }),
-
 /***/ "./src/loadModule.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.loadModule = void 0;
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
-const legacy_libs_1 = __webpack_require__("./src/legacy-libs.ts");
+const COS = __webpack_require__("cos-nodejs-sdk-v5");
 const prisma = new client_cms_admin_1.PrismaClient({
     log: [
         // 'query',
@@ -580,7 +550,7 @@ const prisma = new client_cms_admin_1.PrismaClient({
 function loadModule(container) {
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
     container.bind(flowda_shared_1.COSSymbol).toConstantValue(() => {
-        return new legacy_libs_1.COS({
+        return new COS({
             SecretId: cms_admin_services_1.CMS_ADMIN_ENV.COS_ID,
             SecretKey: cms_admin_services_1.CMS_ADMIN_ENV.COS_KEY,
         });
@@ -3531,41 +3501,6 @@ module.exports = require("cos-nodejs-sdk-v5");
 
 /***/ }),
 
-/***/ "cuid":
-/***/ ((module) => {
-
-module.exports = require("cuid");
-
-/***/ }),
-
-/***/ "dayjs":
-/***/ ((module) => {
-
-module.exports = require("dayjs");
-
-/***/ }),
-
-/***/ "dayjs/plugin/advancedFormat":
-/***/ ((module) => {
-
-module.exports = require("dayjs/plugin/advancedFormat");
-
-/***/ }),
-
-/***/ "dayjs/plugin/timezone":
-/***/ ((module) => {
-
-module.exports = require("dayjs/plugin/timezone");
-
-/***/ }),
-
-/***/ "dayjs/plugin/utc":
-/***/ ((module) => {
-
-module.exports = require("dayjs/plugin/utc");
-
-/***/ }),
-
 /***/ "express":
 /***/ ((module) => {
 
@@ -3640,20 +3575,6 @@ module.exports = require("radash");
 /***/ ((module) => {
 
 module.exports = require("tslib");
-
-/***/ }),
-
-/***/ "wechat-oauth":
-/***/ ((module) => {
-
-module.exports = require("wechat-oauth");
-
-/***/ }),
-
-/***/ "wechatpay-node-v3":
-/***/ ((module) => {
-
-module.exports = require("wechatpay-node-v3");
 
 /***/ }),
 
