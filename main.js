@@ -540,12 +540,7 @@ const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.
 const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
 const prisma = new client_cms_admin_1.PrismaClient({
-    log: [
-        // 'query',
-        'info',
-        'warn',
-        'error',
-    ],
+    log: ['query', 'info', 'warn', 'error'],
 });
 function loadModule(container) {
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
