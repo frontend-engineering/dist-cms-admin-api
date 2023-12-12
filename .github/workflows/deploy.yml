@@ -12,7 +12,7 @@ jobs:
 
       - run: |
           git diff-tree --no-commit-id --name-only -r HEAD~1 HEAD  > changed_files.txt
-          grep -E 'schema.prisma|pnpm-lock.yaml' changed_files.txt > filtered_files.txt
+          grep 'schema.prisma|pnpm-lock.yaml' changed_files.txt > filtered_files.txt
           cat changed_files.txt
           cat filtered_files.txt
 
