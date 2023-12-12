@@ -3631,7 +3631,7 @@ const app_module_1 = __webpack_require__("./src/app/app.module.ts");
 const http_proxy_middleware_1 = __webpack_require__("http-proxy-middleware");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const passport_jwt_1 = __webpack_require__("passport-jwt");
-console.log('begin');
+console.log('started');
 function bootstrap() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
