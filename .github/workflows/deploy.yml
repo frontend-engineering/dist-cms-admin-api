@@ -11,7 +11,7 @@ jobs:
           fetch-depth: 2
 
       - run: |
-          git diff-tree --no-commit-id --name-only -r HEAD~1 HEAD | grep -E 'schema.prisma|pnpm-lock.yaml' > changed_files.txt
+          git diff-tree --no-commit-id --name-only -r HEAD~1 HEAD  > changed_files.txt
 
       - id: check_changes
         run: |
