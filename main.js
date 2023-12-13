@@ -3682,7 +3682,7 @@ function bootstrap() {
                 [`^/api/camunda/engine-rest/`]: '',
             },
         }));
-        const port = process.env.PORT || 3344;
+        const port = process.env.PORT || 3345;
         yield app.listen(port);
         common_1.Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
     });
