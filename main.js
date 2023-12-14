@@ -6,23 +6,14 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
-const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
 let AppController = class AppController {
-    constructor(user, custom) {
-        this.user = user;
-        this.custom = custom;
-    }
+    constructor() { }
     hi() {
         return { hi: 'cms-admin-api' };
-    }
-    findByUsername(username) {
-        return this.user.findByUsername(username);
     }
 };
 tslib_1.__decorate([
@@ -31,17 +22,9 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], AppController.prototype, "hi", null);
-tslib_1.__decorate([
-    (0, common_1.Get)('/findByUsername'),
-    tslib_1.__param(0, (0, common_1.Query)('username')),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", void 0)
-], AppController.prototype, "findByUsername", null);
 AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
-    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.UserService !== "undefined" && cms_admin_services_1.UserService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
+    tslib_1.__metadata("design:paramtypes", [])
 ], AppController);
 exports.AppController = AppController;
 
@@ -540,7 +523,12 @@ const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.
 const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
 const prisma = new client_cms_admin_1.PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
+    log: [
+        // 'query',
+        'info',
+        'warn',
+        'error',
+    ],
 });
 function loadModule(container) {
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
@@ -898,17 +886,36 @@ var UserError;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DynamicTableDataResourceSchema = exports.DynamicTableDefColumnResourceSchema = exports.DynamicTableDefResourceSchema = exports.ProductLineResourceSchema = exports.WorkflowUserResourceSchema = exports.ProcessDefinitionResourceSchema = exports.TaskResourceSchema = exports.TaskFormRelationResourceSchema = exports.UserResourceSchema = void 0;
+exports.DynamicTableDataResourceSchema = exports.DynamicTableDefColumnResourceSchema = exports.DynamicTableDefResourceSchema = exports.ProductLineResourceSchema = exports.WorkflowUserResourceSchema = exports.ProcessDefinitionResourceSchema = exports.TaskResourceSchema = exports.TaskFormRelationResourceSchema = exports.TenantResourceSchema = exports.UserResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const zod_1 = __webpack_require__("zod");
 exports.UserResourceSchema = prisma_cms_admin_1.UserSchema.omit({
     hashedPassword: true,
     hashedRefreshToken: true,
-}).extend({
+})
+    .extend({
+    password: zod_1.z.string().openapi({
+        title: '密码',
+        prisma: false,
+    }),
     __meta: (0, flowda_shared_1.meta)({
         extends: 'UserSchema',
     }),
+})
+    .openapi({
+    custom: {
+        route_prefix: '/admin',
+    },
+});
+exports.TenantResourceSchema = prisma_cms_admin_1.TenantWithRelationsSchema.extend({
+    __meta: (0, flowda_shared_1.meta)({
+        extends: 'TenantSchema',
+    }),
+}).openapi({
+    custom: {
+        route_prefix: '/admin',
+    },
 });
 exports.TaskFormRelationResourceSchema = prisma_cms_admin_1.TaskFormRelationSchema.extend({
     __meta: (0, flowda_shared_1.meta)({
@@ -1525,6 +1532,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 exports.registerSchema = zod_1.z.object({
     username: zod_1.z.string(),
     password: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
 });
 class RegisterDto extends (0, nestjs_zod_1.createZodDto)(exports.registerSchema) {
 }
@@ -1545,30 +1553,13 @@ let UserService = UserService_1 = class UserService {
                 this.logger.warn('User exist:' + dto.username);
                 throw new error_code_1.UserError.UserExist();
             }
-            // 同步到 c7
-            // todo: 涉及到外部依赖，进行 mock，暂时先用 env
-            // if (CMS_ADMIN_ENV.TEST_ENV !== 'yes') {
-            //   try {
-            //     await axios.post(CMS_ADMIN_ENV.C7_REST_URL + `/user/create`, {
-            //       profile: {
-            //         id: dto.username,
-            //       },
-            //       credentials: {
-            //         password: dto.password,
-            //       },
-            //     })
-            //   } catch (e) {
-            //     this.logger.error('call c7 failed:/user/create:' + dto.username)
-            //     throw e
-            //   }
-            // }
             const hashedPassword = yield bcrypt.hash(dto.password, 10);
             const aUser = yield this.prisma.user.create({
                 data: {
                     username: dto.username,
                     hashedPassword: hashedPassword,
                     hashedRefreshToken: null,
-                    status: db.UserStatus.ACTIVE,
+                    tenantId: dto.tenantId,
                 },
             });
             return {
@@ -1583,6 +1574,9 @@ let UserService = UserService_1 = class UserService {
                 where: {
                     username: username,
                 },
+                include: {
+                    tenant: true,
+                },
             });
             if (!user) {
                 throw new common_1.UnauthorizedException({ reason: 'User does not exist', username });
@@ -1594,15 +1588,16 @@ let UserService = UserService_1 = class UserService {
             if (!match) {
                 throw new common_1.UnauthorizedException({ reason: 'Username and password is not matched', username });
             }
-            const payload = { uid: user.id };
+            const payload = { uid: user.id, tid: user.tenantId };
             const rt = this.generateJwt(payload, cms_admin_env_1.CMS_ADMIN_ENV.REFRESH_TOKEN_SECRET, cms_admin_env_1.CMS_ADMIN_ENV.REFRESH_TOKEN_EXPIRE);
-            user.hashedRefreshToken = rt.token;
             yield this.prisma.user.update({
                 where: { id: user.id },
-                data: user,
+                data: {
+                    hashedRefreshToken: rt.token,
+                },
             });
             const at = this.generateJwt(payload, cms_admin_env_1.CMS_ADMIN_ENV.ACCESS_TOKEN_SECRET, cms_admin_env_1.CMS_ADMIN_ENV.ACCESS_TOKEN_EXPIRE);
-            this.logger.log('validate pass:' + username);
+            this.logger.log(`validate pass, t: ${user.tenant.name}, u: ${user.username}`);
             return {
                 username: user.username,
                 refresh_token: rt.token,
@@ -1624,15 +1619,6 @@ let UserService = UserService_1 = class UserService {
     }
     verifyAccessToken(at) {
         return jwt.verify(at, cms_admin_env_1.CMS_ADMIN_ENV.ACCESS_TOKEN_SECRET);
-    }
-    findByUsername(username) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.prisma.user.findFirstOrThrow({
-                where: {
-                    username,
-                },
-            });
-        });
     }
 };
 UserService = UserService_1 = tslib_1.__decorate([
@@ -2012,7 +1998,8 @@ let DataService = DataService_1 = class DataService {
     }
     get(reqUser, pathname, query) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // this.logger.debug!(`get ${pathname}, query: ${JSON.stringify(query, null, 2)}`)
+            this.logger.debug(`[get] reqUser ${JSON.stringify(reqUser, null, 2)}`);
+            this.logger.debug(`get ${pathname}, query: ${JSON.stringify(query, null, 2)}`);
             const findParamRet = yield this.prismaSchemaService.toFindParam(pathname, query);
             if (_.isEmpty(findParamRet)) {
                 return {};
@@ -2040,7 +2027,7 @@ let DataService = DataService_1 = class DataService {
     }
     put(reqUser, path, values) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug(`reqUser ${JSON.stringify(reqUser, null, 2)}`);
+            this.logger.debug(`[put] reqUser ${JSON.stringify(reqUser, null, 2)}`);
             const updateParamRet = yield this.prismaSchemaService.toUpdateParam(path, values);
             const { resource, param } = updateParamRet;
             const prevRet = yield this.prisma[resource].findUnique({
@@ -2073,6 +2060,7 @@ let DataService = DataService_1 = class DataService {
     }
     post(reqUser, path, values) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`[post] reqUser ${JSON.stringify(reqUser, null, 2)}`);
             const createParamRet = yield this.prismaSchemaService.toCreateParam(path, values);
             const { resource, param } = createParamRet;
             if (createParamRet['x-unique']) {
@@ -2132,6 +2120,7 @@ let DataService = DataService_1 = class DataService {
     }
     remove(reqUser, pathname) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`[remove] reqUser ${JSON.stringify(reqUser, null, 2)}`);
             const assDelStrategy = yield this.prismaSchemaService.getAssociationDeleteStrategy(pathname);
             const { resource, param } = yield this.prismaSchemaService.toRemoveParam(pathname);
             for (const k of Object.keys(assDelStrategy)) {
@@ -3246,7 +3235,7 @@ exports.zt = tslib_1.__importStar(__webpack_require__("../../libs/prisma-cms_adm
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DynamicTableDataWithRelationsSchema = exports.DynamicTableDataSchema = exports.DynamicTableDefColumnWithRelationsSchema = exports.DynamicTableDefColumnSchema = exports.DynamicTableDefWithRelationsSchema = exports.DynamicTableDefSchema = exports.AuditsSchema = exports.ProductLineSchema = exports.UserProfileWithRelationsSchema = exports.UserProfileSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.TableFilterSchema = exports.TaskFormRelationSchema = exports.DynamicColumnTypeSchema = exports.UserGroupSchema = exports.UserStatusSchema = exports.UserScalarFieldEnumSchema = exports.UserProfileScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.TaskFormRelationScalarFieldEnumSchema = exports.TableFilterScalarFieldEnumSchema = exports.SortOrderSchema = exports.ProductLineScalarFieldEnumSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.JsonNullValueFilterSchema = exports.DynamicTableDefScalarFieldEnumSchema = exports.DynamicTableDefColumnScalarFieldEnumSchema = exports.DynamicTableDataScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
+exports.DynamicTableDataWithRelationsSchema = exports.DynamicTableDataSchema = exports.DynamicTableDefColumnWithRelationsSchema = exports.DynamicTableDefColumnSchema = exports.DynamicTableDefWithRelationsSchema = exports.DynamicTableDefSchema = exports.AuditsSchema = exports.ProductLineSchema = exports.UserProfileWithRelationsSchema = exports.UserProfileSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.TableFilterSchema = exports.TaskFormRelationSchema = exports.TenantWithRelationsSchema = exports.TenantSchema = exports.DynamicColumnTypeSchema = exports.UserScalarFieldEnumSchema = exports.UserProfileScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.TenantScalarFieldEnumSchema = exports.TaskFormRelationScalarFieldEnumSchema = exports.TableFilterScalarFieldEnumSchema = exports.SortOrderSchema = exports.ProductLineScalarFieldEnumSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.JsonNullValueFilterSchema = exports.DynamicTableDefScalarFieldEnumSchema = exports.DynamicTableDefColumnScalarFieldEnumSchema = exports.DynamicTableDataScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
 const zod_1 = __webpack_require__("zod");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const transformJsonNull = (v) => {
@@ -3289,15 +3278,27 @@ exports.ProductLineScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'upd
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
 exports.TableFilterScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'path', 'name', 'filterJSON']);
 exports.TaskFormRelationScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'taskDefinitionKey', 'formKey']);
+exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name']);
 exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
-exports.UserProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'userId', 'fullName']);
-exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'username', 'hashedPassword', 'hashedRefreshToken', 'status', 'role']);
-exports.UserStatusSchema = zod_1.z.enum(['ACTIVE', 'FORBIDDEN']);
-exports.UserGroupSchema = zod_1.z.enum(['ADMIN', 'USER']);
+exports.UserProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'userId', 'fullName', 'tenantId']);
+exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'username', 'hashedPassword', 'hashedRefreshToken', 'tenantId']);
 exports.DynamicColumnTypeSchema = zod_1.z.enum(['string', 'textarea', 'integer', 'boolean', 'datetime', 'tag', 'reference']);
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
+/////////////////////////////////////////
+// TENANT SCHEMA
+/////////////////////////////////////////
+exports.TenantSchema = zod_1.z.object({
+    id: zod_1.z.number().int(),
+    createdAt: zod_1.z.date(),
+    updatedAt: zod_1.z.date(),
+    isDeleted: zod_1.z.boolean(),
+    name: zod_1.z.string().openapi({ "title": "租户名称" }),
+}).openapi({ "display_name": "租户信息", "display_column": "name" });
+exports.TenantWithRelationsSchema = exports.TenantSchema.merge(zod_1.z.object({
+    users: zod_1.z.lazy(() => exports.UserWithRelationsSchema).array().openapi({ "model_name": "User" }),
+}));
 /////////////////////////////////////////
 // TASK FORM RELATION SCHEMA
 /////////////////////////////////////////
@@ -3325,8 +3326,6 @@ exports.TableFilterSchema = zod_1.z.object({
 // USER SCHEMA
 /////////////////////////////////////////
 exports.UserSchema = zod_1.z.object({
-    status: exports.UserStatusSchema,
-    role: exports.UserGroupSchema,
     id: zod_1.z.number().int(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
@@ -3334,9 +3333,11 @@ exports.UserSchema = zod_1.z.object({
     username: zod_1.z.string(),
     hashedPassword: zod_1.z.string().nullable(),
     hashedRefreshToken: zod_1.z.string().nullable(),
+    tenantId: zod_1.z.number().int().openapi({ "reference": "Tenant" }),
 }).openapi({ "display_name": "员工", "display_column": "username" });
 exports.UserWithRelationsSchema = exports.UserSchema.merge(zod_1.z.object({
     profile: zod_1.z.lazy(() => exports.UserProfileWithRelationsSchema).nullable(),
+    tenant: zod_1.z.lazy(() => exports.TenantWithRelationsSchema),
 }));
 /////////////////////////////////////////
 // USER PROFILE SCHEMA
@@ -3348,6 +3349,7 @@ exports.UserProfileSchema = zod_1.z.object({
     isDeleted: zod_1.z.boolean(),
     userId: zod_1.z.number().int(),
     fullName: zod_1.z.string(),
+    tenantId: zod_1.z.number().int(),
 });
 exports.UserProfileWithRelationsSchema = exports.UserProfileSchema.merge(zod_1.z.object({
     user: zod_1.z.lazy(() => exports.UserWithRelationsSchema),
