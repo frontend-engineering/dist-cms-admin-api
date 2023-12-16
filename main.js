@@ -70,12 +70,13 @@ const assets_controller_1 = __webpack_require__("./src/app/assets.controller.ts"
 const schedule_1 = __webpack_require__("@nestjs/schedule");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const data_controller_1 = __webpack_require__("./src/app/data.controller.ts");
+const audit_controller_1 = __webpack_require__("./src/app/audit.controller.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [services_module_1.ServicesModule, schedule_1.ScheduleModule.forRoot()],
-        controllers: [data_controller_1.DataController, app_controller_1.AppController, user_controller_1.UserController, assets_controller_1.AssetsController],
+        controllers: [data_controller_1.DataController, audit_controller_1.AuditController, app_controller_1.AppController, user_controller_1.UserController, assets_controller_1.AssetsController],
         providers: [
             {
                 provide: core_1.APP_FILTER,
@@ -134,6 +135,40 @@ AssetsController = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.AssetsService !== "undefined" && cms_admin_services_1.AssetsService) === "function" ? _a : Object])
 ], AssetsController);
 exports.AssetsController = AssetsController;
+
+
+/***/ }),
+
+/***/ "./src/app/audit.controller.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuditController = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
+let AuditController = class AuditController {
+    constructor(audit) {
+        this.audit = audit;
+    }
+    queryTableFilter(dto) {
+        return this.audit.queryAudit(dto);
+    }
+};
+tslib_1.__decorate([
+    (0, common_1.Post)('/query'),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof flowda_shared_node_1.QueryAuditSchemaDto !== "undefined" && flowda_shared_node_1.QueryAuditSchemaDto) === "function" ? _b : Object]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AuditController.prototype, "queryTableFilter", null);
+AuditController = tslib_1.__decorate([
+    (0, common_1.Controller)('/audit'),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof flowda_shared_node_1.AuditService !== "undefined" && flowda_shared_node_1.AuditService) === "function" ? _a : Object])
+], AuditController);
+exports.AuditController = AuditController;
 
 
 /***/ }),
@@ -309,22 +344,18 @@ exports.trpc = (0, client_1.createTRPCProxyClient)({
 
 
 var UserController_1;
-var _a, _b;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const userLocalAuth_guard_1 = __webpack_require__("./src/user/userLocalAuth.guard.ts");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
-const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
 let UserController = UserController_1 = class UserController {
     constructor(service) {
         this.service = service;
         this.logger = new common_1.Logger(UserController_1.name);
-    }
-    register(dto) {
-        return this.service.register(dto);
     }
     login(req) {
         return req.user;
@@ -336,14 +367,6 @@ let UserController = UserController_1 = class UserController {
         return req.user;
     }
 };
-tslib_1.__decorate([
-    (0, common_1.Post)('register'),
-    (0, common_1.UsePipes)(nestjs_zod_1.ZodValidationPipe),
-    tslib_1.__param(0, (0, common_1.Body)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof cms_admin_services_1.RegisterDto !== "undefined" && cms_admin_services_1.RegisterDto) === "function" ? _b : Object]),
-    tslib_1.__metadata("design:returntype", void 0)
-], UserController.prototype, "register", null);
 tslib_1.__decorate([
     (0, common_1.UseGuards)(userLocalAuth_guard_1.UserLocalAuthGuard),
     (0, common_1.Post)('login'),
@@ -581,70 +604,21 @@ exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
 
 /***/ }),
 
-/***/ "../../libs/cms-admin-services/src/lib/error-code.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserError = void 0;
-/* eslint-disable @typescript-eslint/no-namespace */
-const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-var UserError;
-(function (UserError) {
-    class UserExist extends flowda_shared_1.CustomError {
-        constructor() {
-            super(1001, 'User exist');
-        }
-    }
-    UserError.UserExist = UserExist;
-})(UserError = exports.UserError || (exports.UserError = {}));
-
-
-/***/ }),
-
 /***/ "../../libs/cms-admin-services/src/lib/schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductLineResourceSchema = exports.TenantResourceSchema = exports.UserResourceSchema = void 0;
+exports.ProductLineResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-const zod_1 = __webpack_require__("zod");
-exports.UserResourceSchema = prisma_cms_admin_1.UserSchema.omit({
-    hashedPassword: true,
-    hashedRefreshToken: true,
-})
-    .extend({
-    password: zod_1.z.string().openapi({
-        title: '密码',
-        prisma: false,
-    }),
-    __meta: (0, flowda_shared_1.meta)({
-        extends: 'UserSchema',
-    }),
-})
-    .openapi({
-    custom: {
-        route_prefix: '/admin',
-    },
-});
-exports.TenantResourceSchema = prisma_cms_admin_1.TenantWithRelationsSchema.extend({
-    __meta: (0, flowda_shared_1.meta)({
-        extends: 'TenantSchema',
-    }),
-}).openapi({
-    custom: {
-        route_prefix: '/admin',
-    },
-});
 exports.ProductLineResourceSchema = prisma_cms_admin_1.ProductLineSchema.extend({
     __meta: (0, flowda_shared_1.meta)({
         extends: 'ProductLineSchema',
     }),
 }).openapi({
     custom: {
-        route_prefix: '/resources/equipment',
+        route_prefix: '/resources',
     },
 });
 
@@ -728,7 +702,7 @@ let CmsAdminSchemaService = class CmsAdminSchemaService {
     }
     getSchema() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const schema = yield this.flowdaTrpc.getSchema.query();
+            const schema = yield this.flowdaTrpc.schema.getSchema.query();
             const schema2 = this.schema.getSchema();
             const ret = Object.assign({}, schema, schema2);
             return ret;
@@ -788,14 +762,9 @@ exports.UserService = exports.RegisterDto = exports.registerSchema = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
-const error_code_1 = __webpack_require__("../../libs/cms-admin-services/src/lib/error-code.ts");
-const bcrypt = tslib_1.__importStar(__webpack_require__("bcrypt"));
-const jwt = tslib_1.__importStar(__webpack_require__("jsonwebtoken"));
-const cms_admin_env_1 = __webpack_require__("../../libs/cms-admin-services/src/lib/cms-admin-env.ts");
-const common_1 = __webpack_require__("@nestjs/common");
+const client_1 = __webpack_require__("@trpc/client");
 exports.registerSchema = zod_1.z.object({
     username: zod_1.z.string(),
     password: zod_1.z.string(),
@@ -805,94 +774,24 @@ class RegisterDto extends (0, nestjs_zod_1.createZodDto)(exports.registerSchema)
 }
 exports.RegisterDto = RegisterDto;
 let UserService = UserService_1 = class UserService {
-    constructor(prisma, loggerFactory) {
-        this.prisma = prisma;
+    constructor(flowdaTrpc, loggerFactory) {
+        this.flowdaTrpc = flowdaTrpc;
         this.logger = loggerFactory(UserService_1.name);
-    }
-    register(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findFirst({
-                where: {
-                    username: dto.username,
-                },
-            });
-            if (user) {
-                this.logger.warn('User exist:' + dto.username);
-                throw new error_code_1.UserError.UserExist();
-            }
-            const hashedPassword = yield bcrypt.hash(dto.password, 10);
-            const aUser = yield this.prisma.user.create({
-                data: {
-                    username: dto.username,
-                    hashedPassword: hashedPassword,
-                    hashedRefreshToken: null,
-                    tenantId: dto.tenantId,
-                },
-            });
-            return {
-                id: aUser.id,
-                username: aUser.username,
-            };
-        });
     }
     validate(username, password) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.prisma.user.findFirst({
-                where: {
-                    username: username,
-                },
-                include: {
-                    tenant: true,
-                },
+            return this.flowdaTrpc.user.validate.query({
+                username,
+                password,
             });
-            if (!user) {
-                throw new common_1.UnauthorizedException({ reason: 'User does not exist', username });
-            }
-            if (!user.hashedPassword) {
-                throw new common_1.UnauthorizedException({ reason: 'Password is not initialized', username });
-            }
-            const match = yield bcrypt.compare(password, user.hashedPassword);
-            if (!match) {
-                throw new common_1.UnauthorizedException({ reason: 'Username and password is not matched', username });
-            }
-            const payload = { uid: user.id, tid: user.tenantId };
-            const rt = this.generateJwt(payload, cms_admin_env_1.CMS_ADMIN_ENV.REFRESH_TOKEN_SECRET, cms_admin_env_1.CMS_ADMIN_ENV.REFRESH_TOKEN_EXPIRE);
-            yield this.prisma.user.update({
-                where: { id: user.id },
-                data: {
-                    hashedRefreshToken: rt.token,
-                },
-            });
-            const at = this.generateJwt(payload, cms_admin_env_1.CMS_ADMIN_ENV.ACCESS_TOKEN_SECRET, cms_admin_env_1.CMS_ADMIN_ENV.ACCESS_TOKEN_EXPIRE);
-            this.logger.log(`validate pass, t: ${user.tenant.name}, u: ${user.username}`);
-            return {
-                username: user.username,
-                refresh_token: rt.token,
-                access_token: at.token,
-            };
         });
-    }
-    generateJwt(payload, secret, expires) {
-        const exp0 = Date.now() + expires * 1000;
-        const token = jwt.sign(Object.assign(Object.assign({}, payload), { exp0 }), secret, {
-            expiresIn: `${expires}s`,
-        });
-        const decode = jwt.decode(token);
-        return {
-            token: token,
-            iat: decode.iat,
-            exp: decode.exp,
-        };
-    }
-    verifyAccessToken(at) {
-        return jwt.verify(at, cms_admin_env_1.CMS_ADMIN_ENV.ACCESS_TOKEN_SECRET);
     }
 };
 UserService = UserService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
 ], UserService);
 exports.UserService = UserService;
 
@@ -2503,7 +2402,7 @@ exports.zt = tslib_1.__importStar(__webpack_require__("../../libs/prisma-cms_adm
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductLineSchema = exports.UserProfileWithRelationsSchema = exports.UserProfileSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.TenantWithRelationsSchema = exports.TenantSchema = exports.UserScalarFieldEnumSchema = exports.UserProfileScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.TenantScalarFieldEnumSchema = exports.SortOrderSchema = exports.ProductLineScalarFieldEnumSchema = void 0;
+exports.AuditsSchema = exports.ProductLineSchema = exports.TransactionIsolationLevelSchema = exports.SortOrderSchema = exports.ProductLineScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 /////////////////////////////////////////
 // HELPER FUNCTIONS
@@ -2511,60 +2410,13 @@ const zod_1 = __webpack_require__("zod");
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
+exports.AuditsScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'auditId', 'auditType', 'userId', 'username', 'action', 'auditChanges', 'version']);
 exports.ProductLineScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'description']);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
-exports.TenantScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name']);
 exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
-exports.UserProfileScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'userId', 'fullName', 'tenantId']);
-exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'username', 'hashedPassword', 'hashedRefreshToken', 'tenantId']);
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
-/////////////////////////////////////////
-// TENANT SCHEMA
-/////////////////////////////////////////
-exports.TenantSchema = zod_1.z.object({
-    id: zod_1.z.number().int(),
-    createdAt: zod_1.z.date(),
-    updatedAt: zod_1.z.date(),
-    isDeleted: zod_1.z.boolean(),
-    name: zod_1.z.string().openapi({ "title": "租户名称" }),
-}).openapi({ "display_name": "租户信息", "display_column": "name" });
-exports.TenantWithRelationsSchema = exports.TenantSchema.merge(zod_1.z.object({
-    users: zod_1.z.lazy(() => exports.UserWithRelationsSchema).array().openapi({ "model_name": "User" }),
-}));
-/////////////////////////////////////////
-// USER SCHEMA
-/////////////////////////////////////////
-exports.UserSchema = zod_1.z.object({
-    id: zod_1.z.number().int(),
-    createdAt: zod_1.z.date(),
-    updatedAt: zod_1.z.date(),
-    isDeleted: zod_1.z.boolean(),
-    username: zod_1.z.string(),
-    hashedPassword: zod_1.z.string().nullable(),
-    hashedRefreshToken: zod_1.z.string().nullable(),
-    tenantId: zod_1.z.number().int().openapi({ "reference": "Tenant" }),
-}).openapi({ "display_name": "员工", "display_column": "username" });
-exports.UserWithRelationsSchema = exports.UserSchema.merge(zod_1.z.object({
-    profile: zod_1.z.lazy(() => exports.UserProfileWithRelationsSchema).nullable(),
-    tenant: zod_1.z.lazy(() => exports.TenantWithRelationsSchema),
-}));
-/////////////////////////////////////////
-// USER PROFILE SCHEMA
-/////////////////////////////////////////
-exports.UserProfileSchema = zod_1.z.object({
-    id: zod_1.z.number().int(),
-    createdAt: zod_1.z.date(),
-    updatedAt: zod_1.z.date(),
-    isDeleted: zod_1.z.boolean(),
-    userId: zod_1.z.number().int(),
-    fullName: zod_1.z.string(),
-    tenantId: zod_1.z.number().int(),
-});
-exports.UserProfileWithRelationsSchema = exports.UserProfileSchema.merge(zod_1.z.object({
-    user: zod_1.z.lazy(() => exports.UserWithRelationsSchema),
-}));
 /////////////////////////////////////////
 // PRODUCT LINE SCHEMA
 /////////////////////////////////////////
@@ -2576,6 +2428,20 @@ exports.ProductLineSchema = zod_1.z.object({
     name: zod_1.z.string().openapi({ "title": "产线名" }),
     description: zod_1.z.string().openapi({ "title": "产线描述", "column_type": "textarea" }),
 }).openapi({ "primary_key": "id", "display_name": "产线", "display_column": "name", "display_primary_key": "false", "searchable_columns": "name" });
+/////////////////////////////////////////
+// AUDITS SCHEMA
+/////////////////////////////////////////
+exports.AuditsSchema = zod_1.z.object({
+    id: zod_1.z.number().int(),
+    createdAt: zod_1.z.date(),
+    auditId: zod_1.z.number().int().openapi({ "title": "关联" }),
+    auditType: zod_1.z.string().openapi({ "title": "审计类型(关联" }),
+    userId: zod_1.z.string().openapi({ "title": "用户" }),
+    username: zod_1.z.string().nullable().openapi({ "title": "用户名" }),
+    action: zod_1.z.string().openapi({ "title": "动作(e.g." }),
+    auditChanges: zod_1.z.string().openapi({ "title": "变化" }),
+    version: zod_1.z.number().int().openapi({ "title": "版本" }),
+}).openapi({ "display_name": "审计日志" });
 
 
 /***/ }),
@@ -2643,13 +2509,6 @@ module.exports = require("axios");
 
 /***/ }),
 
-/***/ "bcrypt":
-/***/ ((module) => {
-
-module.exports = require("bcrypt");
-
-/***/ }),
-
 /***/ "cos-nodejs-sdk-v5":
 /***/ ((module) => {
 
@@ -2675,13 +2534,6 @@ module.exports = require("http-proxy-middleware");
 /***/ ((module) => {
 
 module.exports = require("inversify");
-
-/***/ }),
-
-/***/ "jsonwebtoken":
-/***/ ((module) => {
-
-module.exports = require("jsonwebtoken");
 
 /***/ }),
 
@@ -2808,36 +2660,20 @@ function bootstrap() {
         // PROXY
         common_1.Logger.debug(`FLOWDA_URL ${cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL}`);
         // todo: custom header 里增加 tenant id 信息
-        app.use(`/${globalPrefix}/data/dynamic_table*`, (0, http_proxy_middleware_1.createProxyMiddleware)({
+        app.use(`/${globalPrefix}`, (0, http_proxy_middleware_1.createProxyMiddleware)([
+            `/${globalPrefix}/data/tenants`,
+            `/${globalPrefix}/data/users`,
+            `/${globalPrefix}/data/dynamic_table_defs`,
+            `/${globalPrefix}/data/dynamic_table_def_columns`,
+            `/${globalPrefix}/data/dynamic_table_data`,
+            `/${globalPrefix}/dynamic-table-data`,
+            `/${globalPrefix}/table-filter`,
+            `/${globalPrefix}/camunda/engine-rest`,
+        ], {
             target: cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL,
             changeOrigin: true,
             pathRewrite: {
-                [`^/cms-admin-api/data/dynamic_table_defs`]: '/flowda-api/data/dynamic_table_defs',
-                [`^/cms-admin-api/data/dynamic_table_def_columns`]: '/flowda-api/data/dynamic_table_def_columns',
-                [`^/cms-admin-api/data/dynamic_table_data`]: '/flowda-api/data/dynamic_table_data',
-            },
-        }));
-        app.use(`/${globalPrefix}/dynamic-table-data`, (0, http_proxy_middleware_1.createProxyMiddleware)({
-            target: cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL,
-            changeOrigin: true,
-            pathRewrite: {
-                [`^/${globalPrefix}/dynamic-table-data`]: '/flowda-api/dynamic-table-data',
-            },
-        }));
-        // todo: custom header 里增加 tenant id 信息
-        app.use('/cms-admin-api/table-filter', (0, http_proxy_middleware_1.createProxyMiddleware)({
-            target: cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL,
-            changeOrigin: true,
-            pathRewrite: {
-                [`^/cms-admin-api/table-filter`]: '/flowda-api/table-filter',
-            },
-        }));
-        // todo: custom header 里增加 tenant id 信息
-        app.use('/cms-admin-api/camunda/engine-rest', (0, http_proxy_middleware_1.createProxyMiddleware)({
-            target: cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL,
-            changeOrigin: true,
-            pathRewrite: {
-                [`^/cms-admin-api/camunda/engine-rest`]: '/flowda-api/camunda/engine-rest',
+                [`^/cms-admin-api`]: '/flowda-api',
             },
         }));
         const port = process.env.PORT || 3345;
