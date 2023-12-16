@@ -11,6 +11,8 @@ importers:
       '@nestjs/platform-express': ^9.0.0
       '@nestjs/schedule': ^4.0.0
       '@prisma/client': ^4.13.0
+      '@trpc/client': ^10.44.1
+      '@trpc/server': ^10.44.1
       axios: 1.1.0
       bcrypt: ^5.1.0
       cache-manager: ^5.2.4
@@ -46,6 +48,8 @@ importers:
       '@nestjs/platform-express': 9.2.0_pf2fb646rsvo5szivgkaevcpvi
       '@nestjs/schedule': 4.0.0_v5qdouhazba6t4koo63x35nolu
       '@prisma/client': 4.14.0_prisma@4.14.0
+      '@trpc/client': 10.44.1_@trpc+server@10.44.1
+      '@trpc/server': 10.44.1
       axios: 1.1.0
       bcrypt: 5.1.0
       cache-manager: 5.2.4
@@ -316,6 +320,19 @@ packages:
   /@prisma/engines/4.14.0:
     resolution: {integrity: sha512-PDNlhP/1vyTgmNyiucGqGCdXIp7HIkkvKO50si3y3PcceeHvqtiKPaH1iJdz63jCWMVMbj2MElSxXPOeBvEVIQ==}
     requiresBuild: true
+    dev: false
+
+  /@trpc/client/10.44.1_@trpc+server@10.44.1:
+    resolution: {integrity: sha512-vTWsykNcgz1LnwePVl2fKZnhvzP9N3GaaLYPkfGINo314ZOS0OBqe9x0ytB2LLUnRVTAAZ2WoONzARd8nHiqrA==}
+    peerDependencies:
+      '@trpc/server': 10.44.1
+    dependencies:
+      '@trpc/server': 10.44.1
+    dev: false
+
+  /@trpc/server/10.44.1:
+    resolution: {integrity: sha512-mF7B+K6LjuboX8I1RZgKE5GA/fJhsJ8tKGK2UBt3Bwik7hepEPb4NJgNr7vO6BK5IYwPdBLRLTctRw6XZx0sRg==}
+    engines: {node: '>=18.0.0'}
     dev: false
 
   /@types/body-parser/1.19.2:
