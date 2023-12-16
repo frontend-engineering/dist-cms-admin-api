@@ -2791,7 +2791,6 @@ const core_1 = __webpack_require__("@nestjs/core");
 const http_proxy_middleware_1 = __webpack_require__("http-proxy-middleware");
 const app_module_1 = __webpack_require__("./src/app/app.module.ts");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
-common_1.Logger.log('starting...');
 function bootstrap() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
@@ -2808,25 +2807,21 @@ function bootstrap() {
         });
         // PROXY
         common_1.Logger.debug(`FLOWDA_URL ${cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL}`);
-        // getSchema 不能转发了，要 merge
-        /*app.use(
-          '/cms-admin-api/apps/getSchema',
-          createProxyMiddleware({
-            target: CMS_ADMIN_ENV.FLOWDA_URL,
-            changeOrigin: true,
-            pathRewrite: {
-              [`^/cms-admin-api/apps/getSchema`]: '/flowda-api/apps/getSchema',
-            },
-          }),
-        )*/
         // todo: custom header 里增加 tenant id 信息
-        app.use('/cms-admin-api/data/dynamic_table*', (0, http_proxy_middleware_1.createProxyMiddleware)({
+        app.use(`/${globalPrefix}/data/dynamic_table*`, (0, http_proxy_middleware_1.createProxyMiddleware)({
             target: cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL,
             changeOrigin: true,
             pathRewrite: {
                 [`^/cms-admin-api/data/dynamic_table_defs`]: '/flowda-api/data/dynamic_table_defs',
                 [`^/cms-admin-api/data/dynamic_table_def_columns`]: '/flowda-api/data/dynamic_table_def_columns',
                 [`^/cms-admin-api/data/dynamic_table_data`]: '/flowda-api/data/dynamic_table_data',
+            },
+        }));
+        app.use(`/${globalPrefix}/dynamic-table-data`, (0, http_proxy_middleware_1.createProxyMiddleware)({
+            target: cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL,
+            changeOrigin: true,
+            pathRewrite: {
+                [`^/${globalPrefix}/dynamic-table-data`]: '/flowda-api/dynamic-table-data',
             },
         }));
         // todo: custom header 里增加 tenant id 信息
