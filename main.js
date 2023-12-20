@@ -12,6 +12,7 @@ exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
+const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
 let AppController = class AppController {
     constructor(cmsAdminSchemaService) {
         this.cmsAdminSchemaService = cmsAdminSchemaService;
@@ -23,9 +24,9 @@ let AppController = class AppController {
             };
         });
     }
-    getSchema() {
+    getSchema(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const schema = yield this.cmsAdminSchemaService.getSchema();
+            const schema = yield this.cmsAdminSchemaService.getSchema(req.user);
             return schema;
         });
     }
@@ -38,8 +39,10 @@ tslib_1.__decorate([
 ], AppController.prototype, "hi", null);
 tslib_1.__decorate([
     (0, common_1.Get)('/getSchema'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:paramtypes", [Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getSchema", null);
 AppController = tslib_1.__decorate([
@@ -581,16 +584,16 @@ exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductLineResourceSchema = void 0;
+exports.SiteTemplateResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-exports.ProductLineResourceSchema = prisma_cms_admin_1.ProductLineSchema.extend({
+exports.SiteTemplateResourceSchema = prisma_cms_admin_1.SiteTemplateSchema.extend({
     __meta: (0, flowda_shared_1.meta)({
-        extends: 'ProductLineSchema',
+        extends: 'SiteTemplateSchema',
     }),
 }).openapi({
     custom: {
-        route_prefix: '/resources',
+        route_prefix: '/resources/customers',
     },
 });
 
@@ -662,30 +665,42 @@ exports.AssetsService = AssetsService;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+var CmsAdminSchemaService_1;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CmsAdminSchemaService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-let CmsAdminSchemaService = class CmsAdminSchemaService {
-    constructor(schema, flowdaTrpc) {
+let CmsAdminSchemaService = CmsAdminSchemaService_1 = class CmsAdminSchemaService {
+    constructor(schema, flowdaTrpc, loggerFactory) {
         this.schema = schema;
         this.flowdaTrpc = flowdaTrpc;
+        this.logger = loggerFactory(CmsAdminSchemaService_1.name);
     }
-    getSchema() {
+    getSchema(reqUser) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const schema = yield this.flowdaTrpc.schema.getSchema.query();
+            const tenantInfo = yield this.flowdaTrpc.user.getTenant.query({ tid: reqUser.tid });
+            let schema = {};
+            // todo: 临时先这么做
+            // 目前是暴露一个 getTenant 来判断是否要拿 superadmin schema，因为 cms-admin-frontend 就一个，等于说是充当了网关的作用
+            // 这块逻辑放网关倒是没问题
+            if (tenantInfo.name === 'superadmin') {
+                this.logger.debug(`[getSchema] get superadmin schema`);
+                schema = yield this.flowdaTrpc.schema.getSchema.query();
+            }
+            // 暴露一个接口，如果是超级管理员，则获取超级管理员的 schema
             const schema2 = this.schema.getSchema();
             const ret = Object.assign({}, schema, schema2);
             return ret;
         });
     }
 };
-CmsAdminSchemaService = tslib_1.__decorate([
+CmsAdminSchemaService = CmsAdminSchemaService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.SchemaServiceSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__metadata("design:paramtypes", [Object, Object])
+    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [Object, Object, Function])
 ], CmsAdminSchemaService);
 exports.CmsAdminSchemaService = CmsAdminSchemaService;
 
@@ -2366,7 +2381,7 @@ exports.zt = tslib_1.__importStar(__webpack_require__("../../libs/prisma-cms_adm
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuditsSchema = exports.ProductLineSchema = exports.TransactionIsolationLevelSchema = exports.SortOrderSchema = exports.ProductLineScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = void 0;
+exports.AuditsSchema = exports.SiteTemplateSchema = exports.TransactionIsolationLevelSchema = exports.SortOrderSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 /////////////////////////////////////////
 // HELPER FUNCTIONS
@@ -2375,23 +2390,23 @@ const zod_1 = __webpack_require__("zod");
 // ENUMS
 /////////////////////////////////////////
 exports.AuditsScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'auditId', 'auditType', 'userId', 'username', 'action', 'auditChanges', 'version']);
-exports.ProductLineScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'description']);
+exports.SiteTemplateScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'template']);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
 exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
 /////////////////////////////////////////
-// PRODUCT LINE SCHEMA
+// SITE TEMPLATE SCHEMA
 /////////////////////////////////////////
-exports.ProductLineSchema = zod_1.z.object({
+exports.SiteTemplateSchema = zod_1.z.object({
     id: zod_1.z.number().int(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
     isDeleted: zod_1.z.boolean(),
-    name: zod_1.z.string().openapi({ "title": "产线名" }),
-    description: zod_1.z.string().openapi({ "title": "产线描述", "column_type": "textarea" }),
-}).openapi({ "primary_key": "id", "display_name": "产线", "display_column": "name", "display_primary_key": "false", "searchable_columns": "name" });
+    name: zod_1.z.string().openapi({ "title": "模板名称" }),
+    template: zod_1.z.string().openapi({ "title": "模板内容", "column_type": "textarea" }),
+}).openapi({ "primary_key": "id", "display_name": "网站模板", "display_column": "name", "display_primary_key": "false", "searchable_columns": "name" });
 /////////////////////////////////////////
 // AUDITS SCHEMA
 /////////////////////////////////////////
