@@ -6,7 +6,7 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -23,6 +23,16 @@ let AppController = class AppController {
             return {
                 hi: 'cms-admin-api',
             };
+        });
+    }
+    sitePreview(siteId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.previewSite(parseInt(siteId));
+        });
+    }
+    submitPreviewSite(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.submitPreviewSite(dto);
         });
     }
     getSchema(req) {
@@ -54,6 +64,21 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "hi", null);
 tslib_1.__decorate([
+    (0, common_1.Get)('/sitePreview'),
+    (0, common_1.Header)('content-type', 'text/html'),
+    tslib_1.__param(0, (0, common_1.Query)('siteId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "sitePreview", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/submitPreviewSite'),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof cms_admin_services_1.SubmitPreviewSiteSchemaDto !== "undefined" && cms_admin_services_1.SubmitPreviewSiteSchemaDto) === "function" ? _c : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "submitPreviewSite", null);
+tslib_1.__decorate([
     (0, common_1.Get)('/getSchema'),
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Request)()),
@@ -67,7 +92,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof cms_admin_services_1.GetTemplateDataDefSchemaDto !== "undefined" && cms_admin_services_1.GetTemplateDataDefSchemaDto) === "function" ? _c : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof cms_admin_services_1.GetTemplateDataDefSchemaDto !== "undefined" && cms_admin_services_1.GetTemplateDataDefSchemaDto) === "function" ? _d : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getTemplateDataDef", null);
 tslib_1.__decorate([
@@ -83,7 +108,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generateSite", null);
 AppController = tslib_1.__decorate([
@@ -110,7 +135,6 @@ const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/
 const user_controller_1 = __webpack_require__("./src/user/user.controller.ts");
 const userLocal_strategy_1 = __webpack_require__("./src/user/userLocal.strategy.ts");
 const userJwt_strategy_1 = __webpack_require__("./src/user/userJwt.strategy.ts");
-const assets_controller_1 = __webpack_require__("./src/app/assets.controller.ts");
 const schedule_1 = __webpack_require__("@nestjs/schedule");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const data_controller_1 = __webpack_require__("./src/app/data.controller.ts");
@@ -120,7 +144,7 @@ let AppModule = class AppModule {
 AppModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [services_module_1.ServicesModule, schedule_1.ScheduleModule.forRoot()],
-        controllers: [data_controller_1.DataController, audit_controller_1.AuditController, app_controller_1.AppController, user_controller_1.UserController, assets_controller_1.AssetsController],
+        controllers: [data_controller_1.DataController, audit_controller_1.AuditController, app_controller_1.AppController, user_controller_1.UserController],
         providers: [
             {
                 provide: core_1.APP_FILTER,
@@ -136,49 +160,6 @@ AppModule = tslib_1.__decorate([
     })
 ], AppModule);
 exports.AppModule = AppModule;
-
-
-/***/ }),
-
-/***/ "./src/app/assets.controller.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AssetsController = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const platform_express_1 = __webpack_require__("@nestjs/platform-express");
-const express = tslib_1.__importStar(__webpack_require__("express"));
-const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
-const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
-let AssetsController = class AssetsController {
-    constructor(service) {
-        this.service = service;
-    }
-    post(req, values, file) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.service.upload(file);
-        });
-    }
-};
-tslib_1.__decorate([
-    (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
-    tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Body)()),
-    tslib_1.__param(2, (0, common_1.UploadedFile)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof express !== "undefined" && express.Request) === "function" ? _b : Object, Object, Object]),
-    tslib_1.__metadata("design:returntype", Promise)
-], AssetsController.prototype, "post", null);
-AssetsController = tslib_1.__decorate([
-    (0, common_1.Controller)('/assets'),
-    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.AssetsService !== "undefined" && cms_admin_services_1.AssetsService) === "function" ? _a : Object])
-], AssetsController);
-exports.AssetsController = AssetsController;
 
 
 /***/ }),
@@ -316,13 +297,10 @@ const prisma = new client_cms_admin_1.PrismaClient({
         'error',
     ],
 });
-console.log('---------- ENV --------------');
-console.log('ACCESS_TOKEN_SECRET', cms_admin_services_1.CMS_ADMIN_ENV['ACCESS_TOKEN_SECRET']);
-console.log('---------- ENV --------------');
 function loadModule(container) {
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
     container.bind(flowda_shared_1.FlowdaTrpcClientSymbol).toConstantValue(trpc_1.trpc);
-    container.bind(flowda_shared_1.COSSymbol).toConstantValue(() => {
+    container.bind(flowda_shared_1.COSSymbol).toDynamicValue(() => {
         return new COS({
             SecretId: cms_admin_services_1.CMS_ADMIN_ENV.COS_ID,
             SecretKey: cms_admin_services_1.CMS_ADMIN_ENV.COS_KEY,
@@ -566,14 +544,12 @@ const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/
 const schema = tslib_1.__importStar(__webpack_require__("../../libs/cms-admin-services/src/lib/schema.ts"));
 const user_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/user.service.ts");
 const custom_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/custom.service.ts");
-const assets_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/assets.service.ts");
 const cmsAdminSchema_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/cmsAdminSchema.service.ts");
 exports.cmsAdminServiceModule = new inversify_1.ContainerModule((bind) => {
     bind(flowda_shared_1.PrismaZodSchemaSymbol).toConstantValue(prisma_cms_admin_1.zt);
     bind(flowda_shared_1.CustomZodSchemaSymbol).toConstantValue(schema);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, user_service_1.UserService);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, custom_service_1.CustomService);
-    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, assets_service_1.AssetsService);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, cmsAdminSchema_service_1.CmsAdminSchemaService);
 });
 
@@ -594,7 +570,6 @@ tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/lib/
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/lib/cms-admin-env.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/user.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/custom.service.ts"), exports);
-tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/assets.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/cmsAdminSchema.service.ts"), exports);
 
 
@@ -695,67 +670,6 @@ exports.CustomerResourceSchema = prisma_cms_admin_1.CustomerWithRelationsSchema.
 
 /***/ }),
 
-/***/ "../../libs/cms-admin-services/src/services/assets.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var AssetsService_1;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AssetsService = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-let AssetsService = AssetsService_1 = class AssetsService {
-    constructor(cos) {
-        this.cos = cos;
-        this.logger = new common_1.Logger(AssetsService_1.name);
-    }
-    upload(fileData) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const { fieldname, originalname, encoding, // '7bit',
-            mimetype, // 'image/svg+xml',
-            buffer, size, } = fileData;
-            console.log('upload got: ', fileData, typeof buffer);
-            // SECRETID 和 SECRETKEY请登录 https://console.cloud.tencent.com/cam/capi 进行查看和管理
-            return new Promise((resolve, reject) => {
-                const format = (originalname === null || originalname === void 0 ? void 0 : originalname.split('.').pop()) || 'png';
-                // if (typeof buffer !== 'arraybuffer') {
-                //   reject('invalid data type')
-                // }
-                this.cos.putObject({
-                    Bucket: 'common-1306445775' /* 必须 */,
-                    Region: 'ap-shanghai' /* 必须 */,
-                    Key: `attachment/img-upload-${Math.floor(new Date().valueOf() / 1000)}.${format}`,
-                    StorageClass: 'STANDARD',
-                    Body: buffer,
-                    ContentType: mimetype || 'text/html',
-                    onProgress: function (progressData) {
-                        console.log(JSON.stringify(progressData));
-                    },
-                }, (err, data) => {
-                    console.log(`upload to tencent with resp:  ${JSON.stringify(err || data)}`);
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(data === null || data === void 0 ? void 0 : data.Location);
-                    }
-                });
-            });
-        });
-    }
-};
-AssetsService = AssetsService_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
-    tslib_1.__metadata("design:paramtypes", [Object])
-], AssetsService);
-exports.AssetsService = AssetsService;
-
-
-/***/ }),
-
 /***/ "../../libs/cms-admin-services/src/services/cmsAdminSchema.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -809,7 +723,7 @@ exports.CmsAdminSchemaService = CmsAdminSchemaService;
 var CustomService_1;
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomService = exports.GenerateSiteSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+exports.CustomService = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
@@ -819,25 +733,36 @@ const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
 const dynamic_schema_1 = __webpack_require__("../../libs/cms-admin-services/src/lib/dynamic-schema.ts");
 const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const Handlebars = tslib_1.__importStar(__webpack_require__("handlebars"));
+const node_html_parser_1 = __webpack_require__("node-html-parser");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { generateData } = __webpack_require__("ai-gen-utils");
 const GetTemplateDataDefSchema = zod_1.z.object({
     siteId: zod_1.z.number(),
 });
+class GetTemplateDataDefSchemaDto extends (0, nestjs_zod_1.createZodDto)(GetTemplateDataDefSchema) {
+}
+exports.GetTemplateDataDefSchemaDto = GetTemplateDataDefSchemaDto;
 const GenerateSiteSchema = zod_1.z.object({
     templateId: zod_1.z.number(),
     customerId: zod_1.z.number(),
 });
-class GetTemplateDataDefSchemaDto extends (0, nestjs_zod_1.createZodDto)(GetTemplateDataDefSchema) {
-}
-exports.GetTemplateDataDefSchemaDto = GetTemplateDataDefSchemaDto;
 class GenerateSiteSchemaDto extends (0, nestjs_zod_1.createZodDto)(GenerateSiteSchema) {
 }
 exports.GenerateSiteSchemaDto = GenerateSiteSchemaDto;
+const SubmitPreviewSiteSchema = zod_1.z.object({
+    siteId: zod_1.z.number(),
+    slotData: zod_1.z.any(),
+});
+class SubmitPreviewSiteSchemaDto extends (0, nestjs_zod_1.createZodDto)(SubmitPreviewSiteSchema) {
+}
+exports.SubmitPreviewSiteSchemaDto = SubmitPreviewSiteSchemaDto;
+const BUCKET = 'assets-1306445775';
 let CustomService = CustomService_1 = class CustomService {
-    constructor(prisma, data, loggerFactory) {
+    constructor(prisma, data, cos, loggerFactory) {
         this.prisma = prisma;
         this.data = data;
+        this.cos = cos;
         this.logger = loggerFactory(CustomService_1.name);
     }
     generateSite(dto) {
@@ -887,11 +812,151 @@ let CustomService = CustomService_1 = class CustomService {
             return ret;
         });
     }
+    previewSite(siteId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const siteRet = yield this.prisma.site.findUniqueOrThrow({
+                where: {
+                    id: siteId,
+                },
+                include: {
+                    siteTemplate: true,
+                },
+            });
+            const { prefix, compiledTemplate } = yield this.getTemplate(siteRet.siteTemplate.template);
+            const generatedHTML = compiledTemplate(siteRet.slotData);
+            const root = (0, node_html_parser_1.parse)(generatedHTML);
+            this.updateScriptStyle(root, prefix);
+            // 添加一些 iframe 通信代码
+            root.querySelector('head').insertAdjacentHTML('beforeend', `
+    <style>
+.blink {
+  animation: blink-animation 1s linear 3;
+}
+@keyframes blink-animation {
+  0% { background-color: #f9c6d8; }
+  50% { background-color: white; }
+  100% { background-color: #f9c6d8; }
+}
+    </style>
+    `);
+            root.querySelector('body').insertAdjacentHTML('beforeend', `
+    <script>
+      console.log('inject iframe message proxy')
+      window.addEventListener('message', function (e) {
+        console.log('from parent', e.data)
+        try {
+            const { path, value } = JSON.parse(e.data)
+            const ele = document.querySelectorAll('[data-slot="' + path + '"]')[0]
+            ele.innerText = value
+            ele.scrollIntoView({ behavior: 'smooth' });
+            ele.classList.add('blink');
+            setTimeout(() => {
+                ele.classList.remove('blink');
+            }, 3000);
+        } catch (e) {
+            console.error('error', e.message, e.data)
+        }
+      })
+    </script>
+    `);
+            return root.toString();
+        });
+    }
+    updateScriptStyle(root, prefix) {
+        const links = root.querySelectorAll('link');
+        links.forEach(link => {
+            link.setAttribute('href', prefix + link.getAttribute('href'));
+        });
+        const scripts = root.querySelectorAll('script');
+        scripts.forEach(script => {
+            script.setAttribute('src', prefix + script.getAttribute('src'));
+        });
+    }
+    getTemplate(template) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const cosRet = yield new Promise((resolve, reject) => {
+                this.cos.getObjectUrl({
+                    Bucket: BUCKET,
+                    Region: 'ap-shanghai',
+                    Key: `${template}`,
+                    Sign: false,
+                }, function (err, data) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(data);
+                    }
+                });
+            });
+            this.logger.debug(`url ${cosRet.Url}`);
+            const prefix = cosRet.Url.replace('template.hbs', '');
+            const hbsTpl = yield fetch(cosRet.Url).then(res => res.text());
+            const compiledTemplate = Handlebars.compile(hbsTpl);
+            return { prefix, compiledTemplate };
+        });
+    }
+    submitPreviewSite(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const siteRet = yield this.prisma.site.update({
+                where: {
+                    id: dto.siteId,
+                },
+                data: {
+                    slotData: dto.slotData,
+                },
+                include: {
+                    siteTemplate: true,
+                },
+            });
+            // 发 cos
+            const { prefix, compiledTemplate } = yield this.getTemplate(siteRet.siteTemplate.template);
+            const generatedHTML = compiledTemplate(siteRet.slotData);
+            const root = (0, node_html_parser_1.parse)(generatedHTML);
+            this.updateScriptStyle(root, prefix);
+            const cosUrl = yield new Promise((resolve, reject) => {
+                this.cos.putObject({
+                    Bucket: BUCKET,
+                    Region: 'ap-shanghai',
+                    Key: `${siteRet.name}/index.html`,
+                    StorageClass: 'STANDARD',
+                    Body: root.toString(),
+                    ContentType: 'text/html',
+                    onProgress: progressData => {
+                        this.logger.debug(JSON.stringify(progressData));
+                    },
+                }, (err, data) => {
+                    this.logger.error(`upload to tencent error: ${JSON.stringify(err || data)}`);
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(data === null || data === void 0 ? void 0 : data.Location);
+                    }
+                });
+            });
+            this.logger.debug(`Cos url: ${cosUrl}`);
+            yield this.prisma.site.update({
+                where: {
+                    id: dto.siteId,
+                },
+                data: {
+                    cosUrl: cosUrl,
+                },
+            });
+            return {
+                success: true,
+            };
+        });
+    }
     getTemplateDataDef(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const siteRet = yield this.prisma.site.findUniqueOrThrow({
                 where: {
                     id: dto.siteId,
+                },
+                include: {
+                    siteTemplate: true,
                 },
             });
             const defRet = yield this.prisma.siteTemplateDataDef.findUniqueOrThrow({
@@ -899,6 +964,7 @@ let CustomService = CustomService_1 = class CustomService {
                     siteTemplateId: siteRet.siteTemplateId,
                 },
             });
+            this.logger.debug(`siteTemplate ${siteRet.siteTemplate.template}`);
             return {
                 slotSchema: defRet.defData,
                 slotData: siteRet.slotData,
@@ -915,8 +981,9 @@ CustomService = CustomService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.DataServiceSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _b : Object, Function])
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _b : Object, Object, Function])
 ], CustomService);
 exports.CustomService = CustomService;
 
@@ -2604,7 +2671,7 @@ exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'update
 exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
 exports.JsonNullValueInputSchema = zod_1.z.enum(['JsonNull',]);
 exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
-exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'siteTemplateId', 'customerId', 'slotData']);
+exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'cosUrl', 'siteTemplateId', 'customerId', 'slotData']);
 exports.SiteTemplateDataDefScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteTemplateId', 'defData']);
 exports.SiteTemplateScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'template']);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
@@ -2681,6 +2748,7 @@ exports.SiteSchema = zod_1.z.object({
     updatedAt: zod_1.z.date(),
     isDeleted: zod_1.z.boolean(),
     name: zod_1.z.string().openapi({ "title": "网站名称" }),
+    cosUrl: zod_1.z.string().openapi({ "title": "COS" }),
     siteTemplateId: zod_1.z.number().int().openapi({ "reference": "SiteTemplate" }),
     customerId: zod_1.z.number().int().openapi({ "reference": "Customer" }),
     slotData: exports.InputJsonValue,
@@ -2718,13 +2786,6 @@ module.exports = require("@nestjs/core");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/passport");
-
-/***/ }),
-
-/***/ "@nestjs/platform-express":
-/***/ ((module) => {
-
-module.exports = require("@nestjs/platform-express");
 
 /***/ }),
 
@@ -2770,6 +2831,13 @@ module.exports = require("express");
 
 /***/ }),
 
+/***/ "handlebars":
+/***/ ((module) => {
+
+module.exports = require("handlebars");
+
+/***/ }),
+
 /***/ "http-proxy-middleware":
 /***/ ((module) => {
 
@@ -2795,6 +2863,13 @@ module.exports = require("lodash");
 /***/ ((module) => {
 
 module.exports = require("nestjs-zod");
+
+/***/ }),
+
+/***/ "node-html-parser":
+/***/ ((module) => {
+
+module.exports = require("node-html-parser");
 
 /***/ }),
 
