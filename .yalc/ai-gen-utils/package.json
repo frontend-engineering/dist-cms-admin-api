@@ -1,0 +1,23 @@
+{
+  "name": "ai-gen-utils",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.cjs",
+  "scripts": {
+    "build": "node index.cjs",
+    "build-cache": "WithCache=true node index.cjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fortaine/fetch-event-source": "^3.0.6",
+    "fs-extra": "^11.2.0",
+    "handlebars": "^4.7.8",
+    "nanoid": "^3.1.25",
+    "open": "^7.4.2",
+    "request": "^2.88.2"
+  },
+  "yalcSig": "c478248febd07c2b6ed1b3e1e33c0c4f"
+}
