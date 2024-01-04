@@ -32,7 +32,7 @@ jobs:
           echo "::set-output name=tar_name::$(date +'%Y%m%dT%H%M%S')-$(echo $GITHUB_SHA | cut -c 1-7)"
 
       - run: |
-          tar --exclude .git --exclude .github -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
+          tar --exclude .git --exclude .github --exclude "libquery_engine-darwin.dylib.node" -czf ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz .
 
       - uses: actions/upload-artifact@v3
         with:
