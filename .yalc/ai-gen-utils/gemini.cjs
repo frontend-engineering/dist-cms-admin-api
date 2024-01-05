@@ -1,35 +1,46 @@
 const request = require('request')
 
-async function chat(msg) {
-  var options = {}
-  if (process.env.PROXY !== 'y') {
-    options = {
+async function chat(msgs) {
+  const contents = [];
+  if (typeof msgs === 'string') {
+    contents.push({
+      parts: [{
+        text: msgs
+      }]
+    })
+  } else if (Array.isArray(msgs)) {
+    msgs.forEach(msg => {
+      if (typeof msg === 'string') {
+        contents.push({
+          parts: [{
+            text: msg
+          }]
+        })
+      } else {
+        contents.push(msg)
+      }
+    })
+  }
+
+  if (process.env.DEV) {
+    console.log('chat...', JSON.stringify(contents))
+  }
+  var url 
+  if (process.env.PROXY === 'y') {
+    url = 'http://127.0.0.1:12345'
+  } else {
+    url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDwV1r0F6rFyOQcG54H374gKlQvS_BcyqI'
+  }
+  var options = {
       'method': 'POST',
-      'url': 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDwV1r0F6rFyOQcG54H374gKlQvS_BcyqI',
+      'url': url,
       'headers': {
               'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "contents": [
-          {
-            "parts": [{
-              text: msg
-            }]
-          }
-        ]
+        "contents": contents
       })
-    };
-  } else {
-    console.log('use proxy...')
-    options = {
-      'method': 'POST',
-      'url': 'http://127.0.0.1:12345',
-      'headers': {
-              'Content-Type': 'application/json'
-      },
-      body: msg
-    };
-  }
+  };
 
   return new Promise((resolve, reject) => {
       request(options, function (error, response) {
@@ -37,30 +48,109 @@ async function chat(msg) {
               reject(error)
               return;
           }
-          if (process.env.PROXY === 'y') {
-            console.log('use proxy...')
-            resolve(JSON.parse(response.body.match(/```json(.*)```/s)[1]))
-            return
-          }
           console.log(typeof response.body);
-          const jsonStr = JSON.parse(response.body).candidates[0].content.parts[0].text.match(/```json(.*)```/s)[1];
+          const respJson = JSON.parse(response.body);
+          if (process.env.DEV) {
+            console.log('gemini response : ', respJson)
+            console.log(' - ', respJson?.candidates[0]?.content?.parts[0]?.text)
+          }
+          const contentsTxt = respJson.candidates[0].content.parts[0].text
+          const matches = contentsTxt.match(/```json(.*)```/s);
+          let jsonStr = contentsTxt
+          if (matches) {
+            jsonStr = matches[1]
+          }
 
           console.log('\n')
           console.log('got json str: ', typeof jsonStr)
+          if (process.env.DEV) {
+            console.log('gemini json str: : ', jsonStr)
+          }
           try {
               const data = JSON.parse(jsonStr);
+              if (process.env.DEV) {
+                console.log('gemini response data: ', data)
+              }
               resolve(data)
           } catch (error) {
-              console.log('重新parse json中。。。')
+              // console.log('重新parse json中。。。')
+              // resolve(format(jsonStr))
+              reject(error)
+          }
+      })
+  });
+}
+
+
+async function format(msgString) {
+  const contents = [];
+  if (typeof msgString === 'string') {
+    contents.push({
+      parts: [{
+        text: '重新format该字符串，确保可以被js中的JSON.parse正确解析：' + msgString
+      }]
+    })
+  } else {
+    console.error('invalid input', msgString)
+    return;
+  }
+
+  if (process.env.DEV) {
+    console.log('format...', JSON.stringify(contents))
+  }
+  var options = {
+      'method': 'POST',
+      'url': 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDwV1r0F6rFyOQcG54H374gKlQvS_BcyqI',
+      'headers': {
+              'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "contents": contents
+      })
+  };
+
+  return new Promise((resolve, reject) => {
+      request(options, function (error, response) {
+          if (error) {
+              reject(error)
+              return;
+          }
+          console.log(typeof response.body);
+          const respJson = JSON.parse(response.body);
+          if (process.env.DEV) {
+            console.log('gemini response : ', respJson)
+            console.log(' - ', respJson?.candidates[0]?.content?.parts[0]?.text)
+          }
+          const contentsTxt = respJson.candidates[0].content.parts[0].text
+          const matches = contentsTxt.match(/```json(.*)```/s);
+          let jsonStr = contentsTxt
+          if (matches) {
+            jsonStr = matches[1]
+          }
+
+          console.log('\n')
+          console.log('got json str: ', typeof jsonStr)
+          if (process.env.DEV) {
+            console.log('gemini format json str: : ', jsonStr)
+          }
+          try {
+              const data = JSON.parse(jsonStr);
+              if (process.env.DEV) {
+                console.log('gemini format response data: ', data)
+              }
+              resolve(data)
+          } catch (error) {
+              console.log('重新parse json失败。。。')
               // resolve(formatJSON(jsonStr))
               reject(error)
           }
       })
   });
 }
+
 async function run() {
   // For text-only input, use the gemini-pro model
-  const model = await chat(base, companyInfo)
+  const model = await chat(base + companyInfo)
 
   console.log(model);
 }

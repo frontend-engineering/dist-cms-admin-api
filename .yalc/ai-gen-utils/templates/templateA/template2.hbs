@@ -13,7 +13,7 @@
         <link href="style.css" rel="stylesheet">
         <title data-slot="title">{{title}}</title>
     </head>
-    <body class="text-muted">
+    <body class="text-muted" data-site="{{id}}" data-raw="{{raw}}">
         <header class="bg-dark">
             <nav class="navbar navbar-dark navbar-expand-lg shadow-none"> 
                 <div class="container"> <a class="align-items-center d-inline-flex fw-bold h4 mb-0 navbar-brand text-primary text-uppercase" href="#"> <svg version="1.0" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 100 100" width="2.5em" height="2.5em" class="me-1" fill="currentColor">
@@ -38,12 +38,12 @@
             </nav>
         </header>
         <main>
-            <section data-slot="banner.image" class="bg-secondary pb-5 position-relative poster pt-5 text-white-50"
+            <section id="banner" data-url={{banner.image}} data-slot="banner.image" class="bg-secondary pb-5 position-relative poster pt-5 text-white-50"
                 style="background-image: url({{banner.image}});"
             >
                 <div class="container mt-5 pb-5 pt-5">
                     <div class="mt-5 pt-5 row">
-                        <div class="col-md-10 col-xl-7 pt-5">
+                        <div class="col-md-10 col-xl-7 pt-5 blur-bg banner-fg-vibrant-light" id="banner-txt">
                             <p data-slot="hero.title" class="fw-bold h4 text-white">{{hero.title}}</p>
                             <h1 data-slot="hero.desc" class="display-3 fw-bold mb-4 text-white">{{hero.desc}}</h1>
                             {{!-- <div class="bg-white p-4">
@@ -336,5 +336,7 @@
         </main>
         <script src="assets/js/popper.min.js"></script>
         <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/worker.bundle.js"></script>
+        <script src="assets/js/editor.bundle.js"></script>
     </body>
 </html>

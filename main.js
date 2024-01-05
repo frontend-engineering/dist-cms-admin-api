@@ -6,7 +6,7 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -54,6 +54,11 @@ let AppController = class AppController {
     generateSite(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.generateSite(dto);
+        });
+    }
+    generatePartialSlotData(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.generatePartialSlotData(dto);
         });
     }
 };
@@ -112,6 +117,14 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generateSite", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/generatePartialSlotData'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof cms_admin_services_1.GeneratePartialSlotDataSchemaDto !== "undefined" && cms_admin_services_1.GeneratePartialSlotDataSchemaDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "generatePartialSlotData", null);
 AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
@@ -728,7 +741,7 @@ exports.CmsAdminSchemaService = CmsAdminSchemaService;
 var CustomService_1;
 var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomService = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+exports.CustomService = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
@@ -741,7 +754,7 @@ const _ = tslib_1.__importStar(__webpack_require__("radash"));
 const Handlebars = tslib_1.__importStar(__webpack_require__("handlebars"));
 const node_html_parser_1 = __webpack_require__("node-html-parser");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { generateData } = __webpack_require__("ai-gen-utils");
+const { generateData, generateDataPartial } = __webpack_require__("ai-gen-utils");
 const GetTemplateDataDefSchema = zod_1.z.object({
     siteId: zod_1.z.number(),
 });
@@ -762,6 +775,13 @@ const SubmitPreviewSiteSchema = zod_1.z.object({
 class SubmitPreviewSiteSchemaDto extends (0, nestjs_zod_1.createZodDto)(SubmitPreviewSiteSchema) {
 }
 exports.SubmitPreviewSiteSchemaDto = SubmitPreviewSiteSchemaDto;
+const GeneratePartialSlotDataSchema = zod_1.z.object({
+    siteId: zod_1.z.number(),
+    path: zod_1.z.string(),
+});
+class GeneratePartialSlotDataSchemaDto extends (0, nestjs_zod_1.createZodDto)(GeneratePartialSlotDataSchema) {
+}
+exports.GeneratePartialSlotDataSchemaDto = GeneratePartialSlotDataSchemaDto;
 const BUCKET = 'assets-1306445775';
 let CustomService = CustomService_1 = class CustomService {
     constructor(prisma, data, cos, loggerFactory) {
@@ -817,6 +837,24 @@ let CustomService = CustomService_1 = class CustomService {
             return ret;
         });
     }
+    generatePartialSlotData(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`[generatePartialSlotData] ${JSON.stringify(dto, null, 2)}`);
+            const siteRet = yield this.prisma.site.findUniqueOrThrow({
+                where: {
+                    id: dto.siteId,
+                },
+                include: {
+                    customer: true,
+                },
+            });
+            this.logger.debug(`[generatePartialSlotData] start invoke generateDataPartial`);
+            const data = yield generateDataPartial(siteRet.customer.extendData, siteRet.slotData, dto.path);
+            this.logger.debug(`[generatePartialSlotData] end invoke generateDataPartial`);
+            // const htmlRet = ejs.render(tplRet.template, dto.defData)
+            return data;
+        });
+    }
     previewSite(siteId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const siteRet = yield this.prisma.site.findUniqueOrThrow({
@@ -828,7 +866,7 @@ let CustomService = CustomService_1 = class CustomService {
                 },
             });
             const { prefix, compiledTemplate } = yield this.getTemplate(siteRet.siteTemplate.template);
-            const generatedHTML = compiledTemplate(siteRet.slotData);
+            const generatedHTML = compiledTemplate(Object.assign(siteRet.slotData, { id: siteRet.id }));
             const root = (0, node_html_parser_1.parse)(generatedHTML);
             this.updateScriptStyle(root, prefix);
             // 添加一些 iframe 通信代码
@@ -916,7 +954,7 @@ let CustomService = CustomService_1 = class CustomService {
             });
             // 发 cos
             const { prefix, compiledTemplate } = yield this.getTemplate(siteRet.siteTemplate.template);
-            const generatedHTML = compiledTemplate(siteRet.slotData);
+            const generatedHTML = compiledTemplate(Object.assign(siteRet.slotData, { id: siteRet.id }));
             const root = (0, node_html_parser_1.parse)(generatedHTML);
             this.updateScriptStyle(root, prefix);
             const cosUrl = yield new Promise((resolve, reject) => {

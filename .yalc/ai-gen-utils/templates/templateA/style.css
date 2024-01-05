@@ -11,3 +11,15 @@ body.poster {
 .top-5 {
     top: 5px;
 }
+
+.editor-btn {
+    border: none;
+}
+
+#deploy-btn {
+    border: none;
+    position: fixed;
+    z-index: 9999;
+    top: 12px;
+    right: 12px;
+}

@@ -4,8 +4,13 @@
   "description": "",
   "main": "main.cjs",
   "scripts": {
+    "dev": "DEV=1 node index.cjs",
+    "dev-p": "DEV=1 node index-part.cjs",
+    "dev-cache": "DEV=1 WithCache=true node index.cjs",
     "build": "node index.cjs",
     "build-cache": "WithCache=true node index.cjs",
+    "dev-assets": "DEV=1 node rollup.start.cjs",
+    "bundle-assets": "node rollup.start.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,5 +24,5 @@
     "open": "^7.4.2",
     "request": "^2.88.2"
   },
-  "yalcSig": "c478248febd07c2b6ed1b3e1e33c0c4f"
+  "yalcSig": "043736d22f6a12d4e78d6ab2093698c6"
 }

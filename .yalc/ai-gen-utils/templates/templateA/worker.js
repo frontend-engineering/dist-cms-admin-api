@@ -92,8 +92,20 @@ function getBannerPlatteCss() {
     })
 }
 
+function getData() {
+    try {
+        const data = JSON.parse(document.body.dataset.raw)
+        console.log('got data: ', data);
+        window._raw = data;
+        return data;
+    } catch (error) {
+        console.error('get raw data failed: ', error)
+    }
+}
+
 
 setTimeout(() => {
     run()
     getBannerPlatteCss()
+    getData()
 }, 300)
