@@ -62,7 +62,7 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           script: |
             mkdir /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
-            tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
+            tar -xzvf /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}.tar.gz -C /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
 
       - name: Reinstall
         if: steps.check_changes.outputs.changes_exist == 'true'
