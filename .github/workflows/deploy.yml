@@ -61,7 +61,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            mkdir /cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
+            mkdir /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
             tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
 
       - name: Reinstall
