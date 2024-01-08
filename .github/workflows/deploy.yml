@@ -76,12 +76,7 @@ jobs:
             cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yaml /root/cms/cms-admin-api/release/pnpm-lock.yaml
             cd /root/cms/cms-admin-api/release && pnpm install --registry=https://registry.npmmirror.com
             cp -r /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma /root/cms/cms-admin-api/release/node_modules
-            if [ -e "/root/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/libquery_engine-rhel-openssl-1.0.x.so.node" ]; then \
-              echo "File exists." \
-            else \
-              echo "File does not exist." \
-              wget -P /root/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node
-            fi \
+            if [ -e "/root/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/libquery_engine-rhel-openssl-1.0.x.so.node" ]; then echo "File exists."; else wget -P /root/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node; fi
             touch /root/cms/cms-admin-api/release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
 
       - name: Restart
