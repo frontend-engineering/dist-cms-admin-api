@@ -72,8 +72,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/package.json release/package.json
-            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml release/pnpm-lock.yml
+            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/package.json /root/cms/cms-admin-api/release/package.json
+            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml /root/cms/cms-admin-api/release/pnpm-lock.yml
             cd /root/cms/cms-admin-api/release && pnpm install --registry=https://registry.npmmirror.com
             cp -r /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma /root/cms/cms-admin-api/release/node_modules
             wget -P /root/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node
