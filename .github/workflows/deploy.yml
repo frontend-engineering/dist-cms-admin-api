@@ -46,13 +46,13 @@ jobs:
         run: |
           echo "${{ secrets.SERVER_KEY }}" > ${{ runner.temp }}/private_key.pem
           chmod 600 ${{ runner.temp }}/private_key.pem
-          mkdir /root/.ssh
-          touch /root/.ssh/known_hosts
+          mkdir $HOME/.ssh
+          touch $HOME/.ssh/known_hosts
           ssh-keygen -y -f ${{ runner.temp }}/private_key.pem > ${{ runner.temp }}/private_key.pub
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> /root/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> $HOME/.ssh/known_hosts
 
       - run: |
-          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/cms/cms-admin-api
+          scp -i ${{ runner.temp }}/private_key.pem ${{ runner.temp }}/${{ steps.my_vars.outputs.tar_name }}.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$HOME/cms/cms-admin-api
 
       - name: Extract
         uses: appleboy/ssh-action@master
@@ -62,7 +62,7 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           script: |
             mkdir /cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
-            tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
+            tar -xzvf ${{ steps.my_vars.outputs.tar_name }}.tar.gz -C $HOME/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}
 
       - name: Reinstall
         if: steps.check_changes.outputs.changes_exist == 'true'
@@ -72,12 +72,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/package.json release/package.json
-            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml release/pnpm-lock.yml
-            cd /root/cms/cms-admin-api/release && pnpm install --registry=https://registry.npmmirror.com
-            cp -r /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma /root/cms/cms-admin-api/release/node_modules
-            wget -P /root/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node
-            touch /root/cms/cms-admin-api/release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
+            cp $HOME/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/package.json release/package.json
+            cp $HOME/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/pnpm-lock.yml release/pnpm-lock.yml
+            cd $HOME/cms/cms-admin-api/release && pnpm install --registry=https://registry.npmmirror.com
+            cp -r $HOME/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/node_modules/@prisma $HOME/cms/cms-admin-api/release/node_modules
+            wget -P $HOME/cms/cms-admin-api/release/node_modules/@prisma/client-cms_admin/ https://common-1306445775.cos.ap-shanghai.myqcloud.com/libquery_engine/libquery_engine-rhel-openssl-1.0.x.so.node
+            touch $HOME/cms/cms-admin-api/release/${{ steps.my_vars.outputs.tar_name }}-pnpm-install.txt
 
       - name: Restart
         uses: appleboy/ssh-action@master
@@ -86,7 +86,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/main.js /root/cms/cms-admin-api/release
-            cp /root/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/main.js.map /root/cms/cms-admin-api/release
-            touch /root/cms/cms-admin-api/release/${{ steps.my_vars.outputs.tar_name }}.txt
+            cp $HOME/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/main.js $HOME/cms/cms-admin-api/release
+            cp $HOME/cms/cms-admin-api/${{ steps.my_vars.outputs.tar_name }}/main.js.map $HOME/cms/cms-admin-api/release
+            touch $HOME/cms/cms-admin-api/release/${{ steps.my_vars.outputs.tar_name }}.txt
             pm2 restart cms-admin-api
