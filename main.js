@@ -297,24 +297,40 @@ exports.DataController = DataController;
 /* eslint-disable @typescript-eslint/no-var-requires */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.loadModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
 const trpc_1 = __webpack_require__("./src/trpc/trpc.ts");
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
-const prisma = new client_cms_admin_1.PrismaClient({
-    log: [
-        // 'query',
-        'info',
-        'warn',
-        'error',
-    ],
-});
 console.log('---------- ENV --------------');
 console.log('PROXY', cms_admin_services_1.CMS_ADMIN_ENV.PROXY);
 console.log('---------- ENV --------------');
 function loadModule(container) {
+    const prisma = new client_cms_admin_1.PrismaClient({
+        log: [
+            // 'query',
+            'info',
+            'warn',
+            'error',
+        ],
+    }).$extends({
+        name: 'test',
+        query: {
+            site: {
+                $allOperations({ model, operation, args, query }) {
+                    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+                        // const custom = container.get(CustomService)
+                        // console.log(`[prisma.$extend] invoke $extends, model: ${model}, operation: ${operation}`)
+                        // 调用定制逻辑
+                        // const ret = await custom.syncToDub()
+                        return query(args);
+                    });
+                },
+            },
+        },
+    });
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
     container.bind(flowda_shared_1.FlowdaTrpcClientSymbol).toConstantValue(trpc_1.trpc);
     container.bind(flowda_shared_1.COSSymbol).toDynamicValue(() => {
@@ -1026,6 +1042,12 @@ let CustomService = CustomService_1 = class CustomService {
     getCustomerDef() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return (0, zod_openapi_1.generateSchema)(dynamic_schema_1.CustomerDataDef);
+        });
+    }
+    syncToDub() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`syncToDub`);
+            return 'sync...';
         });
     }
 };
@@ -2686,8 +2708,8 @@ exports.zt = tslib_1.__importStar(__webpack_require__("../../libs/prisma-cms_adm
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SiteTemplateSchema = exports.AuditsSchema = exports.EmailTypeSchema = exports.RoleSchema = exports.jackson_ttlOrderByRelevanceFieldEnumSchema = exports.jackson_storeOrderByRelevanceFieldEnumSchema = exports.jackson_indexOrderByRelevanceFieldEnumSchema = exports.VerificationTokenScalarFieldEnumSchema = exports.VerificationTokenOrderByRelevanceFieldEnumSchema = exports.UserScalarFieldEnumSchema = exports.UserOrderByRelevanceFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.TagScalarFieldEnumSchema = exports.TagOrderByRelevanceFieldEnumSchema = exports.SortOrderSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.SiteTemplateOrderByRelevanceFieldEnumSchema = exports.SiteTemplateDataDefScalarFieldEnumSchema = exports.SiteScalarFieldEnumSchema = exports.SiteOrderByRelevanceFieldEnumSchema = exports.SessionScalarFieldEnumSchema = exports.SessionOrderByRelevanceFieldEnumSchema = exports.SentEmailScalarFieldEnumSchema = exports.SentEmailOrderByRelevanceFieldEnumSchema = exports.ProjectUsersScalarFieldEnumSchema = exports.ProjectUsersOrderByRelevanceFieldEnumSchema = exports.ProjectScalarFieldEnumSchema = exports.ProjectOrderByRelevanceFieldEnumSchema = exports.ProjectInviteScalarFieldEnumSchema = exports.ProjectInviteOrderByRelevanceFieldEnumSchema = exports.NullableJsonNullValueInputSchema = exports.LinkScalarFieldEnumSchema = exports.LinkOrderByRelevanceFieldEnumSchema = exports.JsonNullValueInputSchema = exports.JsonNullValueFilterSchema = exports.Jackson_ttlScalarFieldEnumSchema = exports.Jackson_storeScalarFieldEnumSchema = exports.Jackson_indexScalarFieldEnumSchema = exports.DomainScalarFieldEnumSchema = exports.DomainOrderByRelevanceFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.CustomerOrderByRelevanceFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.AuditsOrderByRelevanceFieldEnumSchema = exports.AccountScalarFieldEnumSchema = exports.AccountOrderByRelevanceFieldEnumSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
-exports.jackson_ttlSchema = exports.jackson_storeSchema = exports.jackson_indexSchema = exports.TagWithRelationsSchema = exports.TagSchema = exports.LinkWithRelationsSchema = exports.LinkSchema = exports.DomainWithRelationsSchema = exports.DomainSchema = exports.SentEmailWithRelationsSchema = exports.SentEmailSchema = exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema = exports.ProjectInviteWithRelationsSchema = exports.ProjectInviteSchema = exports.ProjectWithRelationsSchema = exports.ProjectSchema = exports.VerificationTokenSchema = exports.SessionWithRelationsSchema = exports.SessionSchema = exports.AccountWithRelationsSchema = exports.AccountSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.SiteWithRelationsSchema = exports.SiteSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.SiteTemplateDataDefWithRelationsSchema = exports.SiteTemplateDataDefSchema = exports.SiteTemplateWithRelationsSchema = void 0;
+exports.AuditsSchema = exports.EmailTypeSchema = exports.RoleSchema = exports.jackson_ttlOrderByRelevanceFieldEnumSchema = exports.jackson_storeOrderByRelevanceFieldEnumSchema = exports.jackson_indexOrderByRelevanceFieldEnumSchema = exports.TagOrderByRelevanceFieldEnumSchema = exports.LinkOrderByRelevanceFieldEnumSchema = exports.DomainOrderByRelevanceFieldEnumSchema = exports.SentEmailOrderByRelevanceFieldEnumSchema = exports.ProjectUsersOrderByRelevanceFieldEnumSchema = exports.ProjectInviteOrderByRelevanceFieldEnumSchema = exports.ProjectOrderByRelevanceFieldEnumSchema = exports.VerificationTokenOrderByRelevanceFieldEnumSchema = exports.SessionOrderByRelevanceFieldEnumSchema = exports.AccountOrderByRelevanceFieldEnumSchema = exports.UserOrderByRelevanceFieldEnumSchema = exports.SiteOrderByRelevanceFieldEnumSchema = exports.CustomerOrderByRelevanceFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.SiteTemplateOrderByRelevanceFieldEnumSchema = exports.AuditsOrderByRelevanceFieldEnumSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.SortOrderSchema = exports.Jackson_ttlScalarFieldEnumSchema = exports.Jackson_storeScalarFieldEnumSchema = exports.Jackson_indexScalarFieldEnumSchema = exports.TagScalarFieldEnumSchema = exports.LinkScalarFieldEnumSchema = exports.DomainScalarFieldEnumSchema = exports.SentEmailScalarFieldEnumSchema = exports.ProjectUsersScalarFieldEnumSchema = exports.ProjectInviteScalarFieldEnumSchema = exports.ProjectScalarFieldEnumSchema = exports.VerificationTokenScalarFieldEnumSchema = exports.SessionScalarFieldEnumSchema = exports.AccountScalarFieldEnumSchema = exports.UserScalarFieldEnumSchema = exports.SiteScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.SiteTemplateDataDefScalarFieldEnumSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
+exports.jackson_ttlSchema = exports.jackson_storeSchema = exports.jackson_indexSchema = exports.TagWithRelationsSchema = exports.TagSchema = exports.LinkWithRelationsSchema = exports.LinkSchema = exports.DomainWithRelationsSchema = exports.DomainSchema = exports.SentEmailWithRelationsSchema = exports.SentEmailSchema = exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema = exports.ProjectInviteWithRelationsSchema = exports.ProjectInviteSchema = exports.ProjectWithRelationsSchema = exports.ProjectSchema = exports.VerificationTokenSchema = exports.SessionWithRelationsSchema = exports.SessionSchema = exports.AccountWithRelationsSchema = exports.AccountSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.SiteWithRelationsSchema = exports.SiteSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.SiteTemplateDataDefWithRelationsSchema = exports.SiteTemplateDataDefSchema = exports.SiteTemplateWithRelationsSchema = exports.SiteTemplateSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const transformJsonNull = (v) => {
@@ -2719,45 +2741,46 @@ exports.InputJsonValue = zod_1.z.union([
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
-exports.AccountOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'type', 'provider', 'providerAccountId', 'refresh_token', 'access_token', 'token_type', 'scope', 'id_token', 'session_state']);
-exports.AccountScalarFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'type', 'provider', 'providerAccountId', 'refresh_token', 'refresh_token_expires_in', 'access_token', 'expires_at', 'token_type', 'scope', 'id_token', 'session_state']);
-exports.AuditsOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['auditType', 'userId', 'username', 'action', 'auditChanges']);
+exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
 exports.AuditsScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'auditId', 'auditType', 'userId', 'username', 'action', 'auditChanges', 'version']);
-exports.CustomerOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['name']);
+exports.SiteTemplateScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'template']);
+exports.SiteTemplateDataDefScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteTemplateId', 'defData']);
 exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'extendData']);
-exports.DomainOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'target', 'type', 'description', 'projectId']);
+exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'cosUrl', 'siteTemplateId', 'customerId', 'slotData']);
+exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt']);
+exports.AccountScalarFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'type', 'provider', 'providerAccountId', 'refresh_token', 'refresh_token_expires_in', 'access_token', 'expires_at', 'token_type', 'scope', 'id_token', 'session_state']);
+exports.SessionScalarFieldEnumSchema = zod_1.z.enum(['id', 'sessionToken', 'userId', 'expires']);
+exports.VerificationTokenScalarFieldEnumSchema = zod_1.z.enum(['identifier', 'token', 'expires']);
+exports.ProjectScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'slug', 'logo', 'password', 'type', 'usage', 'usageLimit', 'plan', 'stripeId', 'billingCycleStart', 'region', 'endpoint', 'bucket', 'useHost', 'createdAt', 'updatedAt', 'isDeleted']);
+exports.ProjectInviteScalarFieldEnumSchema = zod_1.z.enum(['email', 'expires', 'projectId', 'createdAt']);
+exports.ProjectUsersScalarFieldEnumSchema = zod_1.z.enum(['id', 'role', 'createdAt', 'updatedAt', 'userId', 'projectId']);
+exports.SentEmailScalarFieldEnumSchema = zod_1.z.enum(['id', 'type', 'createdAt', 'projectId']);
 exports.DomainScalarFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'verified', 'target', 'type', 'description', 'projectId', 'primary', 'lastChecked', 'createdAt', 'updatedAt']);
+exports.LinkScalarFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'archived', 'expiresAt', 'password', 'proxy', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'rewrite', 'ios', 'android', 'userId', 'projectId', 'clicks', 'publicStats', 'createdAt', 'updatedAt', 'tagId']);
+exports.TagScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'createdAt', 'updatedAt', 'projectId']);
 exports.Jackson_indexScalarFieldEnumSchema = zod_1.z.enum(['id', 'key', 'storeKey']);
 exports.Jackson_storeScalarFieldEnumSchema = zod_1.z.enum(['key', 'value', 'iv', 'tag', 'createdAt', 'modifiedAt']);
 exports.Jackson_ttlScalarFieldEnumSchema = zod_1.z.enum(['key', 'expiresAt']);
-exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
-exports.JsonNullValueInputSchema = zod_1.z.enum(['JsonNull',]);
-exports.LinkOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'password', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ios', 'android', 'userId', 'projectId', 'tagId']);
-exports.LinkScalarFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'archived', 'expiresAt', 'password', 'proxy', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'rewrite', 'ios', 'android', 'userId', 'projectId', 'clicks', 'publicStats', 'createdAt', 'updatedAt', 'tagId']);
-exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
-exports.ProjectInviteOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['email', 'projectId']);
-exports.ProjectInviteScalarFieldEnumSchema = zod_1.z.enum(['email', 'expires', 'projectId', 'createdAt']);
-exports.ProjectOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'slug', 'logo', 'password', 'type', 'plan', 'stripeId', 'region', 'endpoint', 'bucket', 'useHost']);
-exports.ProjectScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'slug', 'logo', 'password', 'type', 'usage', 'usageLimit', 'plan', 'stripeId', 'billingCycleStart', 'region', 'endpoint', 'bucket', 'useHost', 'createdAt', 'updatedAt', 'isDeleted']);
-exports.ProjectUsersOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'projectId']);
-exports.ProjectUsersScalarFieldEnumSchema = zod_1.z.enum(['id', 'role', 'createdAt', 'updatedAt', 'userId', 'projectId']);
-exports.SentEmailOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'projectId']);
-exports.SentEmailScalarFieldEnumSchema = zod_1.z.enum(['id', 'type', 'createdAt', 'projectId']);
-exports.SessionOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'sessionToken', 'userId']);
-exports.SessionScalarFieldEnumSchema = zod_1.z.enum(['id', 'sessionToken', 'userId', 'expires']);
-exports.SiteOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['name', 'cosUrl']);
-exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'cosUrl', 'siteTemplateId', 'customerId', 'slotData']);
-exports.SiteTemplateDataDefScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteTemplateId', 'defData']);
-exports.SiteTemplateOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['name', 'template']);
-exports.SiteTemplateScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'template']);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
-exports.TagOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'projectId']);
-exports.TagScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'createdAt', 'updatedAt', 'projectId']);
-exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'ReadCommitted', 'RepeatableRead', 'Serializable']);
+exports.JsonNullValueInputSchema = zod_1.z.enum(['JsonNull',]);
+exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
+exports.NullsOrderSchema = zod_1.z.enum(['first', 'last']);
+exports.AuditsOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['auditType', 'userId', 'username', 'action', 'auditChanges']);
+exports.SiteTemplateOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['name', 'template']);
+exports.JsonNullValueFilterSchema = zod_1.z.enum(['DbNull', 'JsonNull', 'AnyNull',]);
+exports.CustomerOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['name']);
+exports.SiteOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['name', 'cosUrl']);
 exports.UserOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'email', 'image']);
-exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt']);
+exports.AccountOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'type', 'provider', 'providerAccountId', 'refresh_token', 'access_token', 'token_type', 'scope', 'id_token', 'session_state']);
+exports.SessionOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'sessionToken', 'userId']);
 exports.VerificationTokenOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['identifier', 'token']);
-exports.VerificationTokenScalarFieldEnumSchema = zod_1.z.enum(['identifier', 'token', 'expires']);
+exports.ProjectOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'slug', 'logo', 'password', 'type', 'plan', 'stripeId', 'region', 'endpoint', 'bucket', 'useHost']);
+exports.ProjectInviteOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['email', 'projectId']);
+exports.ProjectUsersOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'projectId']);
+exports.SentEmailOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'projectId']);
+exports.DomainOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'target', 'type', 'description', 'projectId']);
+exports.LinkOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'password', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ios', 'android', 'userId', 'projectId', 'tagId']);
+exports.TagOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'projectId']);
 exports.jackson_indexOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['key', 'storeKey']);
 exports.jackson_storeOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['key', 'value', 'iv', 'tag']);
 exports.jackson_ttlOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['key']);
