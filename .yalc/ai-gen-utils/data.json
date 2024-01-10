@@ -1,0 +1,94 @@
+{
+  "id": 1,
+  "title": "Design of the Week Template 12 - Local Handlebars",
+  "companyName": " 无人机",
+  "banner": {
+    "image": "http://ntfkj.com/data/pad/pad_thumb/1682570554395752172.jpg"
+  },
+  "links": [{
+    "name": "关于",
+    "href": "#about"
+  }, {
+    "name": "愿景",
+    "href": "#feature"
+  }, {
+    "name": "产品",
+    "href": "#products"
+  }],
+  "hero": {
+    "title": "Car Rentals",
+    "desc": "For Your Everyday Commute or Leisure"
+  },
+  "about": {
+    "about": "Rental Cars &amp; Much More",
+    "title": "Experience a Rental service like never before",
+    "content": "Phasellus pulvinar faucibus neque, nec rhoncus nunc ultrices sit amet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus pulvinar faucibus neque, nec rhoncus nunc ultrices sit amet. Curabitur ac sagittis neque, vel egestas est.",
+    "more": "Learn more"
+  },
+  "feature": {
+    "title": "Our Service is Built with Trust",
+    "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "list": [{
+      "title": "Insured & Safe",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }, {
+      "title": "Certified Chauffeur",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }, {
+      "title": "24/7 Support",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }]
+  },
+  "products": {
+    "title": "Out Top Cars",
+    "desc": "Cars For All your needs",
+    "list": [{
+      "image": "https://images.unsplash.com/photo-1575090536203-2a6193126514?ixid=MnwyMDkyMnwwfDF8c2VhcmNofDN8fGh5dW5kYWl8ZW58MHx8fHwxNjMxNjk3ODI1&ixlib=rb-1.2.1q=85&fm=jpg&crop=faces&cs=srgb&w=600&h=450&fit=crop",
+      "title": "Hyundai Creta 2017",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }, {
+      "image": "https://images.unsplash.com/photo-1575090536203-2a6193126514?ixid=MnwyMDkyMnwwfDF8c2VhcmNofDN8fGh5dW5kYWl8ZW58MHx8fHwxNjMxNjk3ODI1&ixlib=rb-1.2.1q=85&fm=jpg&crop=faces&cs=srgb&w=600&h=450&fit=crop",
+      "title": "Hyundai Creta 2017",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }, {
+      "image": "https://images.unsplash.com/photo-1575090536203-2a6193126514?ixid=MnwyMDkyMnwwfDF8c2VhcmNofDN8fGh5dW5kYWl8ZW58MHx8fHwxNjMxNjk3ODI1&ixlib=rb-1.2.1q=85&fm=jpg&crop=faces&cs=srgb&w=600&h=450&fit=crop",
+      "title": "Hyundai Creta 2017",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }]
+  },
+  "news": {
+    "news": "新闻中心",
+    "desc": "What Our Customers Say About Us",
+    "list": [{
+      "active": true,
+      "index": "0",
+      "image": "http://ntfkj.com/data/article_thumb_file/d12/167086056536-2022-12-12.jpg",
+      "title": "Kathryn Murphy",
+      "desc": "Chief Technology Officer",
+      "text": "Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi."
+    }, {
+      "index": "1",
+      "image": "https://images.unsplash.com/photo-1574158622682-e40e69881006?ixid=MXwyMDkyMnwwfDF8c2VhcmNofDd8fGNhdHxlbnwwfHx8&ixlib=rb-1.2.1q=85&fm=jpg&crop=faces&cs=srgb&w=360&h=360&fit=crop",
+      "title": "Dianne Russell",
+      "desc": "Founder",
+      "text": "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet."
+    }, {
+      "index": "2",
+      "image": "https://images.unsplash.com/photo-1517101724602-c257fe568157?ixid=MXwyMDkyMnwwfDF8c2VhcmNofDZ8fHBhcnJvdHxlbnwwfHx8&ixlib=rb-1.2.1q=85&fm=jpg&crop=faces&cs=srgb&w=360&h=360&fit=crop",
+      "title": "Darrell Steward",
+      "desc": "Administrative Manager",
+      "text": "Aliqua id fugiat nostrud irure ex duis ea quis id quis ad et. Sunt qui esse pariatur duis deserunt mollit dolore cillum minim tempor enim. Elit aute irure tempor cupidatat incididunt sint deserunt ut voluptate aute id deserunt nisi."
+    }]
+  },
+  "contact": {
+    "contact": "Contact Us",
+    "address": "广东省东莞市凤岗镇校塘路56号",
+    "phone": "13530982832",
+    "email": "ntf_nfly@163.com"
+  },
+  "footer": {
+    "txt": " 名飞植保无人机  为新农业而奋斗 ",
+    "icp": "粤ICP备2022155707号",
+    "icpLink": "http://beian.miit.gov.cn/"
+  }
+}
