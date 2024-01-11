@@ -636,28 +636,28 @@ const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-s
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const zod_1 = __webpack_require__("zod");
 let ProjectRouter = ProjectRouter_1 = class ProjectRouter {
-    constructor(trpc, customService, loggerFactory) {
+    constructor(trpc, customTrpcService, loggerFactory) {
         this.trpc = trpc;
-        this.customService = customService;
+        this.customTrpcService = customTrpcService;
         this.projectRouter = this.trpc.router({
             queryLinks: this.trpc.procedure
                 .input(cms_admin_services_1.queryLinksSchema)
                 .output(zod_1.z.any())
                 .query(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                return this.customService.queryLinks(input);
+                return this.customTrpcService.queryLinks(input);
             })),
             queryProjectUsers: this.trpc.procedure
                 .input(cms_admin_services_1.queryProjectUsersSchema)
                 .output(zod_1.z.any())
                 .query(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                return this.customService.queryProjectUsers(input);
+                return this.customTrpcService.queryProjectUsers(input);
             })),
             updateProject: this.trpc.procedure
                 .input(cms_admin_services_1.updateProjectSchema)
                 .output(zod_1.z.any())
                 .mutation(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 this.logger.debug('[updateProject] invoked');
-                return this.customService.updateProject(input);
+                return this.customTrpcService.updateProject(input);
             })),
         });
         this.logger = loggerFactory(ProjectRouter_1.name);
@@ -668,7 +668,7 @@ ProjectRouter = ProjectRouter_1 = tslib_1.__decorate([
     tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
     tslib_1.__param(1, (0, inversify_1.inject)(cms_admin_services_1.CustomService)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomTrpcService !== "undefined" && cms_admin_services_1.CustomTrpcService) === "function" ? _b : Object, Function])
 ], ProjectRouter);
 exports.ProjectRouter = ProjectRouter;
 
@@ -755,11 +755,13 @@ const schema = tslib_1.__importStar(__webpack_require__("../../libs/cms-admin-se
 const user_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/user.service.ts");
 const custom_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/custom.service.ts");
 const cmsAdminSchema_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/cmsAdminSchema.service.ts");
+const custom_trpc_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/custom-trpc.service.ts");
 exports.cmsAdminServiceModule = new inversify_1.ContainerModule((bind) => {
     bind(flowda_shared_1.PrismaZodSchemaSymbol).toConstantValue(prisma_cms_admin_1.zt);
     bind(flowda_shared_1.CustomZodSchemaSymbol).toConstantValue(schema);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, user_service_1.UserService);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, custom_service_1.CustomService);
+    (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, custom_trpc_service_1.CustomTrpcService);
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, cmsAdminSchema_service_1.CmsAdminSchemaService);
 });
 
@@ -781,6 +783,8 @@ tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/lib/
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/user.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/custom.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/custom.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/custom-trpc.dto.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/custom-trpc.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/cmsAdminSchema.service.ts"), exports);
 
 
@@ -937,12 +941,108 @@ exports.CmsAdminSchemaService = CmsAdminSchemaService;
 
 /***/ }),
 
+/***/ "../../libs/cms-admin-services/src/services/custom-trpc.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QueryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.UpdateProjectSchemaDto = exports.updateProjectSchema = exports.QueryLinksSchemaDto = exports.queryLinksSchema = void 0;
+const zod_1 = __webpack_require__("zod");
+const nestjs_zod_1 = __webpack_require__("nestjs-zod");
+exports.queryLinksSchema = zod_1.z.object({
+    projectId: zod_1.z.string(),
+});
+class QueryLinksSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.queryLinksSchema) {
+}
+exports.QueryLinksSchemaDto = QueryLinksSchemaDto;
+exports.updateProjectSchema = zod_1.z.object({
+    previousSlug: zod_1.z.string(),
+    slug: zod_1.z.string().optional(),
+    name: zod_1.z.string().optional(),
+});
+class UpdateProjectSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.updateProjectSchema) {
+}
+exports.UpdateProjectSchemaDto = UpdateProjectSchemaDto;
+exports.queryProjectUsersSchema = zod_1.z.object({
+    projectId: zod_1.z.string(),
+});
+class QueryProjectUsersSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.queryProjectUsersSchema) {
+}
+exports.QueryProjectUsersSchemaDto = QueryProjectUsersSchemaDto;
+
+
+/***/ }),
+
+/***/ "../../libs/cms-admin-services/src/services/custom-trpc.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var CustomTrpcService_1;
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CustomTrpcService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const inversify_1 = __webpack_require__("inversify");
+const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+let CustomTrpcService = CustomTrpcService_1 = class CustomTrpcService {
+    constructor(prisma, loggerFactory) {
+        this.prisma = prisma;
+        this.logger = loggerFactory(CustomTrpcService_1.name);
+    }
+    queryLinks(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const siteRet = yield this.prisma.site.findUniqueOrThrow({
+                where: {
+                    projectId: dto.projectId,
+                },
+            });
+            return siteRet;
+        });
+    }
+    queryProjectUsers(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const projectUsersRet = yield this.prisma.projectUsers.findMany({
+                where: {
+                    projectId: dto.projectId,
+                },
+                select: {
+                    userId: true,
+                },
+            });
+            return [];
+        });
+    }
+    updateProject(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const ret = yield this.prisma.project.update({
+                where: {
+                    slug: dto.previousSlug,
+                },
+                data: Object.assign(Object.assign({}, (dto.name && { name: dto.name })), (dto.slug && { slug: dto.slug })),
+            });
+            return ret;
+        });
+    }
+};
+CustomTrpcService = CustomTrpcService_1 = tslib_1.__decorate([
+    (0, inversify_1.injectable)(),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Function])
+], CustomTrpcService);
+exports.CustomTrpcService = CustomTrpcService;
+
+
+/***/ }),
+
 /***/ "../../libs/cms-admin-services/src/services/custom.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SyncProjectUpdateToSiteSchemaDto = exports.UpdateProjectSchemaDto = exports.updateProjectSchema = exports.QueryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.QueryLinksSchemaDto = exports.queryLinksSchema = exports.SyncSiteUpdateToProjectSchemaDto = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+exports.SyncProjectUpdateToSiteSchemaDto = exports.SyncSiteUpdateToProjectSchemaDto = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const GetTemplateDataDefSchema = zod_1.z.object({
@@ -979,26 +1079,6 @@ const syncSiteUpdateToProjectSchema = zod_1.z.object({
 class SyncSiteUpdateToProjectSchemaDto extends (0, nestjs_zod_1.createZodDto)(syncSiteUpdateToProjectSchema) {
 }
 exports.SyncSiteUpdateToProjectSchemaDto = SyncSiteUpdateToProjectSchemaDto;
-exports.queryLinksSchema = zod_1.z.object({
-    projectId: zod_1.z.string(),
-});
-class QueryLinksSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.queryLinksSchema) {
-}
-exports.QueryLinksSchemaDto = QueryLinksSchemaDto;
-exports.queryProjectUsersSchema = zod_1.z.object({
-    projectId: zod_1.z.string(),
-});
-class QueryProjectUsersSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.queryProjectUsersSchema) {
-}
-exports.QueryProjectUsersSchemaDto = QueryProjectUsersSchemaDto;
-exports.updateProjectSchema = zod_1.z.object({
-    previousSlug: zod_1.z.string(),
-    slug: zod_1.z.string().optional(),
-    name: zod_1.z.string().optional(),
-});
-class UpdateProjectSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.updateProjectSchema) {
-}
-exports.UpdateProjectSchemaDto = UpdateProjectSchemaDto;
 const syncProjectUpdateToSiteSchema = zod_1.z.object({
     previousSlug: zod_1.z.string(),
     name: zod_1.z.string().optional(),
@@ -1284,40 +1364,6 @@ let CustomService = CustomService_1 = class CustomService {
                 });
             }
             return;
-        });
-    }
-    queryLinks(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const siteRet = yield this.prisma.site.findUniqueOrThrow({
-                where: {
-                    projectId: dto.projectId,
-                },
-            });
-            return siteRet;
-        });
-    }
-    queryProjectUsers(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const projectUsersRet = yield this.prisma.projectUsers.findMany({
-                where: {
-                    projectId: dto.projectId,
-                },
-                select: {
-                    userId: true,
-                },
-            });
-            return [];
-        });
-    }
-    updateProject(dto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ret = yield this.prisma.project.update({
-                where: {
-                    slug: dto.previousSlug,
-                },
-                data: Object.assign(Object.assign({}, (dto.name && { name: dto.name })), (dto.slug && { slug: dto.slug })),
-            });
-            return ret;
         });
     }
     syncProjectUpdateToSite(dto) {
