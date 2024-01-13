@@ -12,6 +12,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^4.0.0",
     "@prisma/client": "^4.16.2",
+    "@prisma/client-cms_admin": "file:.yalc/@prisma/client-cms_admin",
     "@trpc/client": "^10.44.1",
     "@trpc/server": "^10.44.1",
     "ai-gen-utils": "file:.yalc/ai-gen-utils",
