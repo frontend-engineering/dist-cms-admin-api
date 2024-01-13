@@ -619,11 +619,11 @@ const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.
 const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/trpc.service.ts");
 const trpc_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/trpc.router.ts");
 const project_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/project.router.ts");
-const link_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/link.router.ts");
+const user_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/user.router.ts");
 exports.cmsAdminServiceTrpcServerModule = new inversify_1.ContainerModule(bind => {
     bind(trpc_service_1.TrpcService).toSelf().inSingletonScope();
     bind(project_router_1.ProjectRouter).toSelf().inSingletonScope();
-    bind(link_router_1.LinkRouter).toSelf().inSingletonScope();
+    bind(user_router_1.UserRouter).toSelf().inSingletonScope();
     (0, flowda_shared_1.bindService)(bind, flowda_shared_1.ServiceSymbol, trpc_router_1.TrpcRouter);
 });
 
@@ -645,56 +645,12 @@ tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services-trpc-ser
 
 /***/ }),
 
-/***/ "../../libs/cms-admin-services-trpc-server/src/trpc/link.router.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var LinkRouter_1;
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LinkRouter = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const inversify_1 = __webpack_require__("inversify");
-const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/trpc.service.ts");
-const zod_1 = __webpack_require__("zod");
-const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
-const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
-const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-let LinkRouter = LinkRouter_1 = class LinkRouter {
-    constructor(trpc, prisma, loggerFactory) {
-        this.trpc = trpc;
-        this.prisma = prisma;
-        this.router = this.trpc.router({
-            findMany: this.trpc.procedure
-                .input(prisma_cms_admin_1.LinkFindManyArgsSchema)
-                .output(zod_1.z.array(prisma_cms_admin_1.LinkSchema.merge(zod_1.z.object({
-                project: prisma_cms_admin_1.ProjectSchema.nullish(),
-            }))))
-                .query(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                return this.prisma.link.findMany(input);
-            })),
-        });
-        this.logger = loggerFactory(LinkRouter_1.name);
-    }
-};
-LinkRouter = LinkRouter_1 = tslib_1.__decorate([
-    (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, Function])
-], LinkRouter);
-exports.LinkRouter = LinkRouter;
-
-
-/***/ }),
-
 /***/ "../../libs/cms-admin-services-trpc-server/src/trpc/project.router.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 var ProjectRouter_1;
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProjectRouter = exports.updateProjectSchema = exports.queryProjectUsersSchema = exports.queryLinksSchema = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -703,6 +659,8 @@ const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-s
 const zod_1 = __webpack_require__("zod");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
+const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
+const client_1 = __webpack_require__("@trpc/client");
 exports.queryLinksSchema = zod_1.z.object({
     projectId: zod_1.z.string(),
 });
@@ -715,8 +673,9 @@ exports.updateProjectSchema = zod_1.z.object({
     name: zod_1.z.string().optional(),
 });
 let ProjectRouter = ProjectRouter_1 = class ProjectRouter {
-    constructor(trpc, prisma, loggerFactory) {
+    constructor(trpc, flowdaTrpc, prisma, loggerFactory) {
         this.trpc = trpc;
+        this.flowdaTrpc = flowdaTrpc;
         this.prisma = prisma;
         this.router = this.trpc.router({
             queryLinks: this.trpc.procedure
@@ -742,7 +701,13 @@ let ProjectRouter = ProjectRouter_1 = class ProjectRouter {
                         userId: true,
                     },
                 });
-                return [];
+                const userIds = projectUsersRet.filter(i => i.userId != null).map(i => Number(i.userId));
+                const usersRet = yield this.flowdaTrpc.user.findMany.query({ userIds: userIds });
+                return projectUsersRet.map(ret => {
+                    return Object.assign(ret, {
+                        user: usersRet.find(u => u.id === Number(ret.userId)),
+                    });
+                });
             })),
             updateProject: this.trpc.procedure
                 .input(exports.updateProjectSchema)
@@ -757,6 +722,45 @@ let ProjectRouter = ProjectRouter_1 = class ProjectRouter {
                 });
                 return ret;
             })),
+            findUnique: this.trpc.procedure
+                .input(prisma_cms_admin_1.ProjectFindUniqueArgsSchema)
+                .output(prisma_cms_admin_1.ProjectSchema.nullable())
+                .query(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                return this.prisma.project.findUnique(input);
+            })),
+            findProjectOwner: this.trpc.procedure
+                .input(zod_1.z.object({
+                slug: zod_1.z.string(),
+            }))
+                .output(zod_1.z
+                .object({
+                email: zod_1.z.string().nullable(),
+            })
+                .nullable())
+                .query(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                const projectUserRet = yield this.prisma.projectUsers.findFirst({
+                    where: {
+                        role: 'owner',
+                        project: {
+                            slug: input.slug,
+                        },
+                    },
+                });
+                if ((projectUserRet === null || projectUserRet === void 0 ? void 0 : projectUserRet.userId) != null) {
+                    const userRet = yield this.flowdaTrpc.user.findUnique.query({ id: Number(projectUserRet.userId) });
+                    if (userRet) {
+                        return {
+                            email: userRet.email,
+                        };
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                else {
+                    return null;
+                }
+            })),
         });
         this.logger = loggerFactory(ProjectRouter_1.name);
     }
@@ -764,9 +768,10 @@ let ProjectRouter = ProjectRouter_1 = class ProjectRouter {
 ProjectRouter = ProjectRouter_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, Function])
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _b : Object, typeof (_c = typeof db !== "undefined" && db.PrismaClient) === "function" ? _c : Object, Function])
 ], ProjectRouter);
 exports.ProjectRouter = ProjectRouter;
 
@@ -786,15 +791,15 @@ const inversify_1 = __webpack_require__("inversify");
 const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/trpc.service.ts");
 const express_1 = __webpack_require__("@trpc/server/adapters/express");
 const project_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/project.router.ts");
-const link_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/link.router.ts");
+const user_router_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/user.router.ts");
 let TrpcRouter = TrpcRouter_1 = class TrpcRouter {
-    constructor(trpc, projectRouter, linkRouter, loggerFactory) {
+    constructor(trpc, projectRouter, userRouter, loggerFactory) {
         this.trpc = trpc;
         this.projectRouter = projectRouter;
-        this.linkRouter = linkRouter;
+        this.userRouter = userRouter;
         this.appRouter = this.trpc.router({
             project: this.projectRouter.router,
-            link: this.linkRouter.router,
+            user: this.userRouter.router,
         });
         this.logger = loggerFactory(TrpcRouter_1.name);
     }
@@ -809,9 +814,9 @@ TrpcRouter = TrpcRouter_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
     tslib_1.__param(1, (0, inversify_1.inject)(project_router_1.ProjectRouter)),
-    tslib_1.__param(2, (0, inversify_1.inject)(project_router_1.ProjectRouter)),
+    tslib_1.__param(2, (0, inversify_1.inject)(user_router_1.UserRouter)),
     tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof project_router_1.ProjectRouter !== "undefined" && project_router_1.ProjectRouter) === "function" ? _b : Object, typeof (_c = typeof link_router_1.LinkRouter !== "undefined" && link_router_1.LinkRouter) === "function" ? _c : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof project_router_1.ProjectRouter !== "undefined" && project_router_1.ProjectRouter) === "function" ? _b : Object, typeof (_c = typeof user_router_1.UserRouter !== "undefined" && user_router_1.UserRouter) === "function" ? _c : Object, Function])
 ], TrpcRouter);
 exports.TrpcRouter = TrpcRouter;
 
@@ -839,6 +844,52 @@ TrpcService = tslib_1.__decorate([
     (0, inversify_1.injectable)()
 ], TrpcService);
 exports.TrpcService = TrpcService;
+
+
+/***/ }),
+
+/***/ "../../libs/cms-admin-services-trpc-server/src/trpc/user.router.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var UserRouter_1;
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserRouter = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const inversify_1 = __webpack_require__("inversify");
+const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-server/src/trpc/trpc.service.ts");
+const zod_1 = __webpack_require__("zod");
+const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
+const db = tslib_1.__importStar(__webpack_require__("@prisma/client-flowda"));
+const client_1 = __webpack_require__("@trpc/client");
+let UserRouter = UserRouter_1 = class UserRouter {
+    constructor(trpc, flowdaTrpc, prisma, loggerFactory) {
+        this.trpc = trpc;
+        this.flowdaTrpc = flowdaTrpc;
+        this.prisma = prisma;
+        this.router = this.trpc.router({
+            findUnique: this.trpc.procedure
+                .input(zod_1.z.object({
+                email: zod_1.z.string().optional(),
+                id: zod_1.z.number().optional(),
+            }))
+                .query(({ input }) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                return this.flowdaTrpc.user.findUnique.query(input);
+            })),
+        });
+        this.logger = loggerFactory(UserRouter_1.name);
+    }
+};
+UserRouter = UserRouter_1 = tslib_1.__decorate([
+    (0, inversify_1.injectable)(),
+    tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
+    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _b : Object, typeof (_c = typeof db !== "undefined" && db.PrismaClient) === "function" ? _c : Object, Function])
+], UserRouter);
+exports.UserRouter = UserRouter;
 
 
 /***/ }),
@@ -11868,6 +11919,13 @@ module.exports = require("@nestjs/schedule");
 /***/ ((module) => {
 
 module.exports = require("@prisma/client-cms_admin");
+
+/***/ }),
+
+/***/ "@prisma/client-flowda":
+/***/ ((module) => {
+
+module.exports = require("@prisma/client-flowda");
 
 /***/ }),
 
