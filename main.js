@@ -1372,6 +1372,7 @@ let CustomService = CustomService_1 = class CustomService {
         }
       })
     </script>
+    <script src="https://assets-1306445775.cos.ap-shanghai.myqcloud.com/templateA/assets/js/editor.bundle.js"></script>
     `);
             return root.toString();
         });
