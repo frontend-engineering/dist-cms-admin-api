@@ -6,7 +6,7 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -64,6 +64,11 @@ let AppController = class AppController {
     generatePartialSlotData(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.generatePartialSlotData(dto);
+        });
+    }
+    getRandomImages(query) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.getRandomImages(query);
         });
     }
 };
@@ -139,6 +144,14 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_g = typeof cms_admin_services_1.GeneratePartialSlotDataSchemaDto !== "undefined" && cms_admin_services_1.GeneratePartialSlotDataSchemaDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generatePartialSlotData", null);
+tslib_1.__decorate([
+    (0, common_1.Get)('/getRandomImages'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Query)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "getRandomImages", null);
 AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
@@ -344,12 +357,13 @@ exports.TasksService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const common_1 = __webpack_require__("@nestjs/common");
-const schedule_1 = __webpack_require__("@nestjs/schedule");
+// import { Cron } from '@nestjs/schedule'
 let TasksService = TasksService_1 = class TasksService {
     constructor(customService) {
         this.customService = customService;
         this.logger = new common_1.Logger(TasksService_1.name);
     }
+    // @Cron('*/10 * * * *')
     handleCron() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.logger.debug('Called generateSiteJob');
@@ -357,12 +371,6 @@ let TasksService = TasksService_1 = class TasksService {
         });
     }
 };
-tslib_1.__decorate([
-    (0, schedule_1.Cron)('*/10 * * * *'),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", []),
-    tslib_1.__metadata("design:returntype", Promise)
-], TasksService.prototype, "handleCron", null);
 TasksService = TasksService_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _a : Object])
@@ -1036,7 +1044,7 @@ exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
     REFRESH_TOKEN_SECRET: zod_1.z.string().min(1),
     REFRESH_TOKEN_EXPIRE: zod_1.z.number().default(7 * 24 * 60 * 60),
     ACCESS_TOKEN_SECRET: zod_1.z.string().min(1),
-    ACCESS_TOKEN_EXPIRE: zod_1.z.number().default(60 * 60),
+    ACCESS_TOKEN_EXPIRE: zod_1.z.number().default(24 * 60 * 60),
     FLOWDA_URL: zod_1.z.string().min(1),
     COS_KEY: zod_1.z.string().optional(),
     COS_ID: zod_1.z.string().optional(),
@@ -1196,9 +1204,12 @@ exports.CmsAdminSchemaService = CmsAdminSchemaService;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DubSyncExtname = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GenerateSiteJobSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+exports.GetRandomImagesQuery = exports.DubSyncExtname = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GenerateSiteJobSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
+const class_validator_1 = __webpack_require__("class-validator");
+const class_transformer_1 = __webpack_require__("class-transformer");
 const GetTemplateDataDefSchema = zod_1.z.object({
     siteId: zod_1.z.number(),
 });
@@ -1233,6 +1244,18 @@ class GeneratePartialSlotDataSchemaDto extends (0, nestjs_zod_1.createZodDto)(Ge
 }
 exports.GeneratePartialSlotDataSchemaDto = GeneratePartialSlotDataSchemaDto;
 exports.DubSyncExtname = 'dub-sync';
+class GetRandomImagesQuery {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_transformer_1.Type)(() => Number),
+    tslib_1.__metadata("design:type", Number)
+], GetRandomImagesQuery.prototype, "count", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], GetRandomImagesQuery.prototype, "tag", void 0);
+exports.GetRandomImagesQuery = GetRandomImagesQuery;
 
 
 /***/ }),
@@ -1593,6 +1616,18 @@ let CustomService = CustomService_1 = class CustomService {
                 success: passCnt,
                 fail: failCnt,
             };
+        });
+    }
+    getRandomImages(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const ids = yield this.prisma.$queryRaw `SELECT id FROM ImageLibrary WHERE IsDeleted = 0 ORDER BY RAND() LIMIT ${dto.count}`;
+            return this.prisma.imageLibrary.findMany({
+                where: {
+                    id: {
+                        in: ids.map(i => i.id),
+                    },
+                },
+            });
         });
     }
 };
@@ -3730,6 +3765,20 @@ module.exports = require("@trpc/server/adapters/express");
 /***/ ((module) => {
 
 module.exports = require("ai-gen-utils");
+
+/***/ }),
+
+/***/ "class-transformer":
+/***/ ((module) => {
+
+module.exports = require("class-transformer");
+
+/***/ }),
+
+/***/ "class-validator":
+/***/ ((module) => {
+
+module.exports = require("class-validator");
 
 /***/ }),
 
