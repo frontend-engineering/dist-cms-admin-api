@@ -1,6 +1,6 @@
 const nano = require('nanoid')
 const fse = require('fs-extra');
-const { getImages } = require('./images.cjs')
+const { getCacheImages } = require('./images.cjs')
 
 // const { callBridge } = require('./ChatServiceBridge');
 // const { chat } = require('./yiyan')
@@ -658,10 +658,10 @@ const aiData = async (companyInfo, withCache) => {
                 });
         })
         .then(data => {
-            if (typeof data.data === 'string') {
+            if (typeof data?.data === 'string') {
                 throw new Error('data format error')
             }
-            return adapter(data.data, companyInfo)
+            return adapter(data?.data, companyInfo)
         })
         .then(data => {
             // console.log('final data: ', data)
@@ -725,7 +725,7 @@ const generateDataPartial = async (companyInfo, lastResponse, dataPath) => {
     const meta = getUpstreamDataDescription(dataPath)
     const data = await aiDataPartial(companyInfo, JSON.stringify(lastResponse), meta, process.env.WithCache);
     if (meta.hasImage) {
-        const image = (await getImages(1))[0]
+        const image = (await getCacheImages('drone', 1))[0]
         data.image = image;
     }
     const partial = {
@@ -741,27 +741,22 @@ const generateDataPartial = async (companyInfo, lastResponse, dataPath) => {
 
 // parts - 指定只触发部分属性
 const generateData = async (companyInfo) => {
-    return Promise.all([aiData(companyInfo, process.env.WithCache), getImages(8)])
+    return Promise.all([aiData(companyInfo, process.env.WithCache), getCacheImages('drone', 8)])
         .then(([data, images]) => {
             // Inserts images
             // if (!data.banner?.image) {
             //     data.banner.image = images[0]?.full
             // }
-            data.banner.image = images[0]?.full
-            data.about.image = images[1]?.full;
+            data.banner.image = images[0]?.urls.full
+            data.bannerCss = images[0]?.css;
+            data.about.image = images[1]?.urls.full;
             let imgIdx = 2
             data.products.list.forEach((item) => {
-                item.image = setUnsplashImageParams(images[imgIdx++]?.regular, {
-                    width: 600,
-                    height: 450
-                })
+                item.image = images[imgIdx++]?.urls['600*450']
             })
 
             data.news.list.forEach((item) => {
-                item.image = setUnsplashImageParams(images[imgIdx++]?.regular, {
-                    width: 360,
-                    height: 360
-                })
+                item.image = images[imgIdx++]?.urls['360*360']
             })
 
             const raw = JSON.stringify(data)

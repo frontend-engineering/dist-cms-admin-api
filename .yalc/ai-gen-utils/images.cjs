@@ -59,7 +59,6 @@ async function unsplashImages(topic, cnt) {
 
 async function unsplashSearchImages(keyword, cnt) {
     const encodeQuery = encodeURIComponent(keyword || 'industry-4.0')
-    // console.log('requesting... ', `https://api.unsplash.com/photos/random?client_id=-7cs7MfZzNNT_xMNHWc0TNUF0orDHlpzzOjRPJLJbyU&count=${cnt || 1}&topics=${topics}`)
 
     const searchOpt = {
         'method': 'GET',
@@ -132,10 +131,62 @@ const getImages = async (cnt) => {
     }
     return result;
 }
-
-// unsplashSearchImages('industry-4.0', 13)
+async function auth() {
+    return new Promise((resolve, reject) => {
+        request({
+            url: 'https://api.webinfra.cloud/cms-admin-api/user/login',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            json: true,
+            body: {
+                username:"cms_admin",
+                password:"1234"
+            }
+        }, (error, resp) => {
+            if (error) {
+                reject(error)
+            } else {
+                resolve(resp?.body?.access_token)
+            }
+        })
+    })
+}
+async function getCacheImages(tag, cnt) {
+    return auth().then(token => {
+        console.log('getting images: ', tag, cnt)
+        return new Promise((resolve, reject) => {
+            request({
+                url: `https://api.webinfra.cloud/cms-admin-api/apps/getRandomImages?tag=${tag}&count=${cnt}`, 
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                json:true
+            }, (error, resp) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    resp.body.forEach(item => {
+                        const urls = item.urls;
+                        Object.entries(urls).map(([key, value]) => {
+                            if (!value.startsWith('http')) {
+                                urls[key] = `https://${value}`
+                            }
+                        })
+                    })
+                    resolve(resp.body)
+                }
+            })
+        })
+    })
+}
+// getCacheImages('industry-4.0', 1)
 
 module.exports = {
     getImages,
+    getCacheImages,
     unsplashImages
 }

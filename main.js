@@ -400,12 +400,7 @@ console.log('PROXY', cms_admin_services_1.CMS_ADMIN_ENV.PROXY);
 console.log('---------- ENV --------------');
 function loadModule(container) {
     const prisma = new client_cms_admin_1.PrismaClient({
-        log: [
-            // 'query',
-            'info',
-            'warn',
-            'error',
-        ],
+        log: ['query', 'info', 'warn', 'error'],
     }).$extends({
         name: cms_admin_services_1.DubSyncExtname,
         query: {
@@ -1041,10 +1036,7 @@ const zod_1 = __webpack_require__("zod");
 exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
     TEST_ENV: zod_1.z.string().optional(),
     DATABASE_URL: zod_1.z.string().min(1),
-    REFRESH_TOKEN_SECRET: zod_1.z.string().min(1),
-    REFRESH_TOKEN_EXPIRE: zod_1.z.number().default(7 * 24 * 60 * 60),
     ACCESS_TOKEN_SECRET: zod_1.z.string().min(1),
-    ACCESS_TOKEN_EXPIRE: zod_1.z.number().default(24 * 60 * 60),
     FLOWDA_URL: zod_1.z.string().min(1),
     COS_KEY: zod_1.z.string().optional(),
     COS_ID: zod_1.z.string().optional(),
@@ -1621,8 +1613,10 @@ let CustomService = CustomService_1 = class CustomService {
     }
     getRandomImages(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // db.Prisma.join
+            // https://github.com/prisma/prisma/issues/13663#issuecomment-1237142453
             return this.prisma
-                .$queryRaw `SELECT id,unsplashId,tag,urls,css FROM ImageLibrary WHERE IsDeleted = 0 ORDER BY RAND() LIMIT ${dto.count}`;
+                .$queryRaw `SELECT id,unsplashId,tag,urls,css FROM ImageLibrary WHERE IsDeleted = 0 AND tag in (${db.Prisma.join(dto.tag.split(','))}) ORDER BY RAND() LIMIT ${dto.count}`;
         });
     }
 };
