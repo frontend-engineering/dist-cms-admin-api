@@ -1244,6 +1244,7 @@ class GeneratePartialSlotDataSchemaDto extends (0, nestjs_zod_1.createZodDto)(Ge
 }
 exports.GeneratePartialSlotDataSchemaDto = GeneratePartialSlotDataSchemaDto;
 exports.DubSyncExtname = 'dub-sync';
+// https://dev.to/avantar/validating-numeric-query-parameters-in-nestjs-gk9
 class GetRandomImagesQuery {
 }
 tslib_1.__decorate([
@@ -1620,14 +1621,8 @@ let CustomService = CustomService_1 = class CustomService {
     }
     getRandomImages(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ids = yield this.prisma.$queryRaw `SELECT id FROM ImageLibrary WHERE IsDeleted = 0 ORDER BY RAND() LIMIT ${dto.count}`;
-            return this.prisma.imageLibrary.findMany({
-                where: {
-                    id: {
-                        in: ids.map(i => i.id),
-                    },
-                },
-            });
+            return this.prisma
+                .$queryRaw `SELECT id,unsplashId,tag,urls,css FROM ImageLibrary WHERE IsDeleted = 0 ORDER BY RAND() LIMIT ${dto.count}`;
         });
     }
 };
