@@ -72,6 +72,7 @@ let AppController = class AppController {
         });
     }
 };
+exports.AppController = AppController;
 tslib_1.__decorate([
     (0, common_1.Get)('/__hi'),
     tslib_1.__metadata("design:type", Function),
@@ -152,11 +153,10 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getRandomImages", null);
-AppController = tslib_1.__decorate([
+exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
 ], AppController);
-exports.AppController = AppController;
 
 
 /***/ }),
@@ -183,7 +183,8 @@ const audit_controller_1 = __webpack_require__("./src/app/audit.controller.ts");
 const tasks_module_1 = __webpack_require__("./src/app/tasks.module.ts");
 let AppModule = class AppModule {
 };
-AppModule = tslib_1.__decorate([
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [services_module_1.ServicesModule, schedule_1.ScheduleModule.forRoot(), tasks_module_1.TasksModule],
         controllers: [data_controller_1.DataController, audit_controller_1.AuditController, app_controller_1.AppController, user_controller_1.UserController],
@@ -201,7 +202,6 @@ AppModule = tslib_1.__decorate([
         ],
     })
 ], AppModule);
-exports.AppModule = AppModule;
 
 
 /***/ }),
@@ -224,6 +224,7 @@ let AuditController = class AuditController {
         return this.audit.queryAudit(dto);
     }
 };
+exports.AuditController = AuditController;
 tslib_1.__decorate([
     (0, common_1.Post)('/query'),
     tslib_1.__param(0, (0, common_1.Body)()),
@@ -231,11 +232,10 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof flowda_shared_node_1.QueryAuditSchemaDto !== "undefined" && flowda_shared_node_1.QueryAuditSchemaDto) === "function" ? _b : Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], AuditController.prototype, "queryTableFilter", null);
-AuditController = tslib_1.__decorate([
+exports.AuditController = AuditController = tslib_1.__decorate([
     (0, common_1.Controller)('/audit'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof flowda_shared_node_1.AuditService !== "undefined" && flowda_shared_node_1.AuditService) === "function" ? _a : Object])
 ], AuditController);
-exports.AuditController = AuditController;
 
 
 /***/ }),
@@ -283,6 +283,7 @@ let DataController = class DataController {
         });
     }
 };
+exports.DataController = DataController;
 tslib_1.__decorate([
     (0, common_1.Get)(''),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -315,12 +316,11 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof express !== "undefined" && express.Request) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], DataController.prototype, "remove", null);
-DataController = tslib_1.__decorate([
+exports.DataController = DataController = tslib_1.__decorate([
     (0, common_1.Controller)('data/*'),
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _a : Object])
 ], DataController);
-exports.DataController = DataController;
 
 
 /***/ }),
@@ -336,12 +336,12 @@ const common_1 = __webpack_require__("@nestjs/common");
 const tasks_service_1 = __webpack_require__("./src/app/tasks.service.ts");
 let TasksModule = class TasksModule {
 };
-TasksModule = tslib_1.__decorate([
+exports.TasksModule = TasksModule;
+exports.TasksModule = TasksModule = tslib_1.__decorate([
     (0, common_1.Module)({
         providers: [tasks_service_1.TasksService],
     })
 ], TasksModule);
-exports.TasksModule = TasksModule;
 
 
 /***/ }),
@@ -371,11 +371,11 @@ let TasksService = TasksService_1 = class TasksService {
         });
     }
 };
-TasksService = TasksService_1 = tslib_1.__decorate([
+exports.TasksService = TasksService;
+exports.TasksService = TasksService = TasksService_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _a : Object])
 ], TasksService);
-exports.TasksService = TasksService;
 
 
 /***/ }),
@@ -494,7 +494,8 @@ const services = (0, flowda_shared_1.getServices)(exports.servicesContainer);
 let ServicesModule = class ServicesModule {
     constructor() { }
 };
-ServicesModule = tslib_1.__decorate([
+exports.ServicesModule = ServicesModule;
+exports.ServicesModule = ServicesModule = tslib_1.__decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
         providers: services,
@@ -502,7 +503,6 @@ ServicesModule = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [])
 ], ServicesModule);
-exports.ServicesModule = ServicesModule;
 
 
 /***/ }),
@@ -554,6 +554,7 @@ let UserController = UserController_1 = class UserController {
         return req.user;
     }
 };
+exports.UserController = UserController;
 tslib_1.__decorate([
     (0, common_1.UseGuards)(userLocalAuth_guard_1.UserLocalAuthGuard),
     (0, common_1.Post)('login'),
@@ -571,11 +572,10 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], UserController.prototype, "logout", null);
-UserController = UserController_1 = tslib_1.__decorate([
+exports.UserController = UserController = UserController_1 = tslib_1.__decorate([
     (0, common_1.Controller)('user'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.UserService !== "undefined" && cms_admin_services_1.UserService) === "function" ? _a : Object])
 ], UserController);
-exports.UserController = UserController;
 
 
 /***/ }),
@@ -607,11 +607,11 @@ let UserJwtStrategy = UserJwtStrategy_1 = class UserJwtStrategy extends (0, pass
         });
     }
 };
-UserJwtStrategy = UserJwtStrategy_1 = tslib_1.__decorate([
+exports.UserJwtStrategy = UserJwtStrategy;
+exports.UserJwtStrategy = UserJwtStrategy = UserJwtStrategy_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [])
 ], UserJwtStrategy);
-exports.UserJwtStrategy = UserJwtStrategy;
 
 
 /***/ }),
@@ -627,10 +627,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let UserJwtAuthGuard = class UserJwtAuthGuard extends (0, passport_1.AuthGuard)('userJwt') {
 };
-UserJwtAuthGuard = tslib_1.__decorate([
+exports.UserJwtAuthGuard = UserJwtAuthGuard;
+exports.UserJwtAuthGuard = UserJwtAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], UserJwtAuthGuard);
-exports.UserJwtAuthGuard = UserJwtAuthGuard;
 
 
 /***/ }),
@@ -665,11 +665,11 @@ let UserLocalStrategy = UserLocalStrategy_1 = class UserLocalStrategy extends (0
         });
     }
 };
-UserLocalStrategy = UserLocalStrategy_1 = tslib_1.__decorate([
+exports.UserLocalStrategy = UserLocalStrategy;
+exports.UserLocalStrategy = UserLocalStrategy = UserLocalStrategy_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.UserService !== "undefined" && cms_admin_services_1.UserService) === "function" ? _a : Object])
 ], UserLocalStrategy);
-exports.UserLocalStrategy = UserLocalStrategy;
 
 
 /***/ }),
@@ -685,10 +685,10 @@ const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 let UserLocalAuthGuard = class UserLocalAuthGuard extends (0, passport_1.AuthGuard)('userLocal') {
 };
-UserLocalAuthGuard = tslib_1.__decorate([
+exports.UserLocalAuthGuard = UserLocalAuthGuard;
+exports.UserLocalAuthGuard = UserLocalAuthGuard = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], UserLocalAuthGuard);
-exports.UserLocalAuthGuard = UserLocalAuthGuard;
 
 
 /***/ }),
@@ -735,7 +735,7 @@ tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services-trpc-ser
 
 
 var ProjectRouter_1;
-var _a, _b, _c;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProjectRouter = exports.updateProjectSchema = exports.queryProjectUsersSchema = exports.queryLinksSchema = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -745,7 +745,6 @@ const zod_1 = __webpack_require__("zod");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
-const client_1 = __webpack_require__("@trpc/client");
 exports.queryLinksSchema = zod_1.z.object({
     projectId: zod_1.z.string(),
 });
@@ -851,15 +850,15 @@ let ProjectRouter = ProjectRouter_1 = class ProjectRouter {
         this.logger = loggerFactory(ProjectRouter_1.name);
     }
 };
-ProjectRouter = ProjectRouter_1 = tslib_1.__decorate([
+exports.ProjectRouter = ProjectRouter;
+exports.ProjectRouter = ProjectRouter = ProjectRouter_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _b : Object, typeof (_c = typeof db !== "undefined" && db.PrismaClient) === "function" ? _c : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, Function])
 ], ProjectRouter);
-exports.ProjectRouter = ProjectRouter;
 
 
 /***/ }),
@@ -896,7 +895,8 @@ let TrpcRouter = TrpcRouter_1 = class TrpcRouter {
         }));
     }
 };
-TrpcRouter = TrpcRouter_1 = tslib_1.__decorate([
+exports.TrpcRouter = TrpcRouter;
+exports.TrpcRouter = TrpcRouter = TrpcRouter_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
     tslib_1.__param(1, (0, inversify_1.inject)(project_router_1.ProjectRouter)),
@@ -904,7 +904,6 @@ TrpcRouter = TrpcRouter_1 = tslib_1.__decorate([
     tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof project_router_1.ProjectRouter !== "undefined" && project_router_1.ProjectRouter) === "function" ? _b : Object, typeof (_c = typeof user_router_1.UserRouter !== "undefined" && user_router_1.UserRouter) === "function" ? _c : Object, Function])
 ], TrpcRouter);
-exports.TrpcRouter = TrpcRouter;
 
 
 /***/ }),
@@ -926,10 +925,10 @@ let TrpcService = class TrpcService {
         this.mergeRouters = this.trpc.mergeRouters;
     }
 };
-TrpcService = tslib_1.__decorate([
+exports.TrpcService = TrpcService;
+exports.TrpcService = TrpcService = tslib_1.__decorate([
     (0, inversify_1.injectable)()
 ], TrpcService);
-exports.TrpcService = TrpcService;
 
 
 /***/ }),
@@ -939,7 +938,7 @@ exports.TrpcService = TrpcService;
 
 
 var UserRouter_1;
-var _a, _b, _c;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserRouter = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -948,7 +947,6 @@ const trpc_service_1 = __webpack_require__("../../libs/cms-admin-services-trpc-s
 const zod_1 = __webpack_require__("zod");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-flowda"));
-const client_1 = __webpack_require__("@trpc/client");
 let UserRouter = UserRouter_1 = class UserRouter {
     constructor(trpc, flowdaTrpc, prisma, loggerFactory) {
         this.trpc = trpc;
@@ -967,15 +965,15 @@ let UserRouter = UserRouter_1 = class UserRouter {
         this.logger = loggerFactory(UserRouter_1.name);
     }
 };
-UserRouter = UserRouter_1 = tslib_1.__decorate([
+exports.UserRouter = UserRouter;
+exports.UserRouter = UserRouter = UserRouter_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(trpc_service_1.TrpcService)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, typeof (_b = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _b : Object, typeof (_c = typeof db !== "undefined" && db.PrismaClient) === "function" ? _c : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof trpc_service_1.TrpcService !== "undefined" && trpc_service_1.TrpcService) === "function" ? _a : Object, Object, typeof (_b = typeof db !== "undefined" && db.PrismaClient) === "function" ? _b : Object, Function])
 ], UserRouter);
-exports.UserRouter = UserRouter;
 
 
 /***/ }),
@@ -1036,7 +1034,7 @@ const zod_1 = __webpack_require__("zod");
 exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
     TEST_ENV: zod_1.z.string().optional(),
     DATABASE_URL: zod_1.z.string().min(1),
-    ACCESS_TOKEN_SECRET: zod_1.z.string().min(1),
+    ACCESS_TOKEN_SECRET: zod_1.z.string().min(1), // 需要和 FLOWDA_ENV.ACCESS_TOKEN_SECRET 一致
     FLOWDA_URL: zod_1.z.string().min(1),
     COS_KEY: zod_1.z.string().optional(),
     COS_ID: zod_1.z.string().optional(),
@@ -1179,14 +1177,14 @@ let CmsAdminSchemaService = CmsAdminSchemaService_1 = class CmsAdminSchemaServic
         });
     }
 };
-CmsAdminSchemaService = CmsAdminSchemaService_1 = tslib_1.__decorate([
+exports.CmsAdminSchemaService = CmsAdminSchemaService;
+exports.CmsAdminSchemaService = CmsAdminSchemaService = CmsAdminSchemaService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.SchemaServiceSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Object, Function])
 ], CmsAdminSchemaService);
-exports.CmsAdminSchemaService = CmsAdminSchemaService;
 
 
 /***/ }),
@@ -1239,6 +1237,7 @@ exports.DubSyncExtname = 'dub-sync';
 // https://dev.to/avantar/validating-numeric-query-parameters-in-nestjs-gk9
 class GetRandomImagesQuery {
 }
+exports.GetRandomImagesQuery = GetRandomImagesQuery;
 tslib_1.__decorate([
     (0, class_validator_1.IsInt)(),
     (0, class_transformer_1.Type)(() => Number),
@@ -1248,7 +1247,6 @@ tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     tslib_1.__metadata("design:type", String)
 ], GetRandomImagesQuery.prototype, "tag", void 0);
-exports.GetRandomImagesQuery = GetRandomImagesQuery;
 
 
 /***/ }),
@@ -1565,36 +1563,31 @@ let CustomService = CustomService_1 = class CustomService {
             let passCnt = 0;
             let failCnt = 0;
             try {
-                for (var _d = true, customerRet_1 = tslib_1.__asyncValues(customerRet), customerRet_1_1; customerRet_1_1 = yield customerRet_1.next(), _a = customerRet_1_1.done, !_a;) {
+                for (var _d = true, customerRet_1 = tslib_1.__asyncValues(customerRet), customerRet_1_1; customerRet_1_1 = yield customerRet_1.next(), _a = customerRet_1_1.done, !_a; _d = true) {
                     _c = customerRet_1_1.value;
                     _d = false;
+                    const cust = _c;
                     try {
-                        const cust = _c;
-                        try {
-                            const siteRet = yield this.generateSite({
-                                customerId: cust.id,
-                                templateId: tplRet.id,
-                            });
-                            const cosUrl = yield this.deploySiteToCos(siteRet.id);
-                            yield this.prisma.site.update({
-                                where: {
-                                    id: siteRet.id,
-                                },
-                                data: {
-                                    cosUrl,
-                                },
-                            });
-                            this.logger.debug(`[generateSiteJob] success, ${cust.name}, template: ${tplRet.name}`);
-                            passCnt++;
-                        }
-                        catch (e) {
-                            this.logger.error(`[generateSiteJob] ${cust.name}, template: ${tplRet.template}`);
-                            console.error(e);
-                            failCnt++;
-                        }
+                        const siteRet = yield this.generateSite({
+                            customerId: cust.id,
+                            templateId: tplRet.id,
+                        });
+                        const cosUrl = yield this.deploySiteToCos(siteRet.id);
+                        yield this.prisma.site.update({
+                            where: {
+                                id: siteRet.id,
+                            },
+                            data: {
+                                cosUrl,
+                            },
+                        });
+                        this.logger.debug(`[generateSiteJob] success, ${cust.name}, template: ${tplRet.name}`);
+                        passCnt++;
                     }
-                    finally {
-                        _d = true;
+                    catch (e) {
+                        this.logger.error(`[generateSiteJob] ${cust.name}, template: ${tplRet.template}`);
+                        console.error(e);
+                        failCnt++;
                     }
                 }
             }
@@ -1620,7 +1613,8 @@ let CustomService = CustomService_1 = class CustomService {
         });
     }
 };
-CustomService = CustomService_1 = tslib_1.__decorate([
+exports.CustomService = CustomService;
+exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.DataServiceSymbol)),
@@ -1628,7 +1622,6 @@ CustomService = CustomService_1 = tslib_1.__decorate([
     tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _b : Object, Object, Function])
 ], CustomService);
-exports.CustomService = CustomService;
 
 
 /***/ }),
@@ -1660,13 +1653,13 @@ let UserService = UserService_1 = class UserService {
         });
     }
 };
-UserService = UserService_1 = tslib_1.__decorate([
+exports.UserService = UserService;
+exports.UserService = UserService = UserService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
 ], UserService);
-exports.UserService = UserService;
 
 
 /***/ }),
@@ -1726,13 +1719,13 @@ let AuditService = AuditService_1 = class AuditService {
         });
     }
 };
-AuditService = AuditService_1 = tslib_1.__decorate([
+exports.AuditService = AuditService;
+exports.AuditService = AuditService = AuditService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], AuditService);
-exports.AuditService = AuditService;
 
 
 /***/ }),
@@ -1775,9 +1768,7 @@ class RemoveTableFilterSchemaDto extends (0, nestjs_zod_1.createZodDto)(RemoveTa
 }
 exports.RemoveTableFilterSchemaDto = RemoveTableFilterSchemaDto;
 let TableFilterService = TableFilterService_1 = class TableFilterService {
-    constructor(
-    // todo: 暂时先强类型，后续应该做成服务
-    prisma, loggerFactory) {
+    constructor(prisma, loggerFactory) {
         this.prisma = prisma;
         this.logger = loggerFactory(TableFilterService_1.name);
     }
@@ -1806,13 +1797,13 @@ let TableFilterService = TableFilterService_1 = class TableFilterService {
         });
     }
 };
-TableFilterService = TableFilterService_1 = tslib_1.__decorate([
+exports.TableFilterService = TableFilterService;
+exports.TableFilterService = TableFilterService = TableFilterService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], TableFilterService);
-exports.TableFilterService = TableFilterService;
 
 
 /***/ }),
@@ -1865,11 +1856,11 @@ let AppExceptionFilter = AppExceptionFilter_1 = class AppExceptionFilter {
         }
     }
 };
-AppExceptionFilter = AppExceptionFilter_1 = tslib_1.__decorate([
+exports.AppExceptionFilter = AppExceptionFilter;
+exports.AppExceptionFilter = AppExceptionFilter = AppExceptionFilter_1 = tslib_1.__decorate([
     (0, common_1.Catch)(),
     tslib_1.__metadata("design:paramtypes", [])
 ], AppExceptionFilter);
-exports.AppExceptionFilter = AppExceptionFilter;
 
 
 /***/ }),
@@ -2028,10 +2019,7 @@ todo: 增加 reference_type 区分是如何做 nest
 e.g. Customer#weixinProfile 和 Order#customerId 的 nest 查询有区别
  */
 let DataService = DataService_1 = class DataService {
-    constructor(
-    // todo: prisma 要不要强类型
-    // @inject(PrismaClientSymbol) private prisma: db.PrismaClient,
-    prisma, prismaSchemaService, loggerFactory) {
+    constructor(prisma, prismaSchemaService, loggerFactory) {
         this.prisma = prisma;
         this.prismaSchemaService = prismaSchemaService;
         this.logger = loggerFactory(DataService_1.name);
@@ -2084,7 +2072,7 @@ let DataService = DataService_1 = class DataService {
             const auditInfo = {
                 auditId: param.where.id,
                 auditType: resource,
-                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                 username: reqUser['user_name'],
                 action: 'update',
                 auditChanges: JSON.stringify(auditChanges),
@@ -2126,7 +2114,7 @@ let DataService = DataService_1 = class DataService {
                 const auditInfo = {
                     auditId: id,
                     auditType: resource,
-                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                     username: reqUser['user_name'],
                     action: 'soft_delete_revert',
                     auditChanges: JSON.stringify(param.data),
@@ -2143,7 +2131,7 @@ let DataService = DataService_1 = class DataService {
                 const auditInfo = {
                     auditId: ret.id,
                     auditType: resource,
-                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                    userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                     username: reqUser['user_name'],
                     action: 'create',
                     auditChanges: JSON.stringify(param.data),
@@ -2185,7 +2173,7 @@ let DataService = DataService_1 = class DataService {
             const auditInfo = {
                 auditId: param.where.id,
                 auditType: resource,
-                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']),
+                userId: JSON.stringify(reqUser['user_id'] || reqUser['uid']), // todo: 暂时兼容 java 和 node
                 username: reqUser['user_name'],
                 action: 'soft_delete',
                 auditChanges: JSON.stringify(prevRet),
@@ -2199,14 +2187,14 @@ let DataService = DataService_1 = class DataService {
         });
     }
 };
-DataService = DataService_1 = tslib_1.__decorate([
+exports.DataService = DataService;
+exports.DataService = DataService = DataService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(symbols_1.PrismaSchemaServiceSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Object, Function])
 ], DataService);
-exports.DataService = DataService;
 
 
 /***/ }),
@@ -2243,12 +2231,12 @@ let DynamicTableSchemaTransformer = DynamicTableSchemaTransformer_1 = class Dyna
         }, input.extendedSchema);
     }
 };
-DynamicTableSchemaTransformer = DynamicTableSchemaTransformer_1 = tslib_1.__decorate([
+exports.DynamicTableSchemaTransformer = DynamicTableSchemaTransformer;
+exports.DynamicTableSchemaTransformer = DynamicTableSchemaTransformer = DynamicTableSchemaTransformer_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Function])
 ], DynamicTableSchemaTransformer);
-exports.DynamicTableSchemaTransformer = DynamicTableSchemaTransformer;
 
 
 /***/ }),
@@ -2722,14 +2710,14 @@ let PrismaSchemaService = PrismaSchemaService_1 = class PrismaSchemaService {
         });
     }
 };
-PrismaSchemaService = PrismaSchemaService_1 = tslib_1.__decorate([
+exports.PrismaSchemaService = PrismaSchemaService;
+exports.PrismaSchemaService = PrismaSchemaService = PrismaSchemaService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaUtilsSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.SchemaServiceSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Object, Function])
 ], PrismaSchemaService);
-exports.PrismaSchemaService = PrismaSchemaService;
 
 
 /***/ }),
@@ -2746,10 +2734,7 @@ const inversify_1 = __webpack_require__("inversify");
 const matchPath_1 = __webpack_require__("../../libs/flowda-shared/src/utils/matchPath.ts");
 const types_1 = __webpack_require__("../../libs/flowda-shared/src/interfaces/types.ts");
 let PrismaUtils = PrismaUtils_1 = class PrismaUtils {
-    constructor(
-    // todo: prisma 要不要强类型
-    // @inject(PrismaClientSymbol) private prisma: db.PrismaClient,
-    prisma, loggerFactory) {
+    constructor(prisma, loggerFactory) {
         this.prisma = prisma;
         this.logger = loggerFactory(PrismaUtils_1.name);
     }
@@ -2763,13 +2748,13 @@ let PrismaUtils = PrismaUtils_1 = class PrismaUtils {
         });
     }
 };
-PrismaUtils = PrismaUtils_1 = tslib_1.__decorate([
+exports.PrismaUtils = PrismaUtils;
+exports.PrismaUtils = PrismaUtils = PrismaUtils_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], PrismaUtils);
-exports.PrismaUtils = PrismaUtils;
 
 
 /***/ }),
@@ -2821,7 +2806,8 @@ let SchemaService = SchemaService_1 = class SchemaService {
         });
     }
 };
-SchemaService = SchemaService_1 = tslib_1.__decorate([
+exports.SchemaService = SchemaService;
+exports.SchemaService = SchemaService = SchemaService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<SchemaTransformer>')),
@@ -2829,7 +2815,6 @@ SchemaService = SchemaService_1 = tslib_1.__decorate([
     tslib_1.__param(3, (0, inversify_1.inject)(types_1.CustomZodSchemaSymbol)),
     tslib_1.__metadata("design:paramtypes", [Function, Function, Object, Object])
 ], SchemaService);
-exports.SchemaService = SchemaService;
 
 
 /***/ }),
@@ -3092,13 +3077,13 @@ let SchemaTransformer = SchemaTransformer_1 = class SchemaTransformer {
         return _.lowerFirst(schema.split('Schema')[0]) + 'Id';
     }
 };
-SchemaTransformer = SchemaTransformer_1 = tslib_1.__decorate([
+exports.SchemaTransformer = SchemaTransformer;
+exports.SchemaTransformer = SchemaTransformer = SchemaTransformer_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__param(1, (0, inversify_1.inject)(types_1.PrismaZodSchemaSymbol)),
     tslib_1.__metadata("design:paramtypes", [Function, Object])
 ], SchemaTransformer);
-exports.SchemaTransformer = SchemaTransformer;
 
 
 /***/ }),
@@ -3151,9 +3136,9 @@ exports.bindServiceSymbol = bindServiceSymbol;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.error = exports.warn = exports.info = exports.debug = void 0;
 const levelColorMap = {
-    0: '#c0392b',
-    1: '#f39c12',
-    3: '#00BCD4',
+    0: '#c0392b', // Red
+    1: '#f39c12', // Yellow
+    3: '#00BCD4', // Cyan
     4: '#ccc',
 };
 function style(level) {
