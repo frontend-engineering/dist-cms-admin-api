@@ -25,11 +25,6 @@ let AppController = class AppController {
             };
         });
     }
-    sitePreview(siteId) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.custom.previewSite(parseInt(siteId));
-        });
-    }
     submitPreviewSite(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.submitPreviewSite(dto);
@@ -79,15 +74,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "hi", null);
-tslib_1.__decorate([
-    (0, common_1.Get)('/sitePreview'),
-    (0, common_1.Header)('content-type', 'text/html'),
-    (0, common_1.Header)('X-Frame-Options', 'ALLOW-FROM https://cms-1306445775.cos-website.ap-shanghai.myqcloud.com'),
-    tslib_1.__param(0, (0, common_1.Query)('siteId')),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", Promise)
-], AppController.prototype, "sitePreview", null);
 tslib_1.__decorate([
     (0, common_1.Post)('/submitPreviewSite'),
     tslib_1.__param(0, (0, common_1.Body)()),
@@ -181,13 +167,14 @@ const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const data_controller_1 = __webpack_require__("./src/app/data.controller.ts");
 const audit_controller_1 = __webpack_require__("./src/app/audit.controller.ts");
 const tasks_module_1 = __webpack_require__("./src/app/tasks.module.ts");
+const site_preview_controller_1 = __webpack_require__("./src/app/site-preview.controller.ts");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [services_module_1.ServicesModule, schedule_1.ScheduleModule.forRoot(), tasks_module_1.TasksModule],
-        controllers: [data_controller_1.DataController, audit_controller_1.AuditController, app_controller_1.AppController, user_controller_1.UserController],
+        controllers: [data_controller_1.DataController, audit_controller_1.AuditController, app_controller_1.AppController, user_controller_1.UserController, site_preview_controller_1.SitePreviewController],
         providers: [
             {
                 provide: core_1.APP_FILTER,
@@ -321,6 +308,47 @@ exports.DataController = DataController = tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _a : Object])
 ], DataController);
+
+
+/***/ }),
+
+/***/ "./src/app/site-preview.controller.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SitePreviewController = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
+let SitePreviewController = class SitePreviewController {
+    constructor(cmsAdminSchemaService, custom) {
+        this.cmsAdminSchemaService = cmsAdminSchemaService;
+        this.custom = custom;
+    }
+    sitePreview(siteId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.previewSite(parseInt(siteId));
+        });
+    }
+};
+exports.SitePreviewController = SitePreviewController;
+tslib_1.__decorate([
+    (0, common_1.Get)('/preview'),
+    (0, common_1.Header)('content-type', 'text/html')
+    // 在 nginx 配置
+    ,
+    (0, common_1.Header)('X-Frame-Options', 'ALLOW-FROM https://cms-1306445775.cos-website.ap-shanghai.myqcloud.com'),
+    tslib_1.__param(0, (0, common_1.Query)('siteId')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", Promise)
+], SitePreviewController.prototype, "sitePreview", null);
+exports.SitePreviewController = SitePreviewController = tslib_1.__decorate([
+    (0, common_1.Controller)('/site-preview'),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
+], SitePreviewController);
 
 
 /***/ }),
