@@ -59,10 +59,9 @@ const state1Data = {
         }
     ],
 }
-
-const prompt = `
+const techPrompt = `
 # 角色
-您是一位资深无人机行业的业务专家，有丰富的行业经验。您的任务是，根据提供的公司信息和公司在线资料网址，编写一份吸引人的官方网站文案。您的目标是用令人着迷的专业文字，准确而生动地描绘公司的形象和产品。
+您是一位资深的业务专家，有丰富的行业经验。您的任务是，根据提供的公司信息和公司在线资料网址，编写一份吸引人的官方网站文案。您的目标是用令人着迷的专业文字，准确而生动地描绘公司的形象和产品。
 ## 技能
 ### 技能1：企业文化熟悉度
 - 结合公司的商业风格和精神，撰写适合的文案。
@@ -78,7 +77,7 @@ const prompt = `
 - 创作一条10-30字的首页banner slogan，描绘出公司的核心价值。
 
 ### 需求2：description
-- 撰写一段100-300字的公司简介，突出公司的优势和独特性。
+- 改写输入的公司描述信息，撰写一段100-300字的公司简介，突出公司的优势和独特性。
 
 ### 需求3：vision
 - 精练出一条20-50字的公司核心理念，阐述公司的愿景。
@@ -91,6 +90,10 @@ const prompt = `
 
 ### 需求6：news
 - 从企业合作伙伴处收集三个反馈案例，每个案例包括公司名称、负责人以及不超过300个字的详细反馈。
+
+
+### 需求7: story
+- 撰写一段品牌故事，要求逼真务实，结合description内容，描述公司发展历程，100 ～ 300字
 
 ## 输出格式
 \`\`\`{
@@ -112,7 +115,8 @@ const prompt = `
         "title": "",
         "desc":  "",
         "contents": "",
-    }]
+    }],
+    "story": "string"
 }
 \`\`\`
 
@@ -123,8 +127,89 @@ const prompt = `
 
 现在，让我们开始吧！`
 
+const defaultPrompt = `
+# 角色
+您是一位资深无人机行业的业务专家，有丰富的行业经验。您的任务是，根据提供的公司信息和公司在线资料网址，编写一份吸引人的官方网站文案。您的目标是用令人着迷的专业文字，准确而生动地描绘公司的形象和产品。
+## 技能
+### 技能1：企业文化熟悉度
+- 结合公司的商业风格和精神，撰写适合的文案。
+
+### 技能2：理念解读
+- 对企业的发展理念有深入理解，能总结出关键词和口号。
+
+### 技能3：创新精神
+- 创建独特新颖的公司简介和产品描述。
+
+## 文案需求
+### 需求1：slogan
+- 创作一条10-30字的首页banner slogan，描绘出公司的核心价值。
+
+### 需求2：description
+- 改写输入的公司描述信息，撰写一段100-300字的公司简介，突出公司的优势和独特性。
+
+### 需求3：vision
+- 精练出一条20-50字的公司核心理念，阐述公司的愿景。
+
+### 需求4：keywords
+- 总结出三个关键词，每个关键词下附带一段50字左右的描述，展现公司的专业技能和核心价值。
+
+### 需求5：products
+- 设计出公司的三种核心产品，包括产品名称及不超过100字的产品描述。
+
+### 需求6：news
+- 从企业合作伙伴处收集三个反馈案例，每个案例包括公司名称、负责人以及不超过300个字的详细反馈。
+
+
+### 需求7: story
+- 撰写一段品牌故事，要求逼真务实，结合description内容，描述公司发展历程，100 ～ 300字
+
+## 输出格式
+\`\`\`{
+    "companyName": 'string',
+    "image": "string",
+    "slogan": 'string',
+    "vision": "string",
+    "description":"string",
+    "keywords": [{
+        "title": "",
+        "desc": ""
+    }],
+    "products": [{
+        "image": "",
+        "name": "",
+        "desc": ""
+    }],
+    "news": [{
+        "title": "",
+        "desc":  "",
+        "contents": "",
+    }],
+    "story": "string"
+}
+\`\`\`
+
+## 约束条件
+- 请以输出键使用上述中文字段名的JSON形式提供回答。
+- 检查并确保JSON格式正确，没有语法错误。
+- 特别关注所在公司的行业，生成内容需以此为基础
+
+现在，让我们开始吧！`
+
+
+const promptMap = {
+    tech: techPrompt,
+    drone: defaultPrompt,
+    default: defaultPrompt
+}
+
+const keywordMap = {
+    tech: 'technology%20background',
+    drone: 'technology%20background,industrial,factory,drone',
+    default: 'technology%20background,industrial,factory,drone'
+}
+
 // Call OpenAI API to generate descriptive contents
-const generate = async function (questions, withCache) {
+const generate = async function (questions, bizType, withCache) {
     let msgId
     let convId
     try {
@@ -144,6 +229,7 @@ const generate = async function (questions, withCache) {
         console.error('ai meta data not cached')
     }
 
+    const prompt = promptMap[bizType || 'default']
     // 向云服务发起调用
     try {
         let msgs
@@ -193,6 +279,10 @@ const aiMetaDataDescriptor = {
     news: {
         type: 'array',
         description: '客户反馈，三个来自合作公司的良好反馈的案例，包含合作公司名称name(公司名字要真实)/公司负责人manager/反馈的具体内容contents（300字左右）' 
+    },
+    story: {
+        type: 'string',
+        description: '品牌故事，结合description内容，描述公司发展历程，要求逼真务实'
     }
 }
 
@@ -237,7 +327,7 @@ const dataFieldsMap = {
         attr: {
             about: {
                 type: 'string',
-                val: () => '关于'
+                val: () => '简介'
             },
             title: {
                 type: 'string',
@@ -349,6 +439,11 @@ const dataFieldsMap = {
     "footer": {
         type: 'obj',
         attr: {
+            story: {
+                type: 'string',
+                source: 'story',
+                val: ({story, about}) => story || about.content
+            },
             txt: {
                 type: 'string',
                 source: 'slogan',
@@ -385,7 +480,7 @@ const getUpstreamData = (dataPath) => {
 
 const getUpstreamDataDescription = (dataPath) => {
     const meta = getUpstreamData(dataPath)
-    if (process.env.DEV) {
+    if (process.env.DEV === '1') {
         console.log('found meta: ', meta);
     }
     if (meta?.source) {
@@ -412,19 +507,19 @@ const adapterPartial = (respData, meta) => {
     // const { companyName, slogan, description, vision, keywords, products, news, contact, icp } = respData
     // const meta = getUpstreamData(dataPath)
     // console.log('partial adapter ... ', meta)
-    if (process.env.DEV) {
+    if (process.env.DEV === '1') {
         console.log('partial meta: ', meta)
     }
     
     return meta.val.apply(globalThis, [respData, meta.index])
 }
 
-const adapter = (initData, companyInfo) => {
+const adapter = (generatedData, companyInfo) => {
     // test init data
-    if (!initData) {
+    if (!generatedData) {
         throw new Error('Please input valid init data')
     }
-    const { companyName, slogan, description, vision, keywords, products, news, contact, icp } = Object.assign(initData, companyInfo || {})
+    const { companyName, slogan, description, vision, keywords, products, news, contact, icp, story } = Object.assign(companyInfo || {}, generatedData)
 
     if (!companyName || !slogan || !description || !keywords || !products || !(news)) {
         throw new Error('invalid init data')
@@ -523,7 +618,7 @@ const adapter = (initData, companyInfo) => {
             "image": "http://ntfkj.com/data/pad/pad_thumb/1682570554395752172.jpg"
         },
         "links": [{
-            "name": "关于",
+            "name": "简介",
             "href": "#about"
         }, {
             "name": "愿景",
@@ -537,9 +632,9 @@ const adapter = (initData, companyInfo) => {
             "desc": slogan
         },
         "about": {
-            "about": `关于`,
+            "about": `简介`,
             "title": `关于${companyName}`,
-            "content": description,
+            "content": description?.split('。').map(item => item ? `<p>${item.trim()}</p>` : '').join(''),
             "more": "Learn more"
         },
         "feature": {
@@ -564,6 +659,7 @@ const adapter = (initData, companyInfo) => {
             "email": contact?.email
         },
         "footer": {
+            "story": (story || description)?.split('。').map(item => item ? `<p>${item.trim()}</p>` : '').join(''),
             "txt": slogan || vision,
             "icp": icp,
             "icpLink": "http://beian.miit.gov.cn/"
@@ -613,10 +709,10 @@ const aiDataPartial = async (companyInfo, lastResponse, meta, withCache) => {
             }]
         })
     }
-    if (process.env.DEV) {
+    if (process.env.DEV === '1') {
         console.log('partial msgs: ', msgs)
     }
-    return generate(msgs, withCache)
+    return generate(msgs, companyInfo.biz, withCache)
         .then(async data => {
             // TODO: cache增量局部更新
             try {
@@ -634,7 +730,7 @@ const aiDataPartial = async (companyInfo, lastResponse, meta, withCache) => {
             return adapterPartial(data.data, meta)
         })
         .then(data => {
-            if (process.env.DEV) {
+            if (process.env.DEV === '1') {
                 console.log('final partial data: ', data)
             }
             return data;
@@ -643,10 +739,10 @@ const aiDataPartial = async (companyInfo, lastResponse, meta, withCache) => {
 
 const aiData = async (companyInfo, withCache) => {
     const desc = `公司名称：${companyInfo.companyName}, 公司描述：${companyInfo.description}`
-    if (process.env.DEV) {
+    if (process.env.DEV === '1') {
         console.log('company info: ', desc)
     }
-    return generate(desc, withCache)
+    return generate(desc, companyInfo.biz, withCache)
         .then(data => {
             return fse.writeJson('.ai.json', data, { spaces: 2 })
                 .then(() => {
@@ -733,7 +829,7 @@ const generateDataPartial = async (companyInfo, lastResponse, dataPath) => {
         data
     };
 
-    if (process.env.DEV) {
+    if (process.env.DEV === '1') {
         console.log('partial - ', partial, lastResponse)
     }
     return patchData(lastResponse, partial)
@@ -741,28 +837,30 @@ const generateDataPartial = async (companyInfo, lastResponse, dataPath) => {
 
 // parts - 指定只触发部分属性
 const generateData = async (companyInfo) => {
-    return Promise.all([aiData(companyInfo, process.env.WithCache), getCacheImages('drone', 8)])
-        .then(([data, images]) => {
-            // Inserts images
-            // if (!data.banner?.image) {
-            //     data.banner.image = images[0]?.full
-            // }
-            data.banner.image = images[0]?.urls.full
-            data.bannerCss = images[0]?.css;
-            data.about.image = images[1]?.urls.full;
-            let imgIdx = 2
-            data.products.list.forEach((item) => {
-                item.image = images[imgIdx++]?.urls['600*450']
-            })
-
-            data.news.list.forEach((item) => {
-                item.image = images[imgIdx++]?.urls['360*360']
-            })
-
-            const raw = JSON.stringify(data)
-            data.raw = raw;
-            return data;
+    return aiData(companyInfo, process.env.WithCache)
+    .then(async data => {
+        const imgCnt = 2 + (data.products.list?.length || 0) + (data.news.list.length || 0)
+        const images = await getCacheImages(keywordMap[companyInfo.biz || 'default'], imgCnt || 8)
+        // Inserts images
+        data.banner.image = images[0]?.urls.full
+        data.bannerCss = images[0]?.css;
+        data.about.image = images[1]?.urls.full;
+        let imgIdx = 2
+        data.products.list.forEach((item) => {
+            item.image = images[imgIdx++]?.urls['600*450']
         })
+
+        data.news.list.forEach((item) => {
+            item.image = images[imgIdx++]?.urls['360*360']
+        })
+
+        const raw = JSON.stringify(data)
+        data.raw = raw;
+
+        // common data
+        data.homeUrl = "https://webinfra.turbosite.cloud"
+        return data;
+    })
 }
 
 module.exports = {

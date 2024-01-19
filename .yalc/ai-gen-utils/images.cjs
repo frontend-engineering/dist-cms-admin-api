@@ -26,7 +26,7 @@ async function unsplashImages(topic, cnt) {
             const data = response.body
 
             console.log(typeof data, data?.length);
-            const urlList = [];
+            let urlList = [];
 
             if (data.length > 0) {
                 urlList.push(...data.map(item => item.urls))
@@ -78,7 +78,7 @@ async function unsplashSearchImages(keyword, cnt) {
             const data = response.body?.results
 
             console.log(typeof data, data?.length);
-            const urlList = [];
+            let urlList = [];
 
             if (data.length > 0) {
                 urlList.push(...data.map(item => item.urls))
@@ -173,7 +173,7 @@ async function getCacheImages(tag, cnt) {
                         const urls = item.urls;
                         Object.entries(urls).map(([key, value]) => {
                             if (!value.startsWith('http')) {
-                                urls[key] = `https://${value}`
+                                urls[key] = `https://${value.replace('assets-1306445775.cos.ap-shanghai.myqcloud.com', 'assets.greatermaker.cn')}`
                             }
                         })
                     })

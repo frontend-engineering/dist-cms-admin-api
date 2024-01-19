@@ -1,5 +1,20 @@
 const request = require('request')
 
+function jsonParser(input, retry) {
+  let str = input;
+  try {
+    if (retry) {
+      str = input.replaceAll('\'', '"')
+    }
+    return JSON.parse(str)
+  } catch (error) {
+    if (!retry) {
+      return jsonParser(input.retry)
+    }
+    throw error;
+  }
+}
+
 async function chat(msgs) {
   const contents = [];
   if (typeof msgs === 'string') {
@@ -22,7 +37,7 @@ async function chat(msgs) {
     })
   }
 
-  if (process.env.DEV) {
+  if (process.env.DEV === '1') {
     console.log('chat...', JSON.stringify(contents))
   }
   var url 
@@ -57,7 +72,7 @@ async function chat(msgs) {
           }
           console.log(typeof response.body);
           const respJson = JSON.parse(response.body);
-          if (process.env.DEV) {
+          if (process.env.DEV === '1') {
             console.log('gemini response : ', respJson)
             console.log(' - ', respJson?.candidates[0]?.content?.parts[0]?.text)
           }
@@ -70,12 +85,12 @@ async function chat(msgs) {
 
           console.log('\n')
           console.log('got json str: ', typeof jsonStr)
-          if (process.env.DEV) {
+          if (process.env.DEV === '1') {
             console.log('gemini json str: : ', jsonStr)
           }
           try {
-              const data = JSON.parse(jsonStr);
-              if (process.env.DEV) {
+              const data = jsonParser(jsonStr);
+              if (process.env.DEV === '1') {
                 console.log('gemini response data: ', data)
               }
               resolve(data)
@@ -102,7 +117,7 @@ async function format(msgString) {
     return;
   }
 
-  if (process.env.DEV) {
+  if (process.env.DEV === '1') {
     console.log('format...', JSON.stringify(contents))
   }
   var options = {
@@ -124,7 +139,7 @@ async function format(msgString) {
           }
           console.log(typeof response.body);
           const respJson = JSON.parse(response.body);
-          if (process.env.DEV) {
+          if (process.env.DEV === '1') {
             console.log('gemini response : ', respJson)
             console.log(' - ', respJson?.candidates[0]?.content?.parts[0]?.text)
           }
@@ -137,12 +152,12 @@ async function format(msgString) {
 
           console.log('\n')
           console.log('got json str: ', typeof jsonStr)
-          if (process.env.DEV) {
+          if (process.env.DEV === '1') {
             console.log('gemini format json str: : ', jsonStr)
           }
           try {
               const data = JSON.parse(jsonStr);
-              if (process.env.DEV) {
+              if (process.env.DEV === '1') {
                 console.log('gemini format response data: ', data)
               }
               resolve(data)

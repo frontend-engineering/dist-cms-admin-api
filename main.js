@@ -1429,14 +1429,13 @@ exports.queryLinksSchemaDto = queryLinksSchemaDto;
 
 
 var DubService_1;
-var _a, _b;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DubService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
-const client_1 = __webpack_require__("@trpc/client");
 let DubService = DubService_1 = class DubService {
     constructor(prisma, flowdaTrpc, loggerFactory) {
         this.prisma = prisma;
@@ -1527,7 +1526,7 @@ exports.DubService = DubService = DubService_1 = tslib_1.__decorate([
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _b : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Object, Function])
 ], DubService);
 
 
@@ -1538,13 +1537,11 @@ exports.DubService = DubService = DubService_1 = tslib_1.__decorate([
 
 
 var UserService_1;
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
-const client_1 = __webpack_require__("@trpc/client");
 let UserService = UserService_1 = class UserService {
     constructor(flowdaTrpc, loggerFactory) {
         this.flowdaTrpc = flowdaTrpc;
@@ -1565,7 +1562,7 @@ exports.UserService = UserService = UserService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.FlowdaTrpcClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof client_1.CreateTRPCProxyClient !== "undefined" && client_1.CreateTRPCProxyClient) === "function" ? _a : Object, Function])
+    tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], UserService);
 
 

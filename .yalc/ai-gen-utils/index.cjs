@@ -5,7 +5,7 @@ const { generateData, generateDataPartial } = require('./dataAdapter.cjs')
 const { bundle } = require('./rollup.start.cjs')
 function run() {
 // Read the Handlebars template file
-const template = fse.readFileSync('templates/templateA/template2.hbs', 'utf-8');
+const template = fse.readFileSync('templates/templateA/template.hbs', 'utf-8');
 
 // Compile the template
 const compiledTemplate = Handlebars.compile(template);
