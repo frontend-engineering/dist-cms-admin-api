@@ -329,7 +329,7 @@ let SitePreviewController = class SitePreviewController {
     }
     sitePreview(siteId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.custom.previewSite(parseInt(siteId));
+            return this.custom.previewSite(siteId);
         });
     }
 };
@@ -1379,9 +1379,12 @@ let CustomService = CustomService_1 = class CustomService {
     }
     previewSite(siteId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (isNaN(parseInt(siteId))) {
+                throw new Error(`[previewSite] siteId is illegal, ${siteId}`);
+            }
             const siteRet = yield this.prisma.site.findUniqueOrThrow({
                 where: {
-                    id: siteId,
+                    id: parseInt(siteId),
                 },
                 include: {
                     siteTemplate: true,
