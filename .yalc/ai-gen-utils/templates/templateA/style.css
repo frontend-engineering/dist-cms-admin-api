@@ -1,0 +1,52 @@
+@media (max-width:991px) {
+    body.poster {
+        margin-top: 60vh;
+    }
+}
+
+body.poster {
+    background-attachment: fixed;
+}
+
+.top-5 {
+    top: 5px;
+}
+
+.btn {
+    border: none;
+    cursor: pointer;
+    /* color: var(--_text);
+    background-color: var(--_background); */
+    background: #076EFF;
+    color: white;
+    user-select: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 99em;
+    padding: 8px 24px;
+    font-size: small;
+    appearance: none;
+    text-decoration: none;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+.btn:hover {
+    background-color: #185ABC;
+}
+
+.editor-btn {
+    position: fixed;
+    top: 50%;
+    right: 10px;
+    z-index: 9999;
+    border: 0px;
+}
+
+#deploy-btn {
+    border: none;
+    position: fixed;
+    z-index: 9999;
+    top: 12px;
+    right: 12px;
+}
