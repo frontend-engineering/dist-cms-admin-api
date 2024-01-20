@@ -1013,8 +1013,6 @@ const dynamic_schema_1 = __webpack_require__("../../libs/cms-admin-services/src/
 const _ = tslib_1.__importStar(__webpack_require__("radash"));
 const Handlebars = tslib_1.__importStar(__webpack_require__("handlebars"));
 const node_html_parser_1 = __webpack_require__("node-html-parser");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { generateData, generateDataPartial } = __webpack_require__("ai-gen-utils");
 const BUCKET = 'assets-1306445775';
 let CustomService = CustomService_1 = class CustomService {
     constructor(prisma, data, cos, loggerFactory) {
@@ -1038,6 +1036,8 @@ let CustomService = CustomService_1 = class CustomService {
                 this.logger.error(msg);
                 throw new Error(msg);
             }
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { generateData } = __webpack_require__("ai-gen-utils");
             const data = yield generateData(companyInfo);
             this.logger.debug(`[generateSite] end invoke generateData`);
             const siteRet = yield this.prisma.site.findFirst({
@@ -1088,6 +1088,8 @@ let CustomService = CustomService_1 = class CustomService {
                 },
             });
             this.logger.debug(`[generatePartialSlotData] start invoke generateDataPartial`);
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { generateDataPartial } = __webpack_require__("ai-gen-utils");
             const data = yield generateDataPartial(siteRet.customer.extendData, siteRet.slotData, dto.path);
             this.logger.debug(`[generatePartialSlotData] end invoke generateDataPartial`);
             // const htmlRet = ejs.render(tplRet.template, dto.defData)
@@ -1379,7 +1381,7 @@ exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
+exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const zod_1 = __webpack_require__("zod");
 exports.findUserByEmailSchema = zod_1.z.object({
@@ -1420,6 +1422,15 @@ exports.queryLinksSchema = zod_1.z.object({
 class queryLinksSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.queryLinksSchema) {
 }
 exports.queryLinksSchemaDto = queryLinksSchemaDto;
+exports.updateUserInfoSchema = zod_1.z.object({
+    userId: zod_1.z.number(),
+    email: zod_1.z.string().optional(),
+    name: zod_1.z.string().optional(),
+    image: zod_1.z.string().optional(),
+});
+class updateUserInfoSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.updateUserInfoSchema) {
+}
+exports.updateUserInfoSchemaDto = updateUserInfoSchemaDto;
 
 
 /***/ }),
@@ -1445,6 +1456,14 @@ let DubService = DubService_1 = class DubService {
     findUserByEmail(dto) {
         return this.flowdaTrpc.user.findUnique.query({
             email: dto.email,
+        });
+    }
+    updateUserInfo(dto) {
+        return this.flowdaTrpc.user.updateUserInfo.mutate({
+            userId: dto.userId,
+            username: dto.name,
+            email: dto.email,
+            image: dto.image,
         });
     }
     findUserById(dto) {
