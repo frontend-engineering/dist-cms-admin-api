@@ -424,6 +424,7 @@ const trpc_1 = __webpack_require__("./src/trpc/trpc.ts");
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
 console.log('---------- ENV --------------');
 console.log('PROXY', cms_admin_services_1.CMS_ADMIN_ENV.PROXY);
+console.log('FLOWDA_URL', cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL);
 console.log('---------- ENV --------------');
 function loadModule(container) {
     const prisma = new client_cms_admin_1.PrismaClient({
@@ -1381,7 +1382,7 @@ exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
+exports.alreadyInTeamSchemaDto = exports.alreadyInTeamSchema = exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const zod_1 = __webpack_require__("zod");
 exports.findUserByEmailSchema = zod_1.z.object({
@@ -1431,6 +1432,13 @@ exports.updateUserInfoSchema = zod_1.z.object({
 class updateUserInfoSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.updateUserInfoSchema) {
 }
 exports.updateUserInfoSchemaDto = updateUserInfoSchemaDto;
+exports.alreadyInTeamSchema = zod_1.z.object({
+    projectId: zod_1.z.string(),
+    email: zod_1.z.string(),
+});
+class alreadyInTeamSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.alreadyInTeamSchema) {
+}
+exports.alreadyInTeamSchemaDto = alreadyInTeamSchemaDto;
 
 
 /***/ }),
@@ -1536,6 +1544,19 @@ let DubService = DubService_1 = class DubService {
                 },
             });
             return siteRet;
+        });
+    }
+    alreadyInTeam(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const projectUsers = yield this.queryProjectUsers({
+                projectId: dto.projectId,
+            });
+            return projectUsers.filter(pu => {
+                if (pu.user) {
+                    return pu.user.email === dto.email;
+                }
+                return false;
+            })[0];
         });
     }
 };
