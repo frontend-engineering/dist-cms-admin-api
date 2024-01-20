@@ -2,10 +2,7 @@ const request = require('request')
 const fse = require('fs-extra');
 
 const imgSyncFile = `images/db-${new Date().toLocaleDateString().replaceAll('/', '-')}.json`
-if (!fse.existsSync(imgSyncFile)) {
-    fse.ensureDirSync('images')
-    fse.createFileSync(imgSyncFile)
-}
+
 async function unsplashImages(topic, cnt) {
     const topics = encodeURIComponent(topic || 'textures-patterns,business-work,arts-culture')
     // console.log('requesting... ', `https://api.unsplash.com/photos/random?client_id=-7cs7MfZzNNT_xMNHWc0TNUF0orDHlpzzOjRPJLJbyU&count=${cnt || 1}&topics=${topics}`)
@@ -111,6 +108,10 @@ async function unsplashSearchImages(keyword, cnt) {
 }
 
 const getImages = async (cnt) => {
+    if (!fse.existsSync(imgSyncFile)) {
+        fse.ensureDirSync('images')
+        fse.createFileSync(imgSyncFile)
+    }
     const totalList = []
     try {
         const legacy = fse.readJsonSync(imgSyncFile)
