@@ -3,6 +3,7 @@ const fse = require('fs-extra');
 
 const imgSyncFile = `images/db-${new Date().toLocaleDateString().replaceAll('/', '-')}.json`
 if (!fse.existsSync(imgSyncFile)) {
+    fse.ensureDirSync('images')
     fse.createFileSync(imgSyncFile)
 }
 async function unsplashImages(topic, cnt) {
