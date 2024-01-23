@@ -1039,42 +1039,48 @@ let CustomService = CustomService_1 = class CustomService {
             }
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const { generateData } = __webpack_require__("ai-gen-utils");
-            const data = yield generateData(companyInfo);
-            this.logger.debug(`[generateSite] end invoke generateData`);
-            const siteRet = yield this.prisma.site.findFirst({
-                where: {
-                    customerId: dto.customerId,
-                    siteTemplateId: dto.templateId,
-                    isDeleted: false,
-                },
-            });
-            let ret;
-            if (siteRet) {
-                ret = yield this.prisma.site.update({
+            try {
+                const data = yield generateData(companyInfo);
+                this.logger.debug(`[generateSite] end invoke generateData`);
+                const siteRet = yield this.prisma.site.findFirst({
                     where: {
-                        id: siteRet.id,
-                    },
-                    data: {
-                        name: cusRet.name + _.uid(4),
-                        siteTemplateId: dto.templateId,
                         customerId: dto.customerId,
-                        slotData: data,
+                        siteTemplateId: dto.templateId,
+                        isDeleted: false,
                     },
                 });
+                let ret;
+                if (siteRet) {
+                    ret = yield this.prisma.site.update({
+                        where: {
+                            id: siteRet.id,
+                        },
+                        data: {
+                            name: cusRet.name + _.uid(4),
+                            siteTemplateId: dto.templateId,
+                            customerId: dto.customerId,
+                            slotData: data,
+                        },
+                    });
+                }
+                else {
+                    ret = yield this.prisma.site.create({
+                        data: {
+                            name: cusRet.name + _.uid(4),
+                            siteTemplateId: dto.templateId,
+                            customerId: dto.customerId,
+                            slotData: data,
+                        },
+                    });
+                }
+                // const htmlRet = ejs.render(tplRet.template, dto.defData)
+                this.logger.debug(`[generateSite] ret ${JSON.stringify(ret, null, 2)}`);
+                return ret;
             }
-            else {
-                ret = yield this.prisma.site.create({
-                    data: {
-                        name: cusRet.name + _.uid(4),
-                        siteTemplateId: dto.templateId,
-                        customerId: dto.customerId,
-                        slotData: data,
-                    },
-                });
+            catch (e) {
+                this.logger.error(e);
+                return null;
             }
-            // const htmlRet = ejs.render(tplRet.template, dto.defData)
-            this.logger.debug(`[generateSite] ret ${JSON.stringify(ret, null, 2)}`);
-            return ret;
         });
     }
     generatePartialSlotData(dto) {
@@ -1091,10 +1097,16 @@ let CustomService = CustomService_1 = class CustomService {
             this.logger.debug(`[generatePartialSlotData] start invoke generateDataPartial`);
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const { generateDataPartial } = __webpack_require__("ai-gen-utils");
-            const data = yield generateDataPartial(siteRet.customer.extendData, siteRet.slotData, dto.path);
-            this.logger.debug(`[generatePartialSlotData] end invoke generateDataPartial`);
-            // const htmlRet = ejs.render(tplRet.template, dto.defData)
-            return data;
+            try {
+                const data = yield generateDataPartial(siteRet.customer.extendData, siteRet.slotData, dto.path);
+                this.logger.debug(`[generatePartialSlotData] end invoke generateDataPartial`);
+                // const htmlRet = ejs.render(tplRet.template, dto.defData)
+                return data;
+            }
+            catch (e) {
+                this.logger.error(e);
+                return null;
+            }
         });
     }
     previewSite(siteId) {
@@ -1323,6 +1335,9 @@ let CustomService = CustomService_1 = class CustomService {
                             customerId: cust.id,
                             templateId: tplRet.id,
                         });
+                        if (!siteRet) {
+                            throw new Error('[generateSite] failed');
+                        }
                         const cosUrl = yield this.deploySiteToCos(siteRet.id);
                         yield this.prisma.site.update({
                             where: {

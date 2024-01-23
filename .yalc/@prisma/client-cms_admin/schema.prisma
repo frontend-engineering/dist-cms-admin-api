@@ -19,7 +19,7 @@ generator zod {
   createInputTypes          = false
   addInputTypeValidation    = false
   addIncludeType            = false
-  addSelectType             = true
+  addSelectType             = false
   coerceDate                = false
   createRelationValuesTypes = true
   output                    = "../../../libs/prisma-cms_admin/src/zod"
