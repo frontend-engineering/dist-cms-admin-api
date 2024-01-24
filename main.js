@@ -6,13 +6,14 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
+const express = tslib_1.__importStar(__webpack_require__("express"));
 let AppController = class AppController {
     constructor(cmsAdminSchemaService, custom) {
         this.cmsAdminSchemaService = cmsAdminSchemaService;
@@ -65,6 +66,12 @@ let AppController = class AppController {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.getRandomImages(query);
         });
+    }
+    getSiteList(req) {
+        return this.custom.getSiteList(req.user, req.query);
+    }
+    getSite(req) {
+        return this.custom.getSite(req.user, req.query);
     }
 };
 exports.AppController = AppController;
@@ -139,6 +146,20 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getRandomImages", null);
+tslib_1.__decorate([
+    (0, common_1.Get)('/getSiteList'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof express !== "undefined" && express.Request) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AppController.prototype, "getSiteList", null);
+tslib_1.__decorate([
+    (0, common_1.Get)('/getSite'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof express !== "undefined" && express.Request) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AppController.prototype, "getSite", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
@@ -385,13 +406,12 @@ exports.TasksService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const common_1 = __webpack_require__("@nestjs/common");
-// import { Cron } from '@nestjs/schedule'
+const schedule_1 = __webpack_require__("@nestjs/schedule");
 let TasksService = TasksService_1 = class TasksService {
     constructor(customService) {
         this.customService = customService;
         this.logger = new common_1.Logger(TasksService_1.name);
     }
-    // @Cron('*/10 * * * *')
     handleCron() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.logger.debug('Called generateSiteJob');
@@ -400,6 +420,12 @@ let TasksService = TasksService_1 = class TasksService {
     }
 };
 exports.TasksService = TasksService;
+tslib_1.__decorate([
+    (0, schedule_1.Cron)('*/10 * * * *'),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:returntype", Promise)
+], TasksService.prototype, "handleCron", null);
 exports.TasksService = TasksService = TasksService_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _a : Object])
@@ -822,6 +848,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ImageLibraryResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
+const zod_1 = __webpack_require__("zod");
 exports.SiteTemplateResourceSchema = prisma_cms_admin_1.SiteTemplateWithRelationsSchema.extend({
     __meta: (0, flowda_shared_1.meta)({
         extends: 'SiteTemplateSchema',
@@ -841,6 +868,7 @@ exports.SiteTemplateDataDefResourceSchema = prisma_cms_admin_1.SiteTemplateDataD
     },
 });
 exports.SiteResourceSchema = prisma_cms_admin_1.SiteWithRelationsSchema.extend({
+    editableUrl: zod_1.z.string().openapi({ title: '可编辑链接', prisma: false }),
     __meta: (0, flowda_shared_1.meta)({
         extends: 'SiteSchema',
     }),
@@ -1318,6 +1346,7 @@ let CustomService = CustomService_1 = class CustomService {
             const tplRet = yield this.prisma.siteTemplate.findFirstOrThrow({
                 where: {
                     isDeleted: false,
+                    name: 'templateA',
                 },
                 orderBy: {
                     id: 'desc',
@@ -1376,6 +1405,28 @@ let CustomService = CustomService_1 = class CustomService {
             // https://github.com/prisma/prisma/issues/13663#issuecomment-1237142453
             return this.prisma
                 .$queryRaw `SELECT id,unsplashId,tag,urls,css FROM ImageLibrary WHERE IsDeleted = 0 AND tag in (${db.Prisma.join(dto.tag.split(','))}) ORDER BY RAND() LIMIT ${dto.count}`;
+        });
+    }
+    // todo: 后续这种没有请求的计算字段可以放在前端
+    // 先按照已有的扩展方式增加
+    getSiteList(reqUser, query) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const pathRet = yield this.data.get(reqUser, query['path'], query);
+            const { data, pagination } = pathRet;
+            return {
+                data: data.map((dat) => Object.assign(dat, {
+                    editableUrl: `/site-preview/preview?siteId=${dat.id}`,
+                })),
+                pagination,
+            };
+        });
+    }
+    getSite(reqUser, query) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const data = yield this.data.get(reqUser, query['path'], query);
+            return Object.assign(data, {
+                editableUrl: `/site-preview/preview?siteId=${data.id}`,
+            });
         });
     }
 };
@@ -3227,8 +3278,8 @@ exports.zt = tslib_1.__importStar(__webpack_require__("../../libs/prisma-cms_adm
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SiteTemplateWithRelationsSchema = exports.SiteTemplateSchema = exports.AuditsSchema = exports.EmailTypeSchema = exports.RoleSchema = exports.ImageLibraryOrderByRelevanceFieldEnumSchema = exports.TagOrderByRelevanceFieldEnumSchema = exports.LinkOrderByRelevanceFieldEnumSchema = exports.DomainOrderByRelevanceFieldEnumSchema = exports.SentEmailOrderByRelevanceFieldEnumSchema = exports.ProjectUsersOrderByRelevanceFieldEnumSchema = exports.ProjectInviteOrderByRelevanceFieldEnumSchema = exports.ProjectOrderByRelevanceFieldEnumSchema = exports.VerificationTokenOrderByRelevanceFieldEnumSchema = exports.SessionOrderByRelevanceFieldEnumSchema = exports.AccountOrderByRelevanceFieldEnumSchema = exports.UserOrderByRelevanceFieldEnumSchema = exports.SiteOrderByRelevanceFieldEnumSchema = exports.CustomerRawOrderByRelevanceFieldEnumSchema = exports.CustomerOrderByRelevanceFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.SiteTemplateOrderByRelevanceFieldEnumSchema = exports.AuditsOrderByRelevanceFieldEnumSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.SortOrderSchema = exports.ImageLibraryScalarFieldEnumSchema = exports.TagScalarFieldEnumSchema = exports.LinkScalarFieldEnumSchema = exports.DomainScalarFieldEnumSchema = exports.SentEmailScalarFieldEnumSchema = exports.ProjectUsersScalarFieldEnumSchema = exports.ProjectInviteScalarFieldEnumSchema = exports.ProjectScalarFieldEnumSchema = exports.VerificationTokenScalarFieldEnumSchema = exports.SessionScalarFieldEnumSchema = exports.AccountScalarFieldEnumSchema = exports.UserScalarFieldEnumSchema = exports.SiteScalarFieldEnumSchema = exports.CustomerRawScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.SiteTemplateDataDefScalarFieldEnumSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
-exports.ImageLibrarySchema = exports.TagWithRelationsSchema = exports.TagSchema = exports.LinkWithRelationsSchema = exports.LinkSchema = exports.DomainWithRelationsSchema = exports.DomainSchema = exports.SentEmailWithRelationsSchema = exports.SentEmailSchema = exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema = exports.ProjectInviteWithRelationsSchema = exports.ProjectInviteSchema = exports.ProjectWithRelationsSchema = exports.ProjectSchema = exports.VerificationTokenSchema = exports.SessionWithRelationsSchema = exports.SessionSchema = exports.AccountWithRelationsSchema = exports.AccountSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.SiteWithRelationsSchema = exports.SiteSchema = exports.CustomerRawSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.SiteTemplateDataDefWithRelationsSchema = exports.SiteTemplateDataDefSchema = void 0;
+exports.SiteTemplateSchema = exports.AuditsSchema = exports.EmailTypeSchema = exports.RoleSchema = exports.SiteStatusSchema = exports.ImageLibraryOrderByRelevanceFieldEnumSchema = exports.TagOrderByRelevanceFieldEnumSchema = exports.LinkOrderByRelevanceFieldEnumSchema = exports.DomainOrderByRelevanceFieldEnumSchema = exports.SentEmailOrderByRelevanceFieldEnumSchema = exports.ProjectUsersOrderByRelevanceFieldEnumSchema = exports.ProjectInviteOrderByRelevanceFieldEnumSchema = exports.ProjectOrderByRelevanceFieldEnumSchema = exports.VerificationTokenOrderByRelevanceFieldEnumSchema = exports.SessionOrderByRelevanceFieldEnumSchema = exports.AccountOrderByRelevanceFieldEnumSchema = exports.UserOrderByRelevanceFieldEnumSchema = exports.SiteOrderByRelevanceFieldEnumSchema = exports.CustomerRawOrderByRelevanceFieldEnumSchema = exports.CustomerOrderByRelevanceFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.SiteTemplateOrderByRelevanceFieldEnumSchema = exports.AuditsOrderByRelevanceFieldEnumSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.SortOrderSchema = exports.ImageLibraryScalarFieldEnumSchema = exports.TagScalarFieldEnumSchema = exports.LinkScalarFieldEnumSchema = exports.DomainScalarFieldEnumSchema = exports.SentEmailScalarFieldEnumSchema = exports.ProjectUsersScalarFieldEnumSchema = exports.ProjectInviteScalarFieldEnumSchema = exports.ProjectScalarFieldEnumSchema = exports.VerificationTokenScalarFieldEnumSchema = exports.SessionScalarFieldEnumSchema = exports.AccountScalarFieldEnumSchema = exports.UserScalarFieldEnumSchema = exports.SiteScalarFieldEnumSchema = exports.CustomerRawScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.SiteTemplateDataDefScalarFieldEnumSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
+exports.ImageLibrarySchema = exports.TagWithRelationsSchema = exports.TagSchema = exports.LinkWithRelationsSchema = exports.LinkSchema = exports.DomainWithRelationsSchema = exports.DomainSchema = exports.SentEmailWithRelationsSchema = exports.SentEmailSchema = exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema = exports.ProjectInviteWithRelationsSchema = exports.ProjectInviteSchema = exports.ProjectWithRelationsSchema = exports.ProjectSchema = exports.VerificationTokenSchema = exports.SessionWithRelationsSchema = exports.SessionSchema = exports.AccountWithRelationsSchema = exports.AccountSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.SiteWithRelationsSchema = exports.SiteSchema = exports.CustomerRawSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.SiteTemplateDataDefWithRelationsSchema = exports.SiteTemplateDataDefSchema = exports.SiteTemplateWithRelationsSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
@@ -3268,7 +3319,7 @@ exports.SiteTemplateScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'up
 exports.SiteTemplateDataDefScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteTemplateId', 'defData']);
 exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'extendData']);
 exports.CustomerRawScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'ref', 'target', 'name', 'address', 'region', 'phone', 'email', 'websites', 'contact', 'mobile', 'qq', 'desc', 'scope', 'biz', 'logo']);
-exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'cosUrl', 'siteTemplateId', 'customerId', 'slotData', 'projectId']);
+exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'status', 'cosUrl', 'siteTemplateId', 'customerId', 'slotData', 'projectId']);
 exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt']);
 exports.AccountScalarFieldEnumSchema = zod_1.z.enum(['id', 'userId', 'type', 'provider', 'providerAccountId', 'refresh_token', 'refresh_token_expires_in', 'access_token', 'expires_at', 'token_type', 'scope', 'id_token', 'session_state']);
 exports.SessionScalarFieldEnumSchema = zod_1.z.enum(['id', 'sessionToken', 'userId', 'expires']);
@@ -3303,6 +3354,7 @@ exports.DomainOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'tar
 exports.LinkOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'password', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ios', 'android', 'userId', 'projectId', 'tagId']);
 exports.TagOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'projectId']);
 exports.ImageLibraryOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['unsplashId', 'tag', 'css']);
+exports.SiteStatusSchema = zod_1.z.enum(['generated', 'passed', 'failed']).openapi({ "x-enumNames": "已生成,审核通过,审核不通过" });
 exports.RoleSchema = zod_1.z.enum(['owner', 'member']);
 exports.EmailTypeSchema = zod_1.z.enum(['firstDomainInvalidEmail', 'secondDomainInvalidEmail', 'firstUsageLimitEmail', 'secondUsageLimitEmail']);
 /////////////////////////////////////////
@@ -3396,6 +3448,7 @@ exports.CustomerRawSchema = zod_1.z.object({
 // SITE SCHEMA
 /////////////////////////////////////////
 exports.SiteSchema = zod_1.z.object({
+    status: exports.SiteStatusSchema.openapi({ "title": "状态" }),
     id: zod_1.z.number().int(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),

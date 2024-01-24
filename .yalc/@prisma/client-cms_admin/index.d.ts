@@ -203,6 +203,10 @@ export type SitePayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultAr
      */
     name: string
     /**
+     * @schema.title 状态
+     */
+    status: SiteStatus
+    /**
      * @schema.title COS 地址
      */
     cosUrl: string
@@ -535,6 +539,15 @@ export type ImageLibrary = runtime.Types.DefaultSelection<ImageLibraryPayload>
 /**
  * Enums
  */
+
+export const SiteStatus: {
+  generated: 'generated',
+  passed: 'passed',
+  failed: 'failed'
+};
+
+export type SiteStatus = (typeof SiteStatus)[keyof typeof SiteStatus]
+
 
 export const Role: {
   owner: 'owner',
@@ -7967,6 +7980,7 @@ export namespace Prisma {
     updatedAt: Date | null
     isDeleted: boolean | null
     name: string | null
+    status: SiteStatus | null
     cosUrl: string | null
     siteTemplateId: number | null
     customerId: number | null
@@ -7979,6 +7993,7 @@ export namespace Prisma {
     updatedAt: Date | null
     isDeleted: boolean | null
     name: string | null
+    status: SiteStatus | null
     cosUrl: string | null
     siteTemplateId: number | null
     customerId: number | null
@@ -7991,6 +8006,7 @@ export namespace Prisma {
     updatedAt: number
     isDeleted: number
     name: number
+    status: number
     cosUrl: number
     siteTemplateId: number
     customerId: number
@@ -8018,6 +8034,7 @@ export namespace Prisma {
     updatedAt?: true
     isDeleted?: true
     name?: true
+    status?: true
     cosUrl?: true
     siteTemplateId?: true
     customerId?: true
@@ -8030,6 +8047,7 @@ export namespace Prisma {
     updatedAt?: true
     isDeleted?: true
     name?: true
+    status?: true
     cosUrl?: true
     siteTemplateId?: true
     customerId?: true
@@ -8042,6 +8060,7 @@ export namespace Prisma {
     updatedAt?: true
     isDeleted?: true
     name?: true
+    status?: true
     cosUrl?: true
     siteTemplateId?: true
     customerId?: true
@@ -8143,6 +8162,7 @@ export namespace Prisma {
     updatedAt: Date
     isDeleted: boolean
     name: string
+    status: SiteStatus
     cosUrl: string
     siteTemplateId: number
     customerId: number
@@ -8175,6 +8195,7 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     name?: boolean
+    status?: boolean
     cosUrl?: boolean
     siteTemplateId?: boolean
     customerId?: boolean
@@ -8191,6 +8212,7 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     name?: boolean
+    status?: boolean
     cosUrl?: boolean
     siteTemplateId?: boolean
     customerId?: boolean
@@ -20890,6 +20912,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
     name: 'name',
+    status: 'status',
     cosUrl: 'cosUrl',
     siteTemplateId: 'siteTemplateId',
     customerId: 'customerId',
@@ -21665,6 +21688,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
     isDeleted?: BoolFilter | boolean
     name?: StringFilter | string
+    status?: EnumSiteStatusFilter | SiteStatus
     cosUrl?: StringFilter | string
     siteTemplateId?: IntFilter | number
     customerId?: IntFilter | number
@@ -21681,6 +21705,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     name?: SortOrder
+    status?: SortOrder
     cosUrl?: SortOrder
     siteTemplateId?: SortOrder
     customerId?: SortOrder
@@ -21703,6 +21728,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     name?: SortOrder
+    status?: SortOrder
     cosUrl?: SortOrder
     siteTemplateId?: SortOrder
     customerId?: SortOrder
@@ -21724,6 +21750,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     isDeleted?: BoolWithAggregatesFilter | boolean
     name?: StringWithAggregatesFilter | string
+    status?: EnumSiteStatusWithAggregatesFilter | SiteStatus
     cosUrl?: StringWithAggregatesFilter | string
     siteTemplateId?: IntWithAggregatesFilter | number
     customerId?: IntWithAggregatesFilter | number
@@ -22967,6 +22994,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
     siteTemplate: SiteTemplateCreateNestedOneWithoutSiteInput
@@ -22980,6 +23008,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     siteTemplateId: number
     customerId: number
@@ -22992,6 +23021,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
     siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSiteNestedInput
@@ -23005,6 +23035,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     siteTemplateId?: IntFieldUpdateOperationsInput | number
     customerId?: IntFieldUpdateOperationsInput | number
@@ -23018,6 +23049,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     siteTemplateId: number
     customerId: number
@@ -23030,6 +23062,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
   }
@@ -23040,6 +23073,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     siteTemplateId?: IntFieldUpdateOperationsInput | number
     customerId?: IntFieldUpdateOperationsInput | number
@@ -24590,6 +24624,13 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type EnumSiteStatusFilter = {
+    equals?: SiteStatus
+    in?: Enumerable<SiteStatus>
+    notIn?: Enumerable<SiteStatus>
+    not?: NestedEnumSiteStatusFilter | SiteStatus
+  }
+
   export type CustomerRelationFilter = {
     is?: CustomerWhereInput | null
     isNot?: CustomerWhereInput | null
@@ -24612,6 +24653,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     name?: SortOrder
+    status?: SortOrder
     cosUrl?: SortOrder
     siteTemplateId?: SortOrder
     customerId?: SortOrder
@@ -24631,6 +24673,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     name?: SortOrder
+    status?: SortOrder
     cosUrl?: SortOrder
     siteTemplateId?: SortOrder
     customerId?: SortOrder
@@ -24643,6 +24686,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     name?: SortOrder
+    status?: SortOrder
     cosUrl?: SortOrder
     siteTemplateId?: SortOrder
     customerId?: SortOrder
@@ -24653,6 +24697,16 @@ export namespace Prisma {
     id?: SortOrder
     siteTemplateId?: SortOrder
     customerId?: SortOrder
+  }
+
+  export type EnumSiteStatusWithAggregatesFilter = {
+    equals?: SiteStatus
+    in?: Enumerable<SiteStatus>
+    notIn?: Enumerable<SiteStatus>
+    not?: NestedEnumSiteStatusWithAggregatesFilter | SiteStatus
+    _count?: NestedIntFilter
+    _min?: NestedEnumSiteStatusFilter
+    _max?: NestedEnumSiteStatusFilter
   }
 
   export type DateTimeNullableFilter = {
@@ -25586,6 +25640,10 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type EnumSiteStatusFieldUpdateOperationsInput = {
+    set?: SiteStatus
+  }
+
   export type SiteTemplateUpdateOneRequiredWithoutSiteNestedInput = {
     create?: XOR<SiteTemplateCreateWithoutSiteInput, SiteTemplateUncheckedCreateWithoutSiteInput>
     connectOrCreate?: SiteTemplateCreateOrConnectWithoutSiteInput
@@ -26431,6 +26489,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonNullValueFilter
   }
 
+  export type NestedEnumSiteStatusFilter = {
+    equals?: SiteStatus
+    in?: Enumerable<SiteStatus>
+    notIn?: Enumerable<SiteStatus>
+    not?: NestedEnumSiteStatusFilter | SiteStatus
+  }
+
+  export type NestedEnumSiteStatusWithAggregatesFilter = {
+    equals?: SiteStatus
+    in?: Enumerable<SiteStatus>
+    notIn?: Enumerable<SiteStatus>
+    not?: NestedEnumSiteStatusWithAggregatesFilter | SiteStatus
+    _count?: NestedIntFilter
+    _min?: NestedEnumSiteStatusFilter
+    _max?: NestedEnumSiteStatusFilter
+  }
+
   export type NestedDateTimeNullableFilter = {
     equals?: Date | string | null
     in?: Enumerable<Date> | Enumerable<string> | Date | string | null
@@ -26522,6 +26597,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
     customer: CustomerCreateNestedOneWithoutSiteInput
@@ -26534,6 +26610,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     customerId: number
     slotData?: JsonNullValueInput | InputJsonValue
@@ -26595,6 +26672,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
     isDeleted?: BoolFilter | boolean
     name?: StringFilter | string
+    status?: EnumSiteStatusFilter | SiteStatus
     cosUrl?: StringFilter | string
     siteTemplateId?: IntFilter | number
     customerId?: IntFilter | number
@@ -26675,6 +26753,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
     siteTemplate: SiteTemplateCreateNestedOneWithoutSiteInput
@@ -26687,6 +26766,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     siteTemplateId: number
     slotData?: JsonNullValueInput | InputJsonValue
@@ -27359,6 +27439,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
     siteTemplate: SiteTemplateCreateNestedOneWithoutSiteInput
@@ -27371,6 +27452,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     siteTemplateId: number
     customerId: number
@@ -27581,6 +27663,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
     siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSiteNestedInput
@@ -27593,6 +27676,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     siteTemplateId?: IntFieldUpdateOperationsInput | number
     customerId?: IntFieldUpdateOperationsInput | number
@@ -28589,6 +28673,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     customerId: number
     slotData?: JsonNullValueInput | InputJsonValue
@@ -28600,6 +28685,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
     customer?: CustomerUpdateOneRequiredWithoutSiteNestedInput
@@ -28612,6 +28698,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     customerId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue
@@ -28624,6 +28711,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     customerId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue
@@ -28636,6 +28724,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     name: string
+    status?: SiteStatus
     cosUrl?: string
     siteTemplateId: number
     slotData?: JsonNullValueInput | InputJsonValue
@@ -28647,6 +28736,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
     siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSiteNestedInput
@@ -28659,6 +28749,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     siteTemplateId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue

@@ -822,7 +822,7 @@ const generateDataPartial = async (companyInfo, lastResponse, dataPath) => {
     const data = await aiDataPartial(companyInfo, JSON.stringify(lastResponse), meta, process.env.WithCache);
     if (meta.hasImage) {
         const image = (await getCacheImages('drone', 1))[0]
-        data.image = image;
+        data.image = image?.urls?.full;
     }
     const partial = {
         path: meta.routes.join('.'),
@@ -835,6 +835,12 @@ const generateDataPartial = async (companyInfo, lastResponse, dataPath) => {
     return patchData(lastResponse, partial)
 }
 
+const imgDescriptor = {
+    banner: 'full',
+    about: 'full',
+    products: '600*450',
+    news: '360*360',
+}
 // parts - 指定只触发部分属性
 const generateData = async (companyInfo) => {
     return aiData(companyInfo, process.env.WithCache)
@@ -842,16 +848,16 @@ const generateData = async (companyInfo) => {
         const imgCnt = 2 + (data.products.list?.length || 0) + (data.news.list.length || 0)
         const images = await getCacheImages(keywordMap[companyInfo.biz || 'default'], imgCnt || 8)
         // Inserts images
-        data.banner.image = images[0]?.urls.full
+        data.banner.image = images[0]?.urls[imgDescriptor.banner]
         data.bannerCss = images[0]?.css;
-        data.about.image = images[1]?.urls.full;
+        data.about.image = images[1]?.urls[imgDescriptor.about];
         let imgIdx = 2
         data.products.list.forEach((item) => {
-            item.image = images[imgIdx++]?.urls['600*450']
+            item.image = images[imgIdx++]?.urls[imgDescriptor.products]
         })
 
         data.news.list.forEach((item) => {
-            item.image = images[imgIdx++]?.urls['360*360']
+            item.image = images[imgIdx++]?.urls[imgDescriptor.news]
         })
 
         const raw = JSON.stringify(data)

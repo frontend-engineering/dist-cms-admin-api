@@ -81,7 +81,7 @@ function run() {
             console.log(error);
         });
     
-    if (window.location.search.indexOf('editor_mode') > -1) {
+    if ((window.location.href.startsWith('file://')) || (window.location.search.indexOf('editor_mode') > -1)) {
         loadEditor()
     }
 }

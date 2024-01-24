@@ -18,7 +18,7 @@ async function uploadData(data) {
 }
 
 async function aiGen(dataPath) {
-    const key = window.localStorage.getItem('tmp_key')
+    const key = window.localStorage.getItem('access_token')
     return fetch('https://api.webinfra.cloud/cms-admin-api/apps/generatePartialSlotData', {
         method: 'POST',
         headers: {
@@ -34,6 +34,48 @@ async function aiGen(dataPath) {
         console.log('data generated: ', resp)
         return resp.json();
     }) 
+}
+
+async function getCacheImages(tag, cnt) {
+    const key = window.localStorage.getItem('access_token')
+    console.log('getting images: ', tag, cnt)
+    return fetch(`https://api.webinfra.cloud/cms-admin-api/apps/getRandomImages?tag=${tag}&count=${cnt}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`
+        },
+    })
+    .then(resp => resp.json())
+    .then(resp => {
+        console.log('resp: ', resp);
+        resp.forEach(item => {
+            const urls = item.urls;
+            Object.entries(urls).map(([key, value]) => {
+                if (!value.startsWith('http')) {
+                    urls[key] = `https://${value.replace('assets-1306445775.cos.ap-shanghai.myqcloud.com', 'assets.greatermaker.cn')}`
+                }
+            })
+        })
+        return resp;
+    })
+    return new Promise((resolve, reject) => {
+        request({
+            url: `https://api.webinfra.cloud/cms-admin-api/apps/getRandomImages?tag=${tag}&count=${cnt}`, 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            json:true
+        }, (error, resp) => {
+            if (error) {
+                reject(error)
+            } else {
+                
+            }
+        })
+    })
 }
 
 function cleanUpdateBtn() {
@@ -58,6 +100,25 @@ function setupUpdateBtn() {
         console.log('generating new contents', dataPath)
         const rawData = window._raw || getData()
 
+        if (window.selected.dataset.type === 'img' || window.selected.dataset.type === 'bgImg') {
+            const imgs = await getCacheImages('technology%20background,industrial,factory,drone', 1);
+            const size = window.selected.dataset.size || 'full';
+            const path = window.selected.dataset.slot
+            const url = imgs[0].urls[size];
+            const partial = {
+                path,
+                data: url
+            }
+            const rawData = window._raw || getData()
+            window._raw = patchData(rawData, partial)
+            console.log('global data updated - : ', window._raw)
+            if (window.selected.dataset.type === 'img') {
+                window.selected.src = url
+            } else {
+                window.selected.style['backgroundImage'] = `url(${url})`
+            }
+            return;
+        }
         // TODO: data fetch
         const updatedData = await aiGen(dataPath)
         window._raw = updatedData
@@ -68,39 +129,20 @@ function setupUpdateBtn() {
     document.body.appendChild(btn)
 }
 
-function setupSelected() {
-    const elements = document.querySelectorAll('[data-slot]');
-    elements.forEach(item => {
-        item.addEventListener('click', handleSelect);
-        function handleSelect(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            console.log('target selected: ', event.target);
-            window.selected = event.target
-            setupUpdateBtn()
-        } 
-    })
-
-    document.addEventListener('click', e => {
-        e.preventDefault();
-        cleanUpdateBtn();
-    })
-}
-
 function setupEditable() {
     const elements = document.querySelectorAll('[data-slot]');
     elements.forEach(item => {
-        item.contentEditable = true
-        item.addEventListener('input', handleEdit);
-        item.addEventListener('click', handleSelect);
-
-        function handleSelect(event) {
-            event.preventDefault();
-            console.log('target selected: ', event.target);
-            window.selected = event.target
-        }
         function handleEdit(event) {
-            const editedText = event.target.textContent;
+            console.log('editing event: ', event)
+            if (item.dataset.type === 'img' || item.dataset.type === 'bgImg') {
+                return;
+            }
+            // if (item.getAttribute('nested')) {
+            //     window.selected = item
+            //     setupUpdateBtn()
+            //     console.log('target selected: ', window.selected); 
+            // }
+            const editedText = event.target.innerHTML;
             console.log('Content was edited:', editedText);
             const path = event.target.dataset.slot
             const partial = {
@@ -111,6 +153,43 @@ function setupEditable() {
             window._raw = patchData(rawData, partial)
             console.log('global data updated - : ', window._raw)
         }
+        if (!(item.dataset.type === 'img' || item.dataset.type === 'bgImg')) {
+            item.contentEditable = true;
+            item.addEventListener('input', handleEdit);
+        }
+
+        item.addEventListener('click', handleSelect);
+
+        function handleSelect(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            // 只支持图片AI update
+            if (!(item.dataset.type === 'img' || item.dataset.type === 'bgImg')) {
+                event.preventDefault();
+                cleanUpdateBtn();
+                window.selected = null; 
+                return;
+            }
+            if (item.getAttribute('nested')) {
+                window.selected = item
+                setupUpdateBtn()
+                console.log('target selected: ', window.selected); 
+            } else if ((item === event.target)) {
+                window.selected = event.target
+                setupUpdateBtn()
+                console.log('target selected: ', window.selected);
+            } else {
+                event.preventDefault();
+                cleanUpdateBtn();
+                window.selected = null;
+            }
+        } 
+ 
+    })
+
+    document.addEventListener('click', e => {
+        e.preventDefault();
+        cleanUpdateBtn();
     })
 }
 
@@ -121,11 +200,13 @@ function setupDeploy() {
     btn.classList.add('btn')
     btn.addEventListener('click', e => {
         e.preventDefault();
-        uploadData(window._raw)
+        const toUpload = {};
+        Object.assign(toUpload, window._raw);
+        delete toUpload.raw;
+        uploadData(toUpload)
     })
     document.body.insertBefore(btn, document.body.firstChild)
 }
 
 setupEditable()
 setupDeploy()
-setupSelected()

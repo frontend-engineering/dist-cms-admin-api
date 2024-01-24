@@ -154,6 +154,9 @@ model Site {
   /// @schema.title 网站名称
   name String
 
+  /// @schema.title 状态
+  status SiteStatus @default(generated)
+
   /// @schema.title COS 地址
   cosUrl String @default("") @db.VarChar(1000)
 
@@ -171,6 +174,13 @@ model Site {
   /// @schema.title 关联项目
   projectId String?  @unique
   project   Project? @relation(fields: [projectId], references: [id])
+}
+
+/// @schema.x-enumNames 已生成,审核通过,审核不通过
+enum SiteStatus {
+  generated
+  passed
+  failed
 }
 
 model User {

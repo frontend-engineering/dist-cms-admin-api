@@ -172,6 +172,7 @@ exports.Prisma.SiteScalarFieldEnum = {
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
   name: 'name',
+  status: 'status',
   cosUrl: 'cosUrl',
   siteTemplateId: 'siteTemplateId',
   customerId: 'customerId',
@@ -494,6 +495,12 @@ exports.Prisma.ImageLibraryOrderByRelevanceFieldEnum = {
   tag: 'tag',
   css: 'css'
 };
+exports.SiteStatus = {
+  generated: 'generated',
+  passed: 'passed',
+  failed: 'failed'
+};
+
 exports.Role = {
   owner: 'owner',
   member: 'member'
