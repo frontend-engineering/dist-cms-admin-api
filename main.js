@@ -845,7 +845,7 @@ exports.CustomerDataDef = zod_1.z.object({
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ImageLibraryResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
+exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const zod_1 = __webpack_require__("zod");
@@ -911,6 +911,15 @@ exports.ImageLibraryResourceSchema = prisma_cms_admin_1.ImageLibrarySchema.exten
 }).openapi({
     custom: {
         route_prefix: '/resources/image_libraries',
+    },
+});
+exports.ContactResourceSchema = prisma_cms_admin_1.ContactWithRelationsSchema.extend({
+    __meta: (0, flowda_shared_1.meta)({
+        extends: 'ContactSchema',
+    }),
+}).openapi({
+    custom: {
+        route_prefix: '/resources/contacts',
     },
 });
 
@@ -1329,12 +1338,12 @@ let CustomService = CustomService_1 = class CustomService {
                 where: {
                     OR: [
                         {
-                            site: {
+                            sites: {
                                 none: {},
                             },
                         },
                         {
-                            site: {
+                            sites: {
                                 some: {
                                     cosUrl: '',
                                 },
@@ -3278,8 +3287,8 @@ exports.zt = tslib_1.__importStar(__webpack_require__("../../libs/prisma-cms_adm
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SiteTemplateSchema = exports.AuditsSchema = exports.EmailTypeSchema = exports.RoleSchema = exports.SiteStatusSchema = exports.ImageLibraryOrderByRelevanceFieldEnumSchema = exports.TagOrderByRelevanceFieldEnumSchema = exports.LinkOrderByRelevanceFieldEnumSchema = exports.DomainOrderByRelevanceFieldEnumSchema = exports.SentEmailOrderByRelevanceFieldEnumSchema = exports.ProjectUsersOrderByRelevanceFieldEnumSchema = exports.ProjectInviteOrderByRelevanceFieldEnumSchema = exports.ProjectOrderByRelevanceFieldEnumSchema = exports.VerificationTokenOrderByRelevanceFieldEnumSchema = exports.SessionOrderByRelevanceFieldEnumSchema = exports.AccountOrderByRelevanceFieldEnumSchema = exports.UserOrderByRelevanceFieldEnumSchema = exports.SiteOrderByRelevanceFieldEnumSchema = exports.CustomerRawOrderByRelevanceFieldEnumSchema = exports.CustomerOrderByRelevanceFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.SiteTemplateOrderByRelevanceFieldEnumSchema = exports.AuditsOrderByRelevanceFieldEnumSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.SortOrderSchema = exports.ImageLibraryScalarFieldEnumSchema = exports.TagScalarFieldEnumSchema = exports.LinkScalarFieldEnumSchema = exports.DomainScalarFieldEnumSchema = exports.SentEmailScalarFieldEnumSchema = exports.ProjectUsersScalarFieldEnumSchema = exports.ProjectInviteScalarFieldEnumSchema = exports.ProjectScalarFieldEnumSchema = exports.VerificationTokenScalarFieldEnumSchema = exports.SessionScalarFieldEnumSchema = exports.AccountScalarFieldEnumSchema = exports.UserScalarFieldEnumSchema = exports.SiteScalarFieldEnumSchema = exports.CustomerRawScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.SiteTemplateDataDefScalarFieldEnumSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
-exports.ImageLibrarySchema = exports.TagWithRelationsSchema = exports.TagSchema = exports.LinkWithRelationsSchema = exports.LinkSchema = exports.DomainWithRelationsSchema = exports.DomainSchema = exports.SentEmailWithRelationsSchema = exports.SentEmailSchema = exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema = exports.ProjectInviteWithRelationsSchema = exports.ProjectInviteSchema = exports.ProjectWithRelationsSchema = exports.ProjectSchema = exports.VerificationTokenSchema = exports.SessionWithRelationsSchema = exports.SessionSchema = exports.AccountWithRelationsSchema = exports.AccountSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.SiteWithRelationsSchema = exports.SiteSchema = exports.CustomerRawSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.SiteTemplateDataDefWithRelationsSchema = exports.SiteTemplateDataDefSchema = exports.SiteTemplateWithRelationsSchema = void 0;
+exports.EmailTypeSchema = exports.RoleSchema = exports.SiteStatusSchema = exports.ContactOrderByRelevanceFieldEnumSchema = exports.ImageLibraryOrderByRelevanceFieldEnumSchema = exports.TagOrderByRelevanceFieldEnumSchema = exports.LinkOrderByRelevanceFieldEnumSchema = exports.DomainOrderByRelevanceFieldEnumSchema = exports.SentEmailOrderByRelevanceFieldEnumSchema = exports.ProjectUsersOrderByRelevanceFieldEnumSchema = exports.ProjectInviteOrderByRelevanceFieldEnumSchema = exports.ProjectOrderByRelevanceFieldEnumSchema = exports.VerificationTokenOrderByRelevanceFieldEnumSchema = exports.SessionOrderByRelevanceFieldEnumSchema = exports.AccountOrderByRelevanceFieldEnumSchema = exports.UserOrderByRelevanceFieldEnumSchema = exports.SiteOrderByRelevanceFieldEnumSchema = exports.CustomerRawOrderByRelevanceFieldEnumSchema = exports.CustomerOrderByRelevanceFieldEnumSchema = exports.JsonNullValueFilterSchema = exports.SiteTemplateOrderByRelevanceFieldEnumSchema = exports.AuditsOrderByRelevanceFieldEnumSchema = exports.NullsOrderSchema = exports.NullableJsonNullValueInputSchema = exports.JsonNullValueInputSchema = exports.SortOrderSchema = exports.ContactScalarFieldEnumSchema = exports.ImageLibraryScalarFieldEnumSchema = exports.TagScalarFieldEnumSchema = exports.LinkScalarFieldEnumSchema = exports.DomainScalarFieldEnumSchema = exports.SentEmailScalarFieldEnumSchema = exports.ProjectUsersScalarFieldEnumSchema = exports.ProjectInviteScalarFieldEnumSchema = exports.ProjectScalarFieldEnumSchema = exports.VerificationTokenScalarFieldEnumSchema = exports.SessionScalarFieldEnumSchema = exports.AccountScalarFieldEnumSchema = exports.UserScalarFieldEnumSchema = exports.SiteScalarFieldEnumSchema = exports.CustomerRawScalarFieldEnumSchema = exports.CustomerScalarFieldEnumSchema = exports.SiteTemplateDataDefScalarFieldEnumSchema = exports.SiteTemplateScalarFieldEnumSchema = exports.AuditsScalarFieldEnumSchema = exports.TransactionIsolationLevelSchema = exports.InputJsonValue = exports.NullableJsonValue = exports.JsonValue = exports.transformJsonNull = void 0;
+exports.ContactWithRelationsSchema = exports.ContactSchema = exports.ImageLibrarySchema = exports.TagWithRelationsSchema = exports.TagSchema = exports.LinkWithRelationsSchema = exports.LinkSchema = exports.DomainWithRelationsSchema = exports.DomainSchema = exports.SentEmailWithRelationsSchema = exports.SentEmailSchema = exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema = exports.ProjectInviteWithRelationsSchema = exports.ProjectInviteSchema = exports.ProjectWithRelationsSchema = exports.ProjectSchema = exports.VerificationTokenSchema = exports.SessionWithRelationsSchema = exports.SessionSchema = exports.AccountWithRelationsSchema = exports.AccountSchema = exports.UserWithRelationsSchema = exports.UserSchema = exports.SiteWithRelationsSchema = exports.SiteSchema = exports.CustomerRawSchema = exports.CustomerWithRelationsSchema = exports.CustomerSchema = exports.SiteTemplateDataDefWithRelationsSchema = exports.SiteTemplateDataDefSchema = exports.SiteTemplateWithRelationsSchema = exports.SiteTemplateSchema = exports.AuditsSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
@@ -3332,6 +3341,7 @@ exports.DomainScalarFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'verified', 't
 exports.LinkScalarFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'archived', 'expiresAt', 'password', 'proxy', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'rewrite', 'ios', 'android', 'userId', 'projectId', 'clicks', 'publicStats', 'createdAt', 'updatedAt', 'tagId']);
 exports.TagScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'createdAt', 'updatedAt', 'projectId']);
 exports.ImageLibraryScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'unsplashId', 'tag', 'urls', 'css']);
+exports.ContactScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteId', 'contact']);
 exports.SortOrderSchema = zod_1.z.enum(['asc', 'desc']);
 exports.JsonNullValueInputSchema = zod_1.z.enum(['JsonNull',]);
 exports.NullableJsonNullValueInputSchema = zod_1.z.enum(['DbNull', 'JsonNull',]).transform((v) => (0, exports.transformJsonNull)(v));
@@ -3354,6 +3364,7 @@ exports.DomainOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'tar
 exports.LinkOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'password', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ios', 'android', 'userId', 'projectId', 'tagId']);
 exports.TagOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'projectId']);
 exports.ImageLibraryOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['unsplashId', 'tag', 'css']);
+exports.ContactOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['contact']);
 exports.SiteStatusSchema = zod_1.z.enum(['generated', 'passed', 'failed']).openapi({ "x-enumNames": "已生成,审核通过,审核不通过" });
 exports.RoleSchema = zod_1.z.enum(['owner', 'member']);
 exports.EmailTypeSchema = zod_1.z.enum(['firstDomainInvalidEmail', 'secondDomainInvalidEmail', 'firstUsageLimitEmail', 'secondUsageLimitEmail']);
@@ -3386,7 +3397,7 @@ exports.SiteTemplateSchema = zod_1.z.object({
     template: zod_1.z.string().openapi({ "title": "模板内容", "column_type": "textarea" }),
 }).openapi({ "display_name": "网站模板", "display_column": "name" });
 exports.SiteTemplateWithRelationsSchema = exports.SiteTemplateSchema.merge(zod_1.z.object({
-    site: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).array().openapi({ "model_name": "Site" }),
+    sites: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).array().openapi({ "model_name": "Site" }),
     siteTemplateDataDef: zod_1.z.lazy(() => exports.SiteTemplateDataDefWithRelationsSchema).nullable().openapi({ "model_name": "SiteTemplateDataDef" }),
 }));
 /////////////////////////////////////////
@@ -3418,7 +3429,7 @@ exports.CustomerSchema = zod_1.z.object({
     extendData: exports.NullableJsonValue.optional(),
 }).openapi({ "primary_key": "id", "display_name": "客户信息", "display_column": "name", "display_primary_key": "false", "searchable_columns": "name" });
 exports.CustomerWithRelationsSchema = exports.CustomerSchema.merge(zod_1.z.object({
-    site: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).array().openapi({ "model_name": "Site" }),
+    sites: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).array().openapi({ "model_name": "Site" }),
 }));
 /////////////////////////////////////////
 // CUSTOMER RAW SCHEMA
@@ -3459,11 +3470,12 @@ exports.SiteSchema = zod_1.z.object({
     customerId: zod_1.z.number().int().openapi({ "reference": "Customer" }),
     slotData: exports.InputJsonValue,
     projectId: zod_1.z.string().nullable().openapi({ "title": "关联项目" }),
-}).openapi({ "primary_key": "id", "display_name": "网站", "display_column": "name", "display_primary_key": "false", "searchable_columns": "name" });
+}).openapi({ "primary_key": "id", "display_name": "网站", "display_column": "name", "searchable_columns": "name" });
 exports.SiteWithRelationsSchema = exports.SiteSchema.merge(zod_1.z.object({
     siteTemplate: zod_1.z.lazy(() => exports.SiteTemplateWithRelationsSchema),
     customer: zod_1.z.lazy(() => exports.CustomerWithRelationsSchema),
     project: zod_1.z.lazy(() => exports.ProjectWithRelationsSchema).nullable(),
+    contacts: zod_1.z.lazy(() => exports.ContactWithRelationsSchema).array().openapi({ "model_name": "Contact" }),
 }));
 /////////////////////////////////////////
 // USER SCHEMA
@@ -3675,6 +3687,20 @@ exports.ImageLibrarySchema = zod_1.z.object({
     urls: exports.InputJsonValue,
     css: zod_1.z.string(),
 });
+/////////////////////////////////////////
+// CONTACT SCHEMA
+/////////////////////////////////////////
+exports.ContactSchema = zod_1.z.object({
+    id: zod_1.z.number().int(),
+    createdAt: zod_1.z.date(),
+    updatedAt: zod_1.z.date(),
+    isDeleted: zod_1.z.boolean(),
+    siteId: zod_1.z.number().int().openapi({ "reference": "Site" }),
+    contact: zod_1.z.string().openapi({ "title": "Slot" }),
+}).openapi({ "primary_key": "id", "display_name": "产品咨询联系人", "display_column": "contact", "display_primary_key": "false" });
+exports.ContactWithRelationsSchema = exports.ContactSchema.merge(zod_1.z.object({
+    site: zod_1.z.lazy(() => exports.SiteWithRelationsSchema),
+}));
 
 
 /***/ }),

@@ -325,6 +325,15 @@ exports.Prisma.ImageLibraryScalarFieldEnum = {
   css: 'css'
 };
 
+exports.Prisma.ContactScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isDeleted: 'isDeleted',
+  siteId: 'siteId',
+  contact: 'contact'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -495,6 +504,10 @@ exports.Prisma.ImageLibraryOrderByRelevanceFieldEnum = {
   tag: 'tag',
   css: 'css'
 };
+
+exports.Prisma.ContactOrderByRelevanceFieldEnum = {
+  contact: 'contact'
+};
 exports.SiteStatus = {
   generated: 'generated',
   passed: 'passed',
@@ -531,7 +544,8 @@ exports.Prisma.ModelName = {
   Domain: 'Domain',
   Link: 'Link',
   Tag: 'Tag',
-  ImageLibrary: 'ImageLibrary'
+  ImageLibrary: 'ImageLibrary',
+  Contact: 'Contact'
 };
 
 /**

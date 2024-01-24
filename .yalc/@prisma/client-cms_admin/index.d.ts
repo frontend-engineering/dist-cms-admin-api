@@ -61,7 +61,7 @@ export type SiteTemplatePayload<ExtArgs extends $Extensions.Args = $Extensions.D
     /**
      * @schema.model_name Site
      */
-    site: SitePayload<ExtArgs>[]
+    sites: SitePayload<ExtArgs>[]
     /**
      * @schema.model_name SiteTemplateDataDef
      */
@@ -126,7 +126,7 @@ export type CustomerPayload<ExtArgs extends $Extensions.Args = $Extensions.Defau
     /**
      * @schema.model_name Site
      */
-    site: SitePayload<ExtArgs>[]
+    sites: SitePayload<ExtArgs>[]
   }
   scalars: $Extensions.GetResult<{
     id: number
@@ -192,6 +192,10 @@ export type SitePayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultAr
     siteTemplate: SiteTemplatePayload<ExtArgs>
     customer: CustomerPayload<ExtArgs>
     project: ProjectPayload<ExtArgs> | null
+    /**
+     * @schema.model_name Contact
+     */
+    contacts: ContactPayload<ExtArgs>[]
   }
   scalars: $Extensions.GetResult<{
     id: number
@@ -235,7 +239,6 @@ export type SitePayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultAr
  * @schema.primary_key id
  * @schema.display_name 网站
  * @schema.display_column name
- * @schema.display_primary_key false
  * @schema.searchable_columns name
  */
 export type Site = runtime.Types.DefaultSelection<SitePayload>
@@ -535,6 +538,36 @@ export type ImageLibraryPayload<ExtArgs extends $Extensions.Args = $Extensions.D
  * 
  */
 export type ImageLibrary = runtime.Types.DefaultSelection<ImageLibraryPayload>
+export type ContactPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  name: "Contact"
+  objects: {
+    site: SitePayload<ExtArgs>
+  }
+  scalars: $Extensions.GetResult<{
+    id: number
+    createdAt: Date
+    updatedAt: Date
+    isDeleted: boolean
+    /**
+     * @schema.reference Site
+     */
+    siteId: number
+    /**
+     * @schema.title Slot 联系方式
+     */
+    contact: string
+  }, ExtArgs["result"]["contact"]>
+  composites: {}
+}
+
+/**
+ * Model Contact
+ * @schema.primary_key id
+ * @schema.display_name 产品咨询联系人
+ * @schema.display_column contact
+ * @schema.display_primary_key false
+ */
+export type Contact = runtime.Types.DefaultSelection<ContactPayload>
 
 /**
  * Enums
@@ -871,6 +904,16 @@ export class PrismaClient<
     * ```
     */
   get imageLibrary(): Prisma.ImageLibraryDelegate<GlobalReject, ExtArgs>;
+
+  /**
+   * `prisma.contact`: Exposes CRUD operations for the **Contact** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Contacts
+    * const contacts = await prisma.contact.findMany()
+    * ```
+    */
+  get contact(): Prisma.ContactDelegate<GlobalReject, ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1371,7 +1414,8 @@ export namespace Prisma {
     Domain: 'Domain',
     Link: 'Link',
     Tag: 'Tag',
-    ImageLibrary: 'ImageLibrary'
+    ImageLibrary: 'ImageLibrary',
+    Contact: 'Contact'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1388,7 +1432,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     meta: {
-      modelProps: 'audits' | 'siteTemplate' | 'siteTemplateDataDef' | 'customer' | 'customerRaw' | 'site' | 'user' | 'account' | 'session' | 'verificationToken' | 'project' | 'projectInvite' | 'projectUsers' | 'sentEmail' | 'domain' | 'link' | 'tag' | 'imageLibrary'
+      modelProps: 'audits' | 'siteTemplate' | 'siteTemplateDataDef' | 'customer' | 'customerRaw' | 'site' | 'user' | 'account' | 'session' | 'verificationToken' | 'project' | 'projectInvite' | 'projectUsers' | 'sentEmail' | 'domain' | 'link' | 'tag' | 'imageLibrary' | 'contact'
       txIsolationLevel: Prisma.TransactionIsolationLevel
     },
     model: {
@@ -2562,6 +2606,71 @@ export namespace Prisma {
           }
         }
       }
+      Contact: {
+        payload: ContactPayload<ExtArgs>
+        operations: {
+          findUnique: {
+            args: Prisma.ContactFindUniqueArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ContactFindUniqueOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>
+          }
+          findFirst: {
+            args: Prisma.ContactFindFirstArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ContactFindFirstOrThrowArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>
+          }
+          findMany: {
+            args: Prisma.ContactFindManyArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>[]
+          }
+          create: {
+            args: Prisma.ContactCreateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>
+          }
+          createMany: {
+            args: Prisma.ContactCreateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          delete: {
+            args: Prisma.ContactDeleteArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>
+          }
+          update: {
+            args: Prisma.ContactUpdateArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>
+          }
+          deleteMany: {
+            args: Prisma.ContactDeleteManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ContactUpdateManyArgs<ExtArgs>,
+            result: Prisma.BatchPayload
+          }
+          upsert: {
+            args: Prisma.ContactUpsertArgs<ExtArgs>,
+            result: $Utils.PayloadToResult<ContactPayload>
+          }
+          aggregate: {
+            args: Prisma.ContactAggregateArgs<ExtArgs>,
+            result: $Utils.Optional<AggregateContact>
+          }
+          groupBy: {
+            args: Prisma.ContactGroupByArgs<ExtArgs>,
+            result: $Utils.Optional<ContactGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ContactCountArgs<ExtArgs>,
+            result: $Utils.Optional<ContactCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2744,11 +2853,11 @@ export namespace Prisma {
 
 
   export type SiteTemplateCountOutputType = {
-    site: number
+    sites: number
   }
 
   export type SiteTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    site?: boolean | SiteTemplateCountOutputTypeCountSiteArgs
+    sites?: boolean | SiteTemplateCountOutputTypeCountSitesArgs
   }
 
   // Custom InputTypes
@@ -2767,7 +2876,7 @@ export namespace Prisma {
   /**
    * SiteTemplateCountOutputType without action
    */
-  export type SiteTemplateCountOutputTypeCountSiteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type SiteTemplateCountOutputTypeCountSitesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: SiteWhereInput
   }
 
@@ -2779,11 +2888,11 @@ export namespace Prisma {
 
 
   export type CustomerCountOutputType = {
-    site: number
+    sites: number
   }
 
   export type CustomerCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    site?: boolean | CustomerCountOutputTypeCountSiteArgs
+    sites?: boolean | CustomerCountOutputTypeCountSitesArgs
   }
 
   // Custom InputTypes
@@ -2802,8 +2911,43 @@ export namespace Prisma {
   /**
    * CustomerCountOutputType without action
    */
-  export type CustomerCountOutputTypeCountSiteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type CustomerCountOutputTypeCountSitesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: SiteWhereInput
+  }
+
+
+
+  /**
+   * Count Type SiteCountOutputType
+   */
+
+
+  export type SiteCountOutputType = {
+    contacts: number
+  }
+
+  export type SiteCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    contacts?: boolean | SiteCountOutputTypeCountContactsArgs
+  }
+
+  // Custom InputTypes
+
+  /**
+   * SiteCountOutputType without action
+   */
+  export type SiteCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteCountOutputType
+     */
+    select?: SiteCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * SiteCountOutputType without action
+   */
+  export type SiteCountOutputTypeCountContactsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: ContactWhereInput
   }
 
 
@@ -4176,7 +4320,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name?: boolean
     template?: boolean
-    site?: boolean | SiteTemplate$siteArgs<ExtArgs>
+    sites?: boolean | SiteTemplate$sitesArgs<ExtArgs>
     siteTemplateDataDef?: boolean | SiteTemplateDataDefArgs<ExtArgs>
     _count?: boolean | SiteTemplateCountOutputTypeArgs<ExtArgs>
   }, ExtArgs["result"]["siteTemplate"]>
@@ -4191,7 +4335,7 @@ export namespace Prisma {
   }
 
   export type SiteTemplateInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    site?: boolean | SiteTemplate$siteArgs<ExtArgs>
+    sites?: boolean | SiteTemplate$sitesArgs<ExtArgs>
     siteTemplateDataDef?: boolean | SiteTemplateDataDefArgs<ExtArgs>
     _count?: boolean | SiteTemplateCountOutputTypeArgs<ExtArgs>
   }
@@ -4566,7 +4710,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    site<T extends SiteTemplate$siteArgs<ExtArgs> = {}>(args?: Subset<T, SiteTemplate$siteArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<SitePayload<ExtArgs>, T, 'findMany', never>| Null>;
+    sites<T extends SiteTemplate$sitesArgs<ExtArgs> = {}>(args?: Subset<T, SiteTemplate$sitesArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<SitePayload<ExtArgs>, T, 'findMany', never>| Null>;
 
     siteTemplateDataDef<T extends SiteTemplateDataDefArgs<ExtArgs> = {}>(args?: Subset<T, SiteTemplateDataDefArgs<ExtArgs>>): Prisma__SiteTemplateDataDefClient<$Types.GetResult<SiteTemplateDataDefPayload<ExtArgs>, T, 'findUnique', never> | Null, never, ExtArgs>;
 
@@ -4926,9 +5070,9 @@ export namespace Prisma {
 
 
   /**
-   * SiteTemplate.site
+   * SiteTemplate.sites
    */
-  export type SiteTemplate$siteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type SiteTemplate$sitesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Site
      */
@@ -6133,7 +6277,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name?: boolean
     extendData?: boolean
-    site?: boolean | Customer$siteArgs<ExtArgs>
+    sites?: boolean | Customer$sitesArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
@@ -6147,7 +6291,7 @@ export namespace Prisma {
   }
 
   export type CustomerInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    site?: boolean | Customer$siteArgs<ExtArgs>
+    sites?: boolean | Customer$sitesArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeArgs<ExtArgs>
   }
 
@@ -6521,7 +6665,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    site<T extends Customer$siteArgs<ExtArgs> = {}>(args?: Subset<T, Customer$siteArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<SitePayload<ExtArgs>, T, 'findMany', never>| Null>;
+    sites<T extends Customer$sitesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$sitesArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<SitePayload<ExtArgs>, T, 'findMany', never>| Null>;
 
     private get _document();
     /**
@@ -6879,9 +7023,9 @@ export namespace Prisma {
 
 
   /**
-   * Customer.site
+   * Customer.sites
    */
-  export type Customer$siteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+  export type Customer$sitesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Site
      */
@@ -8204,6 +8348,8 @@ export namespace Prisma {
     siteTemplate?: boolean | SiteTemplateArgs<ExtArgs>
     customer?: boolean | CustomerArgs<ExtArgs>
     project?: boolean | ProjectArgs<ExtArgs>
+    contacts?: boolean | Site$contactsArgs<ExtArgs>
+    _count?: boolean | SiteCountOutputTypeArgs<ExtArgs>
   }, ExtArgs["result"]["site"]>
 
   export type SiteSelectScalar = {
@@ -8224,6 +8370,8 @@ export namespace Prisma {
     siteTemplate?: boolean | SiteTemplateArgs<ExtArgs>
     customer?: boolean | CustomerArgs<ExtArgs>
     project?: boolean | ProjectArgs<ExtArgs>
+    contacts?: boolean | Site$contactsArgs<ExtArgs>
+    _count?: boolean | SiteCountOutputTypeArgs<ExtArgs>
   }
 
 
@@ -8602,6 +8750,8 @@ export namespace Prisma {
 
     project<T extends ProjectArgs<ExtArgs> = {}>(args?: Subset<T, ProjectArgs<ExtArgs>>): Prisma__ProjectClient<$Types.GetResult<ProjectPayload<ExtArgs>, T, 'findUnique', never> | Null, never, ExtArgs>;
 
+    contacts<T extends Site$contactsArgs<ExtArgs> = {}>(args?: Subset<T, Site$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findMany', never>| Null>;
+
     private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8954,6 +9104,27 @@ export namespace Prisma {
      * Filter which Sites to delete
      */
     where?: SiteWhereInput
+  }
+
+
+  /**
+   * Site.contacts
+   */
+  export type Site$contactsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    where?: ContactWhereInput
+    orderBy?: Enumerable<ContactOrderByWithRelationAndSearchRelevanceInput>
+    cursor?: ContactWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Enumerable<ContactScalarFieldEnum>
   }
 
 
@@ -20817,6 +20988,977 @@ export namespace Prisma {
 
 
   /**
+   * Model Contact
+   */
+
+
+  export type AggregateContact = {
+    _count: ContactCountAggregateOutputType | null
+    _avg: ContactAvgAggregateOutputType | null
+    _sum: ContactSumAggregateOutputType | null
+    _min: ContactMinAggregateOutputType | null
+    _max: ContactMaxAggregateOutputType | null
+  }
+
+  export type ContactAvgAggregateOutputType = {
+    id: number | null
+    siteId: number | null
+  }
+
+  export type ContactSumAggregateOutputType = {
+    id: number | null
+    siteId: number | null
+  }
+
+  export type ContactMinAggregateOutputType = {
+    id: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    isDeleted: boolean | null
+    siteId: number | null
+    contact: string | null
+  }
+
+  export type ContactMaxAggregateOutputType = {
+    id: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    isDeleted: boolean | null
+    siteId: number | null
+    contact: string | null
+  }
+
+  export type ContactCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    isDeleted: number
+    siteId: number
+    contact: number
+    _all: number
+  }
+
+
+  export type ContactAvgAggregateInputType = {
+    id?: true
+    siteId?: true
+  }
+
+  export type ContactSumAggregateInputType = {
+    id?: true
+    siteId?: true
+  }
+
+  export type ContactMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    isDeleted?: true
+    siteId?: true
+    contact?: true
+  }
+
+  export type ContactMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    isDeleted?: true
+    siteId?: true
+    contact?: true
+  }
+
+  export type ContactCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    isDeleted?: true
+    siteId?: true
+    contact?: true
+    _all?: true
+  }
+
+  export type ContactAggregateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Contact to aggregate.
+     */
+    where?: ContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Contacts to fetch.
+     */
+    orderBy?: Enumerable<ContactOrderByWithRelationAndSearchRelevanceInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Contacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Contacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Contacts
+    **/
+    _count?: true | ContactCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ContactAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ContactSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ContactMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ContactMaxAggregateInputType
+  }
+
+  export type GetContactAggregateType<T extends ContactAggregateArgs> = {
+        [P in keyof T & keyof AggregateContact]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateContact[P]>
+      : GetScalarType<T[P], AggregateContact[P]>
+  }
+
+
+
+
+  export type ContactGroupByArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: ContactWhereInput
+    orderBy?: Enumerable<ContactOrderByWithAggregationInput>
+    by: ContactScalarFieldEnum[]
+    having?: ContactScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ContactCountAggregateInputType | true
+    _avg?: ContactAvgAggregateInputType
+    _sum?: ContactSumAggregateInputType
+    _min?: ContactMinAggregateInputType
+    _max?: ContactMaxAggregateInputType
+  }
+
+
+  export type ContactGroupByOutputType = {
+    id: number
+    createdAt: Date
+    updatedAt: Date
+    isDeleted: boolean
+    siteId: number
+    contact: string
+    _count: ContactCountAggregateOutputType | null
+    _avg: ContactAvgAggregateOutputType | null
+    _sum: ContactSumAggregateOutputType | null
+    _min: ContactMinAggregateOutputType | null
+    _max: ContactMaxAggregateOutputType | null
+  }
+
+  type GetContactGroupByPayload<T extends ContactGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickArray<ContactGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ContactGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ContactGroupByOutputType[P]>
+            : GetScalarType<T[P], ContactGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ContactSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    isDeleted?: boolean
+    siteId?: boolean
+    contact?: boolean
+    site?: boolean | SiteArgs<ExtArgs>
+  }, ExtArgs["result"]["contact"]>
+
+  export type ContactSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    isDeleted?: boolean
+    siteId?: boolean
+    contact?: boolean
+  }
+
+  export type ContactInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    site?: boolean | SiteArgs<ExtArgs>
+  }
+
+
+  type ContactGetPayload<S extends boolean | null | undefined | ContactArgs> = $Types.GetResult<ContactPayload, S>
+
+  type ContactCountArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = 
+    Omit<ContactFindManyArgs, 'select' | 'include'> & {
+      select?: ContactCountAggregateInputType | true
+    }
+
+  export interface ContactDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Contact'], meta: { name: 'Contact' } }
+    /**
+     * Find zero or one Contact that matches the filter.
+     * @param {ContactFindUniqueArgs} args - Arguments to find a Contact
+     * @example
+     * // Get one Contact
+     * const contact = await prisma.contact.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends ContactFindUniqueArgs<ExtArgs>, LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, ContactFindUniqueArgs<ExtArgs>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Contact'> extends True ? Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findUnique', never>, never, ExtArgs> : Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findUnique', never> | null, null, ExtArgs>
+
+    /**
+     * Find one Contact that matches the filter or throw an error  with `error.code='P2025'` 
+     *     if no matches were found.
+     * @param {ContactFindUniqueOrThrowArgs} args - Arguments to find a Contact
+     * @example
+     * // Get one Contact
+     * const contact = await prisma.contact.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ContactFindUniqueOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ContactFindUniqueOrThrowArgs<ExtArgs>>
+    ): Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findUniqueOrThrow', never>, never, ExtArgs>
+
+    /**
+     * Find the first Contact that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactFindFirstArgs} args - Arguments to find a Contact
+     * @example
+     * // Get one Contact
+     * const contact = await prisma.contact.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends ContactFindFirstArgs<ExtArgs>, LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, ContactFindFirstArgs<ExtArgs>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Contact'> extends True ? Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findFirst', never>, never, ExtArgs> : Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findFirst', never> | null, null, ExtArgs>
+
+    /**
+     * Find the first Contact that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactFindFirstOrThrowArgs} args - Arguments to find a Contact
+     * @example
+     * // Get one Contact
+     * const contact = await prisma.contact.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ContactFindFirstOrThrowArgs<ExtArgs>>(
+      args?: SelectSubset<T, ContactFindFirstOrThrowArgs<ExtArgs>>
+    ): Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findFirstOrThrow', never>, never, ExtArgs>
+
+    /**
+     * Find zero or more Contacts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Contacts
+     * const contacts = await prisma.contact.findMany()
+     * 
+     * // Get first 10 Contacts
+     * const contacts = await prisma.contact.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const contactWithIdOnly = await prisma.contact.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends ContactFindManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ContactFindManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<$Types.GetResult<ContactPayload<ExtArgs>, T, 'findMany', never>>
+
+    /**
+     * Create a Contact.
+     * @param {ContactCreateArgs} args - Arguments to create a Contact.
+     * @example
+     * // Create one Contact
+     * const Contact = await prisma.contact.create({
+     *   data: {
+     *     // ... data to create a Contact
+     *   }
+     * })
+     * 
+    **/
+    create<T extends ContactCreateArgs<ExtArgs>>(
+      args: SelectSubset<T, ContactCreateArgs<ExtArgs>>
+    ): Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'create', never>, never, ExtArgs>
+
+    /**
+     * Create many Contacts.
+     *     @param {ContactCreateManyArgs} args - Arguments to create many Contacts.
+     *     @example
+     *     // Create many Contacts
+     *     const contact = await prisma.contact.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends ContactCreateManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ContactCreateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Contact.
+     * @param {ContactDeleteArgs} args - Arguments to delete one Contact.
+     * @example
+     * // Delete one Contact
+     * const Contact = await prisma.contact.delete({
+     *   where: {
+     *     // ... filter to delete one Contact
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends ContactDeleteArgs<ExtArgs>>(
+      args: SelectSubset<T, ContactDeleteArgs<ExtArgs>>
+    ): Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'delete', never>, never, ExtArgs>
+
+    /**
+     * Update one Contact.
+     * @param {ContactUpdateArgs} args - Arguments to update one Contact.
+     * @example
+     * // Update one Contact
+     * const contact = await prisma.contact.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends ContactUpdateArgs<ExtArgs>>(
+      args: SelectSubset<T, ContactUpdateArgs<ExtArgs>>
+    ): Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'update', never>, never, ExtArgs>
+
+    /**
+     * Delete zero or more Contacts.
+     * @param {ContactDeleteManyArgs} args - Arguments to filter Contacts to delete.
+     * @example
+     * // Delete a few Contacts
+     * const { count } = await prisma.contact.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends ContactDeleteManyArgs<ExtArgs>>(
+      args?: SelectSubset<T, ContactDeleteManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Contacts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Contacts
+     * const contact = await prisma.contact.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends ContactUpdateManyArgs<ExtArgs>>(
+      args: SelectSubset<T, ContactUpdateManyArgs<ExtArgs>>
+    ): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Contact.
+     * @param {ContactUpsertArgs} args - Arguments to update or create a Contact.
+     * @example
+     * // Update or create a Contact
+     * const contact = await prisma.contact.upsert({
+     *   create: {
+     *     // ... data to create a Contact
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Contact we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends ContactUpsertArgs<ExtArgs>>(
+      args: SelectSubset<T, ContactUpsertArgs<ExtArgs>>
+    ): Prisma__ContactClient<$Types.GetResult<ContactPayload<ExtArgs>, T, 'upsert', never>, never, ExtArgs>
+
+    /**
+     * Count the number of Contacts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactCountArgs} args - Arguments to filter Contacts to count.
+     * @example
+     * // Count the number of Contacts
+     * const count = await prisma.contact.count({
+     *   where: {
+     *     // ... the filter for the Contacts we want to count
+     *   }
+     * })
+    **/
+    count<T extends ContactCountArgs>(
+      args?: Subset<T, ContactCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ContactCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Contact.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ContactAggregateArgs>(args: Subset<T, ContactAggregateArgs>): Prisma.PrismaPromise<GetContactAggregateType<T>>
+
+    /**
+     * Group by Contact.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContactGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ContactGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ContactGroupByArgs['orderBy'] }
+        : { orderBy?: ContactGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ContactGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContactGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Contact.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__ContactClient<T, Null = never, ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> implements Prisma.PrismaPromise<T> {
+    private readonly _dmmf;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    readonly [Symbol.toStringTag]: 'PrismaPromise';
+    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+
+    site<T extends SiteArgs<ExtArgs> = {}>(args?: Subset<T, SiteArgs<ExtArgs>>): Prisma__SiteClient<$Types.GetResult<SitePayload<ExtArgs>, T, 'findUnique', never> | Null, never, ExtArgs>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * Contact base type for findUnique actions
+   */
+  export type ContactFindUniqueArgsBase<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * Filter, which Contact to fetch.
+     */
+    where: ContactWhereUniqueInput
+  }
+
+  /**
+   * Contact findUnique
+   */
+  export interface ContactFindUniqueArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends ContactFindUniqueArgsBase<ExtArgs> {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Contact findUniqueOrThrow
+   */
+  export type ContactFindUniqueOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * Filter, which Contact to fetch.
+     */
+    where: ContactWhereUniqueInput
+  }
+
+
+  /**
+   * Contact base type for findFirst actions
+   */
+  export type ContactFindFirstArgsBase<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * Filter, which Contact to fetch.
+     */
+    where?: ContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Contacts to fetch.
+     */
+    orderBy?: Enumerable<ContactOrderByWithRelationAndSearchRelevanceInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Contacts.
+     */
+    cursor?: ContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Contacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Contacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Contacts.
+     */
+    distinct?: Enumerable<ContactScalarFieldEnum>
+  }
+
+  /**
+   * Contact findFirst
+   */
+  export interface ContactFindFirstArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> extends ContactFindFirstArgsBase<ExtArgs> {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * Contact findFirstOrThrow
+   */
+  export type ContactFindFirstOrThrowArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * Filter, which Contact to fetch.
+     */
+    where?: ContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Contacts to fetch.
+     */
+    orderBy?: Enumerable<ContactOrderByWithRelationAndSearchRelevanceInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Contacts.
+     */
+    cursor?: ContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Contacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Contacts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Contacts.
+     */
+    distinct?: Enumerable<ContactScalarFieldEnum>
+  }
+
+
+  /**
+   * Contact findMany
+   */
+  export type ContactFindManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * Filter, which Contacts to fetch.
+     */
+    where?: ContactWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Contacts to fetch.
+     */
+    orderBy?: Enumerable<ContactOrderByWithRelationAndSearchRelevanceInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Contacts.
+     */
+    cursor?: ContactWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Contacts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Contacts.
+     */
+    skip?: number
+    distinct?: Enumerable<ContactScalarFieldEnum>
+  }
+
+
+  /**
+   * Contact create
+   */
+  export type ContactCreateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Contact.
+     */
+    data: XOR<ContactCreateInput, ContactUncheckedCreateInput>
+  }
+
+
+  /**
+   * Contact createMany
+   */
+  export type ContactCreateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Contacts.
+     */
+    data: Enumerable<ContactCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Contact update
+   */
+  export type ContactUpdateArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Contact.
+     */
+    data: XOR<ContactUpdateInput, ContactUncheckedUpdateInput>
+    /**
+     * Choose, which Contact to update.
+     */
+    where: ContactWhereUniqueInput
+  }
+
+
+  /**
+   * Contact updateMany
+   */
+  export type ContactUpdateManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Contacts.
+     */
+    data: XOR<ContactUpdateManyMutationInput, ContactUncheckedUpdateManyInput>
+    /**
+     * Filter which Contacts to update
+     */
+    where?: ContactWhereInput
+  }
+
+
+  /**
+   * Contact upsert
+   */
+  export type ContactUpsertArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Contact to update in case it exists.
+     */
+    where: ContactWhereUniqueInput
+    /**
+     * In case the Contact found by the `where` argument doesn't exist, create a new Contact with this data.
+     */
+    create: XOR<ContactCreateInput, ContactUncheckedCreateInput>
+    /**
+     * In case the Contact was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ContactUpdateInput, ContactUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Contact delete
+   */
+  export type ContactDeleteArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+    /**
+     * Filter which Contact to delete.
+     */
+    where: ContactWhereUniqueInput
+  }
+
+
+  /**
+   * Contact deleteMany
+   */
+  export type ContactDeleteManyArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Contacts to delete
+     */
+    where?: ContactWhereInput
+  }
+
+
+  /**
+   * Contact without action
+   */
+  export type ContactArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contact
+     */
+    select?: ContactSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: ContactInclude<ExtArgs> | null
+  }
+
+
+
+  /**
    * Enums
    */
 
@@ -21104,6 +22246,18 @@ export namespace Prisma {
   export type ImageLibraryScalarFieldEnum = (typeof ImageLibraryScalarFieldEnum)[keyof typeof ImageLibraryScalarFieldEnum]
 
 
+  export const ContactScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    isDeleted: 'isDeleted',
+    siteId: 'siteId',
+    contact: 'contact'
+  };
+
+  export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeof ContactScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -21341,6 +22495,13 @@ export namespace Prisma {
   export type ImageLibraryOrderByRelevanceFieldEnum = (typeof ImageLibraryOrderByRelevanceFieldEnum)[keyof typeof ImageLibraryOrderByRelevanceFieldEnum]
 
 
+  export const ContactOrderByRelevanceFieldEnum: {
+    contact: 'contact'
+  };
+
+  export type ContactOrderByRelevanceFieldEnum = (typeof ContactOrderByRelevanceFieldEnum)[keyof typeof ContactOrderByRelevanceFieldEnum]
+
+
   /**
    * Deep Input Types
    */
@@ -21420,7 +22581,7 @@ export namespace Prisma {
     isDeleted?: BoolFilter | boolean
     name?: StringFilter | string
     template?: StringFilter | string
-    site?: SiteListRelationFilter
+    sites?: SiteListRelationFilter
     siteTemplateDataDef?: XOR<SiteTemplateDataDefRelationFilter, SiteTemplateDataDefWhereInput> | null
   }
 
@@ -21431,7 +22592,7 @@ export namespace Prisma {
     isDeleted?: SortOrder
     name?: SortOrder
     template?: SortOrder
-    site?: SiteOrderByRelationAggregateInput
+    sites?: SiteOrderByRelationAggregateInput
     siteTemplateDataDef?: SiteTemplateDataDefOrderByWithRelationAndSearchRelevanceInput
     _relevance?: SiteTemplateOrderByRelevanceInput
   }
@@ -21530,7 +22691,7 @@ export namespace Prisma {
     isDeleted?: BoolFilter | boolean
     name?: StringFilter | string
     extendData?: JsonNullableFilter
-    site?: SiteListRelationFilter
+    sites?: SiteListRelationFilter
   }
 
   export type CustomerOrderByWithRelationAndSearchRelevanceInput = {
@@ -21540,7 +22701,7 @@ export namespace Prisma {
     isDeleted?: SortOrder
     name?: SortOrder
     extendData?: SortOrderInput | SortOrder
-    site?: SiteOrderByRelationAggregateInput
+    sites?: SiteOrderByRelationAggregateInput
     _relevance?: CustomerOrderByRelevanceInput
   }
 
@@ -21697,6 +22858,7 @@ export namespace Prisma {
     siteTemplate?: XOR<SiteTemplateRelationFilter, SiteTemplateWhereInput>
     customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
     project?: XOR<ProjectRelationFilter, ProjectWhereInput> | null
+    contacts?: ContactListRelationFilter
   }
 
   export type SiteOrderByWithRelationAndSearchRelevanceInput = {
@@ -21714,6 +22876,7 @@ export namespace Prisma {
     siteTemplate?: SiteTemplateOrderByWithRelationAndSearchRelevanceInput
     customer?: CustomerOrderByWithRelationAndSearchRelevanceInput
     project?: ProjectOrderByWithRelationAndSearchRelevanceInput
+    contacts?: ContactOrderByRelationAggregateInput
     _relevance?: SiteOrderByRelevanceInput
   }
 
@@ -22566,6 +23729,60 @@ export namespace Prisma {
     css?: StringWithAggregatesFilter | string
   }
 
+  export type ContactWhereInput = {
+    AND?: Enumerable<ContactWhereInput>
+    OR?: Enumerable<ContactWhereInput>
+    NOT?: Enumerable<ContactWhereInput>
+    id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    isDeleted?: BoolFilter | boolean
+    siteId?: IntFilter | number
+    contact?: StringFilter | string
+    site?: XOR<SiteRelationFilter, SiteWhereInput>
+  }
+
+  export type ContactOrderByWithRelationAndSearchRelevanceInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    isDeleted?: SortOrder
+    siteId?: SortOrder
+    contact?: SortOrder
+    site?: SiteOrderByWithRelationAndSearchRelevanceInput
+    _relevance?: ContactOrderByRelevanceInput
+  }
+
+  export type ContactWhereUniqueInput = {
+    id?: number
+  }
+
+  export type ContactOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    isDeleted?: SortOrder
+    siteId?: SortOrder
+    contact?: SortOrder
+    _count?: ContactCountOrderByAggregateInput
+    _avg?: ContactAvgOrderByAggregateInput
+    _max?: ContactMaxOrderByAggregateInput
+    _min?: ContactMinOrderByAggregateInput
+    _sum?: ContactSumOrderByAggregateInput
+  }
+
+  export type ContactScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<ContactScalarWhereWithAggregatesInput>
+    OR?: Enumerable<ContactScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<ContactScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+    isDeleted?: BoolWithAggregatesFilter | boolean
+    siteId?: IntWithAggregatesFilter | number
+    contact?: StringWithAggregatesFilter | string
+  }
+
   export type AuditsCreateInput = {
     createdAt?: Date | string
     auditId: number
@@ -22653,7 +23870,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     template: string
-    site?: SiteCreateNestedManyWithoutSiteTemplateInput
+    sites?: SiteCreateNestedManyWithoutSiteTemplateInput
     siteTemplateDataDef?: SiteTemplateDataDefCreateNestedOneWithoutSiteTemplateInput
   }
 
@@ -22664,7 +23881,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     template: string
-    site?: SiteUncheckedCreateNestedManyWithoutSiteTemplateInput
+    sites?: SiteUncheckedCreateNestedManyWithoutSiteTemplateInput
     siteTemplateDataDef?: SiteTemplateDataDefUncheckedCreateNestedOneWithoutSiteTemplateInput
   }
 
@@ -22674,7 +23891,7 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     template?: StringFieldUpdateOperationsInput | string
-    site?: SiteUpdateManyWithoutSiteTemplateNestedInput
+    sites?: SiteUpdateManyWithoutSiteTemplateNestedInput
     siteTemplateDataDef?: SiteTemplateDataDefUpdateOneWithoutSiteTemplateNestedInput
   }
 
@@ -22685,7 +23902,7 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     template?: StringFieldUpdateOperationsInput | string
-    site?: SiteUncheckedUpdateManyWithoutSiteTemplateNestedInput
+    sites?: SiteUncheckedUpdateManyWithoutSiteTemplateNestedInput
     siteTemplateDataDef?: SiteTemplateDataDefUncheckedUpdateOneWithoutSiteTemplateNestedInput
   }
 
@@ -22780,7 +23997,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
-    site?: SiteCreateNestedManyWithoutCustomerInput
+    sites?: SiteCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateInput = {
@@ -22790,7 +24007,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
-    site?: SiteUncheckedCreateNestedManyWithoutCustomerInput
+    sites?: SiteUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUpdateInput = {
@@ -22799,7 +24016,7 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
-    site?: SiteUpdateManyWithoutCustomerNestedInput
+    sites?: SiteUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateInput = {
@@ -22809,7 +24026,7 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
-    site?: SiteUncheckedUpdateManyWithoutCustomerNestedInput
+    sites?: SiteUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerCreateManyInput = {
@@ -22997,9 +24214,10 @@ export namespace Prisma {
     status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
-    siteTemplate: SiteTemplateCreateNestedOneWithoutSiteInput
-    customer: CustomerCreateNestedOneWithoutSiteInput
+    siteTemplate: SiteTemplateCreateNestedOneWithoutSitesInput
+    customer: CustomerCreateNestedOneWithoutSitesInput
     project?: ProjectCreateNestedOneWithoutSiteInput
+    contacts?: ContactCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateInput = {
@@ -23014,6 +24232,7 @@ export namespace Prisma {
     customerId: number
     slotData?: JsonNullValueInput | InputJsonValue
     projectId?: string | null
+    contacts?: ContactUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUpdateInput = {
@@ -23024,9 +24243,10 @@ export namespace Prisma {
     status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
-    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSiteNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutSiteNestedInput
+    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSitesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSitesNestedInput
     project?: ProjectUpdateOneWithoutSiteNestedInput
+    contacts?: ContactUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateInput = {
@@ -23041,6 +24261,7 @@ export namespace Prisma {
     customerId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    contacts?: ContactUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteCreateManyInput = {
@@ -24127,6 +25348,65 @@ export namespace Prisma {
     css?: StringFieldUpdateOperationsInput | string
   }
 
+  export type ContactCreateInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    contact: string
+    site: SiteCreateNestedOneWithoutContactsInput
+  }
+
+  export type ContactUncheckedCreateInput = {
+    id?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    siteId: number
+    contact: string
+  }
+
+  export type ContactUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    contact?: StringFieldUpdateOperationsInput | string
+    site?: SiteUpdateOneRequiredWithoutContactsNestedInput
+  }
+
+  export type ContactUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    siteId?: IntFieldUpdateOperationsInput | number
+    contact?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ContactCreateManyInput = {
+    id?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    siteId: number
+    contact: string
+  }
+
+  export type ContactUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    contact?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ContactUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    siteId?: IntFieldUpdateOperationsInput | number
+    contact?: StringFieldUpdateOperationsInput | string
+  }
+
   export type IntFilter = {
     equals?: number
     in?: Enumerable<number> | number
@@ -24639,6 +25919,16 @@ export namespace Prisma {
   export type ProjectRelationFilter = {
     is?: ProjectWhereInput | null
     isNot?: ProjectWhereInput | null
+  }
+
+  export type ContactListRelationFilter = {
+    every?: ContactWhereInput
+    some?: ContactWhereInput
+    none?: ContactWhereInput
+  }
+
+  export type ContactOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type SiteOrderByRelevanceInput = {
@@ -25468,6 +26758,49 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type ContactOrderByRelevanceInput = {
+    fields: Enumerable<ContactOrderByRelevanceFieldEnum>
+    sort: SortOrder
+    search: string
+  }
+
+  export type ContactCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    isDeleted?: SortOrder
+    siteId?: SortOrder
+    contact?: SortOrder
+  }
+
+  export type ContactAvgOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+  }
+
+  export type ContactMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    isDeleted?: SortOrder
+    siteId?: SortOrder
+    contact?: SortOrder
+  }
+
+  export type ContactMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    isDeleted?: SortOrder
+    siteId?: SortOrder
+    contact?: SortOrder
+  }
+
+  export type ContactSumOrderByAggregateInput = {
+    id?: SortOrder
+    siteId?: SortOrder
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -25622,15 +26955,15 @@ export namespace Prisma {
     deleteMany?: Enumerable<SiteScalarWhereInput>
   }
 
-  export type SiteTemplateCreateNestedOneWithoutSiteInput = {
-    create?: XOR<SiteTemplateCreateWithoutSiteInput, SiteTemplateUncheckedCreateWithoutSiteInput>
-    connectOrCreate?: SiteTemplateCreateOrConnectWithoutSiteInput
+  export type SiteTemplateCreateNestedOneWithoutSitesInput = {
+    create?: XOR<SiteTemplateCreateWithoutSitesInput, SiteTemplateUncheckedCreateWithoutSitesInput>
+    connectOrCreate?: SiteTemplateCreateOrConnectWithoutSitesInput
     connect?: SiteTemplateWhereUniqueInput
   }
 
-  export type CustomerCreateNestedOneWithoutSiteInput = {
-    create?: XOR<CustomerCreateWithoutSiteInput, CustomerUncheckedCreateWithoutSiteInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutSiteInput
+  export type CustomerCreateNestedOneWithoutSitesInput = {
+    create?: XOR<CustomerCreateWithoutSitesInput, CustomerUncheckedCreateWithoutSitesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutSitesInput
     connect?: CustomerWhereUniqueInput
   }
 
@@ -25640,24 +26973,38 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type ContactCreateNestedManyWithoutSiteInput = {
+    create?: XOR<Enumerable<ContactCreateWithoutSiteInput>, Enumerable<ContactUncheckedCreateWithoutSiteInput>>
+    connectOrCreate?: Enumerable<ContactCreateOrConnectWithoutSiteInput>
+    createMany?: ContactCreateManySiteInputEnvelope
+    connect?: Enumerable<ContactWhereUniqueInput>
+  }
+
+  export type ContactUncheckedCreateNestedManyWithoutSiteInput = {
+    create?: XOR<Enumerable<ContactCreateWithoutSiteInput>, Enumerable<ContactUncheckedCreateWithoutSiteInput>>
+    connectOrCreate?: Enumerable<ContactCreateOrConnectWithoutSiteInput>
+    createMany?: ContactCreateManySiteInputEnvelope
+    connect?: Enumerable<ContactWhereUniqueInput>
+  }
+
   export type EnumSiteStatusFieldUpdateOperationsInput = {
     set?: SiteStatus
   }
 
-  export type SiteTemplateUpdateOneRequiredWithoutSiteNestedInput = {
-    create?: XOR<SiteTemplateCreateWithoutSiteInput, SiteTemplateUncheckedCreateWithoutSiteInput>
-    connectOrCreate?: SiteTemplateCreateOrConnectWithoutSiteInput
-    upsert?: SiteTemplateUpsertWithoutSiteInput
+  export type SiteTemplateUpdateOneRequiredWithoutSitesNestedInput = {
+    create?: XOR<SiteTemplateCreateWithoutSitesInput, SiteTemplateUncheckedCreateWithoutSitesInput>
+    connectOrCreate?: SiteTemplateCreateOrConnectWithoutSitesInput
+    upsert?: SiteTemplateUpsertWithoutSitesInput
     connect?: SiteTemplateWhereUniqueInput
-    update?: XOR<SiteTemplateUpdateWithoutSiteInput, SiteTemplateUncheckedUpdateWithoutSiteInput>
+    update?: XOR<SiteTemplateUpdateWithoutSitesInput, SiteTemplateUncheckedUpdateWithoutSitesInput>
   }
 
-  export type CustomerUpdateOneRequiredWithoutSiteNestedInput = {
-    create?: XOR<CustomerCreateWithoutSiteInput, CustomerUncheckedCreateWithoutSiteInput>
-    connectOrCreate?: CustomerCreateOrConnectWithoutSiteInput
-    upsert?: CustomerUpsertWithoutSiteInput
+  export type CustomerUpdateOneRequiredWithoutSitesNestedInput = {
+    create?: XOR<CustomerCreateWithoutSitesInput, CustomerUncheckedCreateWithoutSitesInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutSitesInput
+    upsert?: CustomerUpsertWithoutSitesInput
     connect?: CustomerWhereUniqueInput
-    update?: XOR<CustomerUpdateWithoutSiteInput, CustomerUncheckedUpdateWithoutSiteInput>
+    update?: XOR<CustomerUpdateWithoutSitesInput, CustomerUncheckedUpdateWithoutSitesInput>
   }
 
   export type ProjectUpdateOneWithoutSiteNestedInput = {
@@ -25668,6 +27015,34 @@ export namespace Prisma {
     delete?: boolean
     connect?: ProjectWhereUniqueInput
     update?: XOR<ProjectUpdateWithoutSiteInput, ProjectUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type ContactUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<Enumerable<ContactCreateWithoutSiteInput>, Enumerable<ContactUncheckedCreateWithoutSiteInput>>
+    connectOrCreate?: Enumerable<ContactCreateOrConnectWithoutSiteInput>
+    upsert?: Enumerable<ContactUpsertWithWhereUniqueWithoutSiteInput>
+    createMany?: ContactCreateManySiteInputEnvelope
+    set?: Enumerable<ContactWhereUniqueInput>
+    disconnect?: Enumerable<ContactWhereUniqueInput>
+    delete?: Enumerable<ContactWhereUniqueInput>
+    connect?: Enumerable<ContactWhereUniqueInput>
+    update?: Enumerable<ContactUpdateWithWhereUniqueWithoutSiteInput>
+    updateMany?: Enumerable<ContactUpdateManyWithWhereWithoutSiteInput>
+    deleteMany?: Enumerable<ContactScalarWhereInput>
+  }
+
+  export type ContactUncheckedUpdateManyWithoutSiteNestedInput = {
+    create?: XOR<Enumerable<ContactCreateWithoutSiteInput>, Enumerable<ContactUncheckedCreateWithoutSiteInput>>
+    connectOrCreate?: Enumerable<ContactCreateOrConnectWithoutSiteInput>
+    upsert?: Enumerable<ContactUpsertWithWhereUniqueWithoutSiteInput>
+    createMany?: ContactCreateManySiteInputEnvelope
+    set?: Enumerable<ContactWhereUniqueInput>
+    disconnect?: Enumerable<ContactWhereUniqueInput>
+    delete?: Enumerable<ContactWhereUniqueInput>
+    connect?: Enumerable<ContactWhereUniqueInput>
+    update?: Enumerable<ContactUpdateWithWhereUniqueWithoutSiteInput>
+    updateMany?: Enumerable<ContactUpdateManyWithWhereWithoutSiteInput>
+    deleteMany?: Enumerable<ContactScalarWhereInput>
   }
 
   export type AccountCreateNestedManyWithoutUserInput = {
@@ -26292,6 +27667,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<LinkScalarWhereInput>
   }
 
+  export type SiteCreateNestedOneWithoutContactsInput = {
+    create?: XOR<SiteCreateWithoutContactsInput, SiteUncheckedCreateWithoutContactsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutContactsInput
+    connect?: SiteWhereUniqueInput
+  }
+
+  export type SiteUpdateOneRequiredWithoutContactsNestedInput = {
+    create?: XOR<SiteCreateWithoutContactsInput, SiteUncheckedCreateWithoutContactsInput>
+    connectOrCreate?: SiteCreateOrConnectWithoutContactsInput
+    upsert?: SiteUpsertWithoutContactsInput
+    connect?: SiteWhereUniqueInput
+    update?: XOR<SiteUpdateWithoutContactsInput, SiteUncheckedUpdateWithoutContactsInput>
+  }
+
   export type NestedIntFilter = {
     equals?: number
     in?: Enumerable<number> | number
@@ -26600,8 +27989,9 @@ export namespace Prisma {
     status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
-    customer: CustomerCreateNestedOneWithoutSiteInput
+    customer: CustomerCreateNestedOneWithoutSitesInput
     project?: ProjectCreateNestedOneWithoutSiteInput
+    contacts?: ContactCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutSiteTemplateInput = {
@@ -26615,6 +28005,7 @@ export namespace Prisma {
     customerId: number
     slotData?: JsonNullValueInput | InputJsonValue
     projectId?: string | null
+    contacts?: ContactUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutSiteTemplateInput = {
@@ -26660,7 +28051,7 @@ export namespace Prisma {
 
   export type SiteUpdateManyWithWhereWithoutSiteTemplateInput = {
     where: SiteScalarWhereInput
-    data: XOR<SiteUpdateManyMutationInput, SiteUncheckedUpdateManyWithoutSiteInput>
+    data: XOR<SiteUpdateManyMutationInput, SiteUncheckedUpdateManyWithoutSitesInput>
   }
 
   export type SiteScalarWhereInput = {
@@ -26706,7 +28097,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     template: string
-    site?: SiteCreateNestedManyWithoutSiteTemplateInput
+    sites?: SiteCreateNestedManyWithoutSiteTemplateInput
   }
 
   export type SiteTemplateUncheckedCreateWithoutSiteTemplateDataDefInput = {
@@ -26716,7 +28107,7 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     template: string
-    site?: SiteUncheckedCreateNestedManyWithoutSiteTemplateInput
+    sites?: SiteUncheckedCreateNestedManyWithoutSiteTemplateInput
   }
 
   export type SiteTemplateCreateOrConnectWithoutSiteTemplateDataDefInput = {
@@ -26735,7 +28126,7 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     template?: StringFieldUpdateOperationsInput | string
-    site?: SiteUpdateManyWithoutSiteTemplateNestedInput
+    sites?: SiteUpdateManyWithoutSiteTemplateNestedInput
   }
 
   export type SiteTemplateUncheckedUpdateWithoutSiteTemplateDataDefInput = {
@@ -26745,7 +28136,7 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     template?: StringFieldUpdateOperationsInput | string
-    site?: SiteUncheckedUpdateManyWithoutSiteTemplateNestedInput
+    sites?: SiteUncheckedUpdateManyWithoutSiteTemplateNestedInput
   }
 
   export type SiteCreateWithoutCustomerInput = {
@@ -26756,8 +28147,9 @@ export namespace Prisma {
     status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
-    siteTemplate: SiteTemplateCreateNestedOneWithoutSiteInput
+    siteTemplate: SiteTemplateCreateNestedOneWithoutSitesInput
     project?: ProjectCreateNestedOneWithoutSiteInput
+    contacts?: ContactCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutCustomerInput = {
@@ -26771,6 +28163,7 @@ export namespace Prisma {
     siteTemplateId: number
     slotData?: JsonNullValueInput | InputJsonValue
     projectId?: string | null
+    contacts?: ContactUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutCustomerInput = {
@@ -26796,10 +28189,10 @@ export namespace Prisma {
 
   export type SiteUpdateManyWithWhereWithoutCustomerInput = {
     where: SiteScalarWhereInput
-    data: XOR<SiteUpdateManyMutationInput, SiteUncheckedUpdateManyWithoutSiteInput>
+    data: XOR<SiteUpdateManyMutationInput, SiteUncheckedUpdateManyWithoutSitesInput>
   }
 
-  export type SiteTemplateCreateWithoutSiteInput = {
+  export type SiteTemplateCreateWithoutSitesInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
@@ -26808,7 +28201,7 @@ export namespace Prisma {
     siteTemplateDataDef?: SiteTemplateDataDefCreateNestedOneWithoutSiteTemplateInput
   }
 
-  export type SiteTemplateUncheckedCreateWithoutSiteInput = {
+  export type SiteTemplateUncheckedCreateWithoutSitesInput = {
     id?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26818,12 +28211,12 @@ export namespace Prisma {
     siteTemplateDataDef?: SiteTemplateDataDefUncheckedCreateNestedOneWithoutSiteTemplateInput
   }
 
-  export type SiteTemplateCreateOrConnectWithoutSiteInput = {
+  export type SiteTemplateCreateOrConnectWithoutSitesInput = {
     where: SiteTemplateWhereUniqueInput
-    create: XOR<SiteTemplateCreateWithoutSiteInput, SiteTemplateUncheckedCreateWithoutSiteInput>
+    create: XOR<SiteTemplateCreateWithoutSitesInput, SiteTemplateUncheckedCreateWithoutSitesInput>
   }
 
-  export type CustomerCreateWithoutSiteInput = {
+  export type CustomerCreateWithoutSitesInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
@@ -26831,7 +28224,7 @@ export namespace Prisma {
     extendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type CustomerUncheckedCreateWithoutSiteInput = {
+  export type CustomerUncheckedCreateWithoutSitesInput = {
     id?: number
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26840,9 +28233,9 @@ export namespace Prisma {
     extendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type CustomerCreateOrConnectWithoutSiteInput = {
+  export type CustomerCreateOrConnectWithoutSitesInput = {
     where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutSiteInput, CustomerUncheckedCreateWithoutSiteInput>
+    create: XOR<CustomerCreateWithoutSitesInput, CustomerUncheckedCreateWithoutSitesInput>
   }
 
   export type ProjectCreateWithoutSiteInput = {
@@ -26904,12 +28297,37 @@ export namespace Prisma {
     create: XOR<ProjectCreateWithoutSiteInput, ProjectUncheckedCreateWithoutSiteInput>
   }
 
-  export type SiteTemplateUpsertWithoutSiteInput = {
-    update: XOR<SiteTemplateUpdateWithoutSiteInput, SiteTemplateUncheckedUpdateWithoutSiteInput>
-    create: XOR<SiteTemplateCreateWithoutSiteInput, SiteTemplateUncheckedCreateWithoutSiteInput>
+  export type ContactCreateWithoutSiteInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    contact: string
   }
 
-  export type SiteTemplateUpdateWithoutSiteInput = {
+  export type ContactUncheckedCreateWithoutSiteInput = {
+    id?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    contact: string
+  }
+
+  export type ContactCreateOrConnectWithoutSiteInput = {
+    where: ContactWhereUniqueInput
+    create: XOR<ContactCreateWithoutSiteInput, ContactUncheckedCreateWithoutSiteInput>
+  }
+
+  export type ContactCreateManySiteInputEnvelope = {
+    data: Enumerable<ContactCreateManySiteInput>
+    skipDuplicates?: boolean
+  }
+
+  export type SiteTemplateUpsertWithoutSitesInput = {
+    update: XOR<SiteTemplateUpdateWithoutSitesInput, SiteTemplateUncheckedUpdateWithoutSitesInput>
+    create: XOR<SiteTemplateCreateWithoutSitesInput, SiteTemplateUncheckedCreateWithoutSitesInput>
+  }
+
+  export type SiteTemplateUpdateWithoutSitesInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
@@ -26918,7 +28336,7 @@ export namespace Prisma {
     siteTemplateDataDef?: SiteTemplateDataDefUpdateOneWithoutSiteTemplateNestedInput
   }
 
-  export type SiteTemplateUncheckedUpdateWithoutSiteInput = {
+  export type SiteTemplateUncheckedUpdateWithoutSitesInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26928,12 +28346,12 @@ export namespace Prisma {
     siteTemplateDataDef?: SiteTemplateDataDefUncheckedUpdateOneWithoutSiteTemplateNestedInput
   }
 
-  export type CustomerUpsertWithoutSiteInput = {
-    update: XOR<CustomerUpdateWithoutSiteInput, CustomerUncheckedUpdateWithoutSiteInput>
-    create: XOR<CustomerCreateWithoutSiteInput, CustomerUncheckedCreateWithoutSiteInput>
+  export type CustomerUpsertWithoutSitesInput = {
+    update: XOR<CustomerUpdateWithoutSitesInput, CustomerUncheckedUpdateWithoutSitesInput>
+    create: XOR<CustomerCreateWithoutSitesInput, CustomerUncheckedCreateWithoutSitesInput>
   }
 
-  export type CustomerUpdateWithoutSiteInput = {
+  export type CustomerUpdateWithoutSitesInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
@@ -26941,7 +28359,7 @@ export namespace Prisma {
     extendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type CustomerUncheckedUpdateWithoutSiteInput = {
+  export type CustomerUncheckedUpdateWithoutSitesInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27007,6 +28425,34 @@ export namespace Prisma {
     domains?: DomainUncheckedUpdateManyWithoutProjectNestedInput
     links?: LinkUncheckedUpdateManyWithoutProjectNestedInput
     tags?: TagUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ContactUpsertWithWhereUniqueWithoutSiteInput = {
+    where: ContactWhereUniqueInput
+    update: XOR<ContactUpdateWithoutSiteInput, ContactUncheckedUpdateWithoutSiteInput>
+    create: XOR<ContactCreateWithoutSiteInput, ContactUncheckedCreateWithoutSiteInput>
+  }
+
+  export type ContactUpdateWithWhereUniqueWithoutSiteInput = {
+    where: ContactWhereUniqueInput
+    data: XOR<ContactUpdateWithoutSiteInput, ContactUncheckedUpdateWithoutSiteInput>
+  }
+
+  export type ContactUpdateManyWithWhereWithoutSiteInput = {
+    where: ContactScalarWhereInput
+    data: XOR<ContactUpdateManyMutationInput, ContactUncheckedUpdateManyWithoutContactsInput>
+  }
+
+  export type ContactScalarWhereInput = {
+    AND?: Enumerable<ContactScalarWhereInput>
+    OR?: Enumerable<ContactScalarWhereInput>
+    NOT?: Enumerable<ContactScalarWhereInput>
+    id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    isDeleted?: BoolFilter | boolean
+    siteId?: IntFilter | number
+    contact?: StringFilter | string
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -27442,8 +28888,9 @@ export namespace Prisma {
     status?: SiteStatus
     cosUrl?: string
     slotData?: JsonNullValueInput | InputJsonValue
-    siteTemplate: SiteTemplateCreateNestedOneWithoutSiteInput
-    customer: CustomerCreateNestedOneWithoutSiteInput
+    siteTemplate: SiteTemplateCreateNestedOneWithoutSitesInput
+    customer: CustomerCreateNestedOneWithoutSitesInput
+    contacts?: ContactCreateNestedManyWithoutSiteInput
   }
 
   export type SiteUncheckedCreateWithoutProjectInput = {
@@ -27457,6 +28904,7 @@ export namespace Prisma {
     siteTemplateId: number
     customerId: number
     slotData?: JsonNullValueInput | InputJsonValue
+    contacts?: ContactUncheckedCreateNestedManyWithoutSiteInput
   }
 
   export type SiteCreateOrConnectWithoutProjectInput = {
@@ -27666,8 +29114,9 @@ export namespace Prisma {
     status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
-    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSiteNestedInput
-    customer?: CustomerUpdateOneRequiredWithoutSiteNestedInput
+    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSitesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSitesNestedInput
+    contacts?: ContactUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutProjectInput = {
@@ -27681,6 +29130,7 @@ export namespace Prisma {
     siteTemplateId?: IntFieldUpdateOperationsInput | number
     customerId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue
+    contacts?: ContactUncheckedUpdateManyWithoutSiteNestedInput
   }
 
   export type ProjectCreateWithoutInvitesInput = {
@@ -28667,6 +30117,70 @@ export namespace Prisma {
     data: XOR<LinkUpdateManyMutationInput, LinkUncheckedUpdateManyWithoutLinksInput>
   }
 
+  export type SiteCreateWithoutContactsInput = {
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    name: string
+    status?: SiteStatus
+    cosUrl?: string
+    slotData?: JsonNullValueInput | InputJsonValue
+    siteTemplate: SiteTemplateCreateNestedOneWithoutSitesInput
+    customer: CustomerCreateNestedOneWithoutSitesInput
+    project?: ProjectCreateNestedOneWithoutSiteInput
+  }
+
+  export type SiteUncheckedCreateWithoutContactsInput = {
+    id?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    name: string
+    status?: SiteStatus
+    cosUrl?: string
+    siteTemplateId: number
+    customerId: number
+    slotData?: JsonNullValueInput | InputJsonValue
+    projectId?: string | null
+  }
+
+  export type SiteCreateOrConnectWithoutContactsInput = {
+    where: SiteWhereUniqueInput
+    create: XOR<SiteCreateWithoutContactsInput, SiteUncheckedCreateWithoutContactsInput>
+  }
+
+  export type SiteUpsertWithoutContactsInput = {
+    update: XOR<SiteUpdateWithoutContactsInput, SiteUncheckedUpdateWithoutContactsInput>
+    create: XOR<SiteCreateWithoutContactsInput, SiteUncheckedCreateWithoutContactsInput>
+  }
+
+  export type SiteUpdateWithoutContactsInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
+    cosUrl?: StringFieldUpdateOperationsInput | string
+    slotData?: JsonNullValueInput | InputJsonValue
+    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSitesNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSitesNestedInput
+    project?: ProjectUpdateOneWithoutSiteNestedInput
+  }
+
+  export type SiteUncheckedUpdateWithoutContactsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
+    cosUrl?: StringFieldUpdateOperationsInput | string
+    siteTemplateId?: IntFieldUpdateOperationsInput | number
+    customerId?: IntFieldUpdateOperationsInput | number
+    slotData?: JsonNullValueInput | InputJsonValue
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type SiteCreateManySiteTemplateInput = {
     id?: number
     createdAt?: Date | string
@@ -28688,8 +30202,9 @@ export namespace Prisma {
     status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
-    customer?: CustomerUpdateOneRequiredWithoutSiteNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutSitesNestedInput
     project?: ProjectUpdateOneWithoutSiteNestedInput
+    contacts?: ContactUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutSiteTemplateInput = {
@@ -28703,9 +30218,10 @@ export namespace Prisma {
     customerId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    contacts?: ContactUncheckedUpdateManyWithoutSiteNestedInput
   }
 
-  export type SiteUncheckedUpdateManyWithoutSiteInput = {
+  export type SiteUncheckedUpdateManyWithoutSitesInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28739,8 +30255,9 @@ export namespace Prisma {
     status?: EnumSiteStatusFieldUpdateOperationsInput | SiteStatus
     cosUrl?: StringFieldUpdateOperationsInput | string
     slotData?: JsonNullValueInput | InputJsonValue
-    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSiteNestedInput
+    siteTemplate?: SiteTemplateUpdateOneRequiredWithoutSitesNestedInput
     project?: ProjectUpdateOneWithoutSiteNestedInput
+    contacts?: ContactUpdateManyWithoutSiteNestedInput
   }
 
   export type SiteUncheckedUpdateWithoutCustomerInput = {
@@ -28754,6 +30271,38 @@ export namespace Prisma {
     siteTemplateId?: IntFieldUpdateOperationsInput | number
     slotData?: JsonNullValueInput | InputJsonValue
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    contacts?: ContactUncheckedUpdateManyWithoutSiteNestedInput
+  }
+
+  export type ContactCreateManySiteInput = {
+    id?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    contact: string
+  }
+
+  export type ContactUpdateWithoutSiteInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    contact?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ContactUncheckedUpdateWithoutSiteInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    contact?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ContactUncheckedUpdateManyWithoutContactsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    contact?: StringFieldUpdateOperationsInput | string
   }
 
   export type AccountCreateManyUserInput = {
