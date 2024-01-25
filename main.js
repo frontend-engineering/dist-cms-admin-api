@@ -6,14 +6,13 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
-const express = tslib_1.__importStar(__webpack_require__("express"));
 let AppController = class AppController {
     constructor(cmsAdminSchemaService, custom) {
         this.cmsAdminSchemaService = cmsAdminSchemaService;
@@ -71,12 +70,6 @@ let AppController = class AppController {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.getRandomImages(query);
         });
-    }
-    getSiteList(req) {
-        return this.custom.getSiteList(req.user, req.query);
-    }
-    getSite(req) {
-        return this.custom.getSite(req.user, req.query);
     }
 };
 exports.AppController = AppController;
@@ -160,20 +153,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getRandomImages", null);
-tslib_1.__decorate([
-    (0, common_1.Get)('/getSiteList'),
-    tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof express !== "undefined" && express.Request) === "function" ? _k : Object]),
-    tslib_1.__metadata("design:returntype", void 0)
-], AppController.prototype, "getSiteList", null);
-tslib_1.__decorate([
-    (0, common_1.Get)('/getSite'),
-    tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_l = typeof express !== "undefined" && express.Request) === "function" ? _l : Object]),
-    tslib_1.__metadata("design:returntype", void 0)
-], AppController.prototype, "getSite", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
@@ -1478,28 +1457,6 @@ let CustomService = CustomService_1 = class CustomService {
             // https://github.com/prisma/prisma/issues/13663#issuecomment-1237142453
             return this.prisma
                 .$queryRaw `SELECT id,unsplashId,tag,urls,css FROM ImageLibrary WHERE IsDeleted = 0 AND tag in (${db.Prisma.join(dto.tag.split(','))}) ORDER BY RAND() LIMIT ${dto.count}`;
-        });
-    }
-    // todo: 后续这种没有请求的计算字段可以放在前端
-    // 先按照已有的扩展方式增加
-    getSiteList(reqUser, query) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const pathRet = yield this.data.get(reqUser, query['path'], query);
-            const { data, pagination } = pathRet;
-            return {
-                data: data.map((dat) => Object.assign(dat, {
-                    editableUrl: `/site-preview/preview?siteId=${dat.id}`,
-                })),
-                pagination,
-            };
-        });
-    }
-    getSite(reqUser, query) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const data = yield this.data.get(reqUser, query['path'], query);
-            return Object.assign(data, {
-                editableUrl: `/site-preview/preview?siteId=${data.id}`,
-            });
         });
     }
 };
