@@ -6,7 +6,7 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -50,6 +50,11 @@ let AppController = class AppController {
     generateJobSite(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.generateSiteJob(dto);
+        });
+    }
+    findToDoCustomers(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.findToDoCustomers(dto);
         });
     }
     generateSite(dto) {
@@ -123,11 +128,20 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generateJobSite", null);
 tslib_1.__decorate([
+    (0, common_1.Get)('/findToDoCustomers'),
+    (0, common_1.HttpCode)(200),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof cms_admin_services_1.GenerateSiteJobSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteJobSchemaDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "findToDoCustomers", null);
+tslib_1.__decorate([
     (0, common_1.Post)('/generateSite'),
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_g = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generateSite", null);
 tslib_1.__decorate([
@@ -135,7 +149,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_g = typeof cms_admin_services_1.GeneratePartialSlotDataSchemaDto !== "undefined" && cms_admin_services_1.GeneratePartialSlotDataSchemaDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GeneratePartialSlotDataSchemaDto !== "undefined" && cms_admin_services_1.GeneratePartialSlotDataSchemaDto) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generatePartialSlotData", null);
 tslib_1.__decorate([
@@ -143,21 +157,21 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Query)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getRandomImages", null);
 tslib_1.__decorate([
     (0, common_1.Get)('/getSiteList'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof express !== "undefined" && express.Request) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof express !== "undefined" && express.Request) === "function" ? _k : Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], AppController.prototype, "getSiteList", null);
 tslib_1.__decorate([
     (0, common_1.Get)('/getSite'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof express !== "undefined" && express.Request) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_l = typeof express !== "undefined" && express.Request) === "function" ? _l : Object]),
     tslib_1.__metadata("design:returntype", void 0)
 ], AppController.prototype, "getSite", null);
 exports.AppController = AppController = tslib_1.__decorate([
@@ -1332,26 +1346,7 @@ let CustomService = CustomService_1 = class CustomService {
         var _a, e_1, _b, _c;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // https://github.com/prisma/prisma/issues/3888#issuecomment-709868053
-            const customerRet = yield this.prisma.customer.findMany({
-                take: dto.take || 10,
-                skip: 0,
-                where: {
-                    OR: [
-                        {
-                            sites: {
-                                none: {},
-                            },
-                        },
-                        {
-                            sites: {
-                                some: {
-                                    cosUrl: '',
-                                },
-                            },
-                        },
-                    ],
-                },
-            });
+            const customerRet = yield this.findToDoCustomers(dto);
             const tplRet = yield this.prisma.siteTemplate.findFirstOrThrow({
                 where: {
                     isDeleted: false,
@@ -1406,6 +1401,41 @@ let CustomService = CustomService_1 = class CustomService {
                 success: passCnt,
                 fail: failCnt,
             };
+        });
+    }
+    findToDoCustomers(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const customerRet = yield this.prisma.customer.findMany({
+                take: dto.take || 10,
+                skip: 0,
+                where: {
+                    AND: [
+                        {
+                            extendData: {
+                                path: '$.description',
+                                not: db.Prisma.DbNull,
+                            },
+                        },
+                        {
+                            OR: [
+                                {
+                                    sites: {
+                                        none: {},
+                                    },
+                                },
+                                {
+                                    sites: {
+                                        some: {
+                                            cosUrl: '',
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+            return customerRet;
         });
     }
     getRandomImages(dto) {
