@@ -374,7 +374,7 @@ tslib_1.__decorate([
     (0, common_1.Header)('content-type', 'text/html')
     // 在 nginx 配置
     ,
-    (0, common_1.Header)('X-Frame-Options', 'ALLOW-FROM https://cms-1306445775.cos-website.ap-shanghai.myqcloud.com'),
+    (0, common_1.Header)('X-Frame-Options', 'ALLOW-FROM https://cms-1306445775.cos-website.ap-shanghai.myqcloud.com http://localhost:3345'),
     tslib_1.__param(0, (0, common_1.Query)('siteId')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
@@ -1192,22 +1192,56 @@ let CustomService = CustomService_1 = class CustomService {
     `);
             root.querySelector('body').insertAdjacentHTML('beforeend', `
     <script>
-      console.log('inject iframe message proxy')
       window.addEventListener('message', function (e) {
-        console.log('from parent', e.data)
         try {
-            const { path, value } = JSON.parse(e.data)
-            const ele = document.querySelectorAll('[data-slot="' + path + '"]')[0]
-            ele.innerText = value
-            ele.scrollIntoView({ behavior: 'smooth' });
-            ele.classList.add('blink');
-            setTimeout(() => {
-                ele.classList.remove('blink');
-            }, 3000);
+            const { evt, data } = JSON.parse(e.data)
+            console.log('on ' + evt, value)
+            if (evt === 'updatePathValue') {
+                const { path, value } = data
+                const ele = document.querySelectorAll('[data-slot="' + path + '"]')[0]
+                ele.innerText = value
+                ele.scrollIntoView({ behavior: 'smooth' });
+                ele.classList.add('blink');
+                setTimeout(() => {
+                    ele.classList.remove('blink');
+                }, 3000);
+            }
         } catch (e) {
             console.error('error', e.message, e.data)
         }
       })
+      
+      let duplexPromiseMap = new Map()
+      
+      async function duplex(action, params) {
+        const lastEntry =  [...duplexPromiseMap.entries()].pop()
+        const lastKey = lastEntry ? lastEntry[0] + 1 : 0
+        const promise = new Promise(resolve => {
+            duplexPromiseMap.set(lastKey, resolve)
+        })
+        window.parent.postMessage(JSON.stringify({ evt: 'duplex', action, params, counter: lastKey }), '*');
+        const data = await promise
+        return data
+      }
+      
+      window.addEventListener('message', function (e) {
+        try {
+            const { evt, data, counter } = JSON.parse(e.data)
+            if (evt === 'duplex') {
+                const resolve = duplexPromiseMap.get(counter)
+                if (resolve)  {
+                    resolve(data)
+                    duplexPromiseMap.delete(counter)
+                } else {
+                    console.error('cannot find resolve ' + counter)
+                }
+            }
+        } catch (e) {
+            console.error('error', e.message, e.data)
+        }
+      })
+      
+      window.getAccessToken = duplex('getAccessToken', {})
     </script>
     <script src="https://assets-1306445775.cos.ap-shanghai.myqcloud.com/templateA/assets/js/editor.bundle.js"></script>
     `);
