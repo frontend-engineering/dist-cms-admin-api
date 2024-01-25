@@ -1174,8 +1174,8 @@ let CustomService = CustomService_1 = class CustomService {
       window.addEventListener('message', function (e) {
         try {
             const { evt, data } = JSON.parse(e.data)
-            console.log('on ' + evt, value)
             if (evt === 'updatePathValue') {
+                console.log('updatePathValue', data)
                 const { path, value } = data
                 const ele = document.querySelectorAll('[data-slot="' + path + '"]')[0]
                 ele.innerText = value
@@ -1192,7 +1192,7 @@ let CustomService = CustomService_1 = class CustomService {
       
       let duplexPromiseMap = new Map()
       
-      async function duplex(action, params) {
+      function duplex(action, params) {
         return async function () {
             const lastEntry =  [...duplexPromiseMap.entries()].pop()
             const lastKey = lastEntry ? lastEntry[0] + 1 : 0
