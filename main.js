@@ -353,7 +353,7 @@ tslib_1.__decorate([
     (0, common_1.Header)('content-type', 'text/html')
     // 在 nginx 配置
     ,
-    (0, common_1.Header)('X-Frame-Options', 'ALLOW-FROM https://cms-1306445775.cos-website.ap-shanghai.myqcloud.com http://localhost:3345'),
+    (0, common_1.Header)('X-Frame-Options', 'ALLOW-FROM https://cms-1306445775.cos-website.ap-shanghai.myqcloud.com'),
     tslib_1.__param(0, (0, common_1.Query)('siteId')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
@@ -1193,14 +1193,16 @@ let CustomService = CustomService_1 = class CustomService {
       let duplexPromiseMap = new Map()
       
       async function duplex(action, params) {
-        const lastEntry =  [...duplexPromiseMap.entries()].pop()
-        const lastKey = lastEntry ? lastEntry[0] + 1 : 0
-        const promise = new Promise(resolve => {
-            duplexPromiseMap.set(lastKey, resolve)
-        })
-        window.parent.postMessage(JSON.stringify({ evt: 'duplex', action, params, counter: lastKey }), '*');
-        const data = await promise
-        return data
+        return async function () {
+            const lastEntry =  [...duplexPromiseMap.entries()].pop()
+            const lastKey = lastEntry ? lastEntry[0] + 1 : 0
+            const promise = new Promise(resolve => {
+                duplexPromiseMap.set(lastKey, resolve)
+            })
+            window.parent.postMessage(JSON.stringify({ evt: 'duplex', action, params, counter: lastKey }), '*');
+            const data = await promise
+            return data
+        }
       }
       
       window.addEventListener('message', function (e) {
