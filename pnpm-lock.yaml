@@ -12,6 +12,7 @@ importers:
       '@prisma/client': ^4.16.2
       '@trpc/client': ^10.44.1
       '@trpc/server': ^10.44.1
+      '@upstash/redis': 1.18.0
       axios: 1.1.0
       bcrypt: ^5.1.0
       cache-manager: ^5.2.4
@@ -32,6 +33,7 @@ importers:
       passport: ^0.6.0
       passport-jwt: ^4.0.1
       passport-local: ^1.0.0
+      pinyin-pro: ^3.19.3
       pluralize: ^8.0.0
       prisma: ^4.16.2
       qs: ^6.11.2
@@ -51,6 +53,7 @@ importers:
       '@prisma/client': 4.16.2_prisma@4.16.2
       '@trpc/client': 10.44.1_@trpc+server@10.44.1
       '@trpc/server': 10.44.1
+      '@upstash/redis': 1.18.0
       axios: 1.1.0
       bcrypt: 5.1.0
       cache-manager: 5.2.4
@@ -71,6 +74,7 @@ importers:
       passport: 0.6.0
       passport-jwt: 4.0.1
       passport-local: 1.0.0
+      pinyin-pro: 3.19.3
       pluralize: 8.0.0
       prisma: 4.16.2
       qs: 6.11.2
@@ -366,6 +370,14 @@ packages:
     dependencies:
       '@types/mime': 3.0.1
       '@types/node': 18.11.9
+    dev: false
+
+  /@upstash/redis/1.18.0:
+    resolution: {integrity: sha512-BBYz0X5EghFttYIk0vePW3/clQoAfxmPxwqc3UXem3Qp9iGFRwLN/HKvxuJQxkt18RyNPQ3fN4Eg0MG4lyu7Hw==}
+    dependencies:
+      isomorphic-fetch: 3.0.0
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /abbrev/1.1.1:
@@ -1320,6 +1332,15 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
+  /isomorphic-fetch/3.0.0:
+    resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
+    dependencies:
+      node-fetch: 2.7.0
+      whatwg-fetch: 3.6.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /isstream/0.1.2:
     resolution: {integrity: sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==}
     dev: false
@@ -1821,6 +1842,10 @@ packages:
     engines: {node: '>=8.6'}
     dev: false
 
+  /pinyin-pro/3.19.3:
+    resolution: {integrity: sha512-tIBL4ibq3P+MFbSwOTTi42Xf6jau726swgKqEmSkkiZiE1iUMhQdguR9aavLt9nqnRDpcBSIanNV8tPuKPSmvw==}
+    dev: false
+
   /pkg-up/3.1.0:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
@@ -2285,6 +2310,10 @@ packages:
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+    dev: false
+
+  /whatwg-fetch/3.6.2:
+    resolution: {integrity: sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==}
     dev: false
 
   /whatwg-url/5.0.0:

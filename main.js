@@ -25,9 +25,9 @@ let AppController = class AppController {
             };
         });
     }
-    submitPreviewSite(dto) {
+    submitPreviewSite(req, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.custom.submitPreviewSite(dto);
+            return this.custom.submitPreviewSite(req.user, dto);
         });
     }
     getSchema(req) {
@@ -81,9 +81,11 @@ tslib_1.__decorate([
 ], AppController.prototype, "hi", null);
 tslib_1.__decorate([
     (0, common_1.Post)('/submitPreviewSite'),
-    tslib_1.__param(0, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Request)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof cms_admin_services_1.SubmitPreviewSiteSchemaDto !== "undefined" && cms_admin_services_1.SubmitPreviewSiteSchemaDto) === "function" ? _c : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_c = typeof cms_admin_services_1.SubmitPreviewSiteSchemaDto !== "undefined" && cms_admin_services_1.SubmitPreviewSiteSchemaDto) === "function" ? _c : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "submitPreviewSite", null);
 tslib_1.__decorate([
@@ -440,6 +442,8 @@ const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
 const trpc_1 = __webpack_require__("./src/trpc/trpc.ts");
+const redis_1 = __webpack_require__("@upstash/redis");
+// const { Redis } = require('@upstash/redis')
 const COS = __webpack_require__("cos-nodejs-sdk-v5");
 console.log('---------- ENV --------------');
 console.log('PROXY', cms_admin_services_1.CMS_ADMIN_ENV.PROXY);
@@ -447,7 +451,12 @@ console.log('FLOWDA_URL', cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL);
 console.log('---------- ENV --------------');
 function loadModule(container) {
     const prisma = new client_cms_admin_1.PrismaClient({
-        log: ['query', 'info', 'warn', 'error'],
+        log: [
+            // 'query',
+            'info',
+            'warn',
+            'error',
+        ],
     }).$extends({
         name: cms_admin_services_1.DubSyncExtname,
         query: {
@@ -507,6 +516,11 @@ function loadModule(container) {
         },
     });
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
+    const redis = new redis_1.Redis({
+        url: cms_admin_services_1.CMS_ADMIN_ENV.UPSTASH_REDIS_REST_URL,
+        token: cms_admin_services_1.CMS_ADMIN_ENV.UPSTASH_REDIS_REST_TOKEN,
+    });
+    container.bind(cms_admin_services_1.DubRedisSymbol).toConstantValue(redis);
     container.bind(flowda_shared_1.FlowdaTrpcClientSymbol).toConstantValue(trpc_1.trpc);
     container.bind(flowda_shared_1.COSSymbol).toDynamicValue(() => {
         return new COS({
@@ -784,6 +798,8 @@ tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/serv
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/custom.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/dub.dto.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/services/dub.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/symbols.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../libs/cms-admin-services/src/lib/consts.ts"), exports);
 
 
 /***/ }),
@@ -804,7 +820,20 @@ exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
     COS_KEY: zod_1.z.string().optional(),
     COS_ID: zod_1.z.string().optional(),
     PROXY: zod_1.z.string().default('n'),
+    UPSTASH_REDIS_REST_URL: zod_1.z.string().default('n'),
+    UPSTASH_REDIS_REST_TOKEN: zod_1.z.string().default('n'),
 });
+
+
+/***/ }),
+
+/***/ "../../libs/cms-admin-services/src/lib/consts.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RedisPrefix = void 0;
+exports.RedisPrefix = 'invio:';
 
 
 /***/ }),
@@ -1044,10 +1073,13 @@ const dynamic_schema_1 = __webpack_require__("../../libs/cms-admin-services/src/
 const _ = tslib_1.__importStar(__webpack_require__("radash"));
 const Handlebars = tslib_1.__importStar(__webpack_require__("handlebars"));
 const node_html_parser_1 = __webpack_require__("node-html-parser");
+const py_1 = __webpack_require__("../../libs/cms-admin-services/src/utils/py.ts"); // eslint-disable-next-line @typescript-eslint/no-var-requires
+const symbols_1 = __webpack_require__("../../libs/cms-admin-services/src/symbols.ts");
 const BUCKET = 'assets-1306445775';
 let CustomService = CustomService_1 = class CustomService {
-    constructor(prisma, data, cos, loggerFactory) {
+    constructor(prisma, redis, data, cos, loggerFactory) {
         this.prisma = prisma;
+        this.redis = redis;
         this.data = data;
         this.cos = cos;
         this.logger = loggerFactory(CustomService_1.name);
@@ -1263,8 +1295,9 @@ let CustomService = CustomService_1 = class CustomService {
             return { prefix, compiledTemplate };
         });
     }
-    submitPreviewSite(dto) {
+    submitPreviewSite(reqUser, dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // todo: transaction
             const siteRet = yield this.prisma.site.update({
                 where: {
                     id: dto.siteId,
@@ -1272,20 +1305,65 @@ let CustomService = CustomService_1 = class CustomService {
                 data: {
                     slotData: dto.slotData,
                 },
-                include: {
-                    siteTemplate: true,
+                select: {
+                    id: true,
                 },
             });
             // 发 cos
             const cosUrl = yield this.deploySiteToCos(siteRet.id);
-            yield this.prisma.site.update({
+            const siteUpdateRet = yield this.prisma.site.update({
                 where: {
                     id: dto.siteId,
                 },
                 data: {
                     cosUrl: cosUrl,
+                    status: 'passed', // 提交网站就认为审核通过
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    projectId: true,
+                    siteTemplateId: true,
+                    customer: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 },
             });
+            // 创建 dub project 利用二级域名能力
+            if (siteUpdateRet.projectId == null) {
+                // todo: template 增加 prefix，用 id 不好看
+                const slug = (0, py_1.customerName2Slug)(siteUpdateRet.customer.name) + siteUpdateRet.siteTemplateId;
+                const projectRet = yield this.prisma.project.create({
+                    data: {
+                        name: siteUpdateRet.name,
+                        slug: slug,
+                        type: 'Site',
+                        site: {
+                            connect: {
+                                id: siteUpdateRet.id,
+                            },
+                        },
+                        users: {
+                            create: {
+                                role: 'owner',
+                                userId: String(reqUser.uid),
+                            },
+                        },
+                    },
+                    select: {
+                        id: true,
+                        password: true,
+                    },
+                });
+                this.logger.debug(`Project created, id: ${projectRet.id}, siteId: ${siteUpdateRet.id}, user: ${reqUser.uid}`);
+                yield this.redis.set(`site:${slug}`, {
+                    name: 'site:' + siteUpdateRet.name,
+                    password: projectRet.password,
+                });
+                this.logger.debug(`redis write id: ${projectRet.id}`);
+            }
             return {
                 success: true,
             };
@@ -1326,7 +1404,7 @@ let CustomService = CustomService_1 = class CustomService {
                     }
                 });
             });
-            this.logger.debug(`Cos url: ${cosUrl}`);
+            this.logger.debug(`Cos url: ${cosUrl}, siteId: ${siteId}`);
             return cosUrl;
         });
     }
@@ -1466,10 +1544,11 @@ exports.CustomService = CustomService;
 exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_1.DataServiceSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
-    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _b : Object, Object, Function])
+    tslib_1.__param(1, (0, inversify_1.inject)(symbols_1.DubRedisSymbol)),
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.DataServiceSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
+    tslib_1.__param(4, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Object, typeof (_b = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _b : Object, Object, Function])
 ], CustomService);
 
 
@@ -1702,6 +1781,56 @@ exports.UserService = UserService = UserService_1 = tslib_1.__decorate([
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], UserService);
+
+
+/***/ }),
+
+/***/ "../../libs/cms-admin-services/src/symbols.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DubRedisSymbol = void 0;
+exports.DubRedisSymbol = Symbol.for('DubRedis');
+
+
+/***/ }),
+
+/***/ "../../libs/cms-admin-services/src/utils/py.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.customerName2Slug = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const pinyin_pro_1 = __webpack_require__("pinyin-pro");
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const ignorePrefix = [
+    '科技',
+    '信息',
+    '技术',
+    '创新',
+    '中国',
+    '(',
+    ')',
+    '（',
+    '）',
+    '.',
+    '有限公司',
+    '有限责任公司',
+    '株式会社',
+    '文化',
+    '传媒',
+];
+function customerName2Slug(hanzi) {
+    ignorePrefix.forEach(p => (hanzi = hanzi.replace(p, '')));
+    let py = (0, pinyin_pro_1.pinyin)(hanzi, { pattern: 'first', separator: '', toneType: 'none' });
+    if (py.length < 6) {
+        py = py + '_' + _.uid(6 - py.length).toLowerCase();
+    }
+    return py;
+}
+exports.customerName2Slug = customerName2Slug;
 
 
 /***/ }),
@@ -3777,6 +3906,13 @@ module.exports = require("@trpc/client");
 
 /***/ }),
 
+/***/ "@upstash/redis":
+/***/ ((module) => {
+
+module.exports = require("@upstash/redis");
+
+/***/ }),
+
 /***/ "ai-gen-utils":
 /***/ ((module) => {
 
@@ -3865,6 +4001,13 @@ module.exports = require("passport-jwt");
 /***/ ((module) => {
 
 module.exports = require("passport-local");
+
+/***/ }),
+
+/***/ "pinyin-pro":
+/***/ ((module) => {
+
+module.exports = require("pinyin-pro");
 
 /***/ }),
 
