@@ -247,7 +247,7 @@ exports.AuditController = AuditController = tslib_1.__decorate([
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DataController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -255,19 +255,18 @@ const common_1 = __webpack_require__("@nestjs/common");
 const express = tslib_1.__importStar(__webpack_require__("express"));
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
-const _ = tslib_1.__importStar(__webpack_require__("radash"));
 let DataController = class DataController {
     constructor(service) {
         this.service = service;
     }
-    get(req, body) {
+    get(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (_.isEmpty(req.query) && !_.isEmpty(body)) {
-                return this.service.get(req.user, req.params[0], body);
-            }
-            else {
-                return this.service.get(req.user, req.params[0], req.query);
-            }
+            return this.service.get(req.user, req.params[0], req.query);
+        });
+    }
+    query(req, body) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.service.get(req.user, req.params[0], body);
         });
     }
     put(req, values) {
@@ -290,17 +289,24 @@ exports.DataController = DataController;
 tslib_1.__decorate([
     (0, common_1.Get)(''),
     tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof express !== "undefined" && express.Request) === "function" ? _b : Object, Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof express !== "undefined" && express.Request) === "function" ? _b : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], DataController.prototype, "get", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('query'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof express !== "undefined" && express.Request) === "function" ? _c : Object, Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], DataController.prototype, "query", null);
 tslib_1.__decorate([
     (0, common_1.Put)(''),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof express !== "undefined" && express.Request) === "function" ? _c : Object, Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof express !== "undefined" && express.Request) === "function" ? _d : Object, Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], DataController.prototype, "put", null);
 tslib_1.__decorate([
@@ -308,7 +314,7 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof express !== "undefined" && express.Request) === "function" ? _d : Object, Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof express !== "undefined" && express.Request) === "function" ? _e : Object, Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], DataController.prototype, "post", null);
 tslib_1.__decorate([
@@ -316,7 +322,7 @@ tslib_1.__decorate([
     (0, common_1.HttpCode)(200),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof express !== "undefined" && express.Request) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof express !== "undefined" && express.Request) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], DataController.prototype, "remove", null);
 exports.DataController = DataController = tslib_1.__decorate([
@@ -416,7 +422,7 @@ let TasksService = TasksService_1 = class TasksService {
 };
 exports.TasksService = TasksService;
 tslib_1.__decorate([
-    (0, schedule_1.Cron)('*/10 * * * *'),
+    (0, schedule_1.Cron)(cms_admin_services_1.CMS_ADMIN_ENV.GENERATE_SITE_CRON),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", Promise)
@@ -448,6 +454,8 @@ const COS = __webpack_require__("cos-nodejs-sdk-v5");
 console.log('---------- ENV --------------');
 console.log('PROXY', cms_admin_services_1.CMS_ADMIN_ENV.PROXY);
 console.log('FLOWDA_URL', cms_admin_services_1.CMS_ADMIN_ENV.FLOWDA_URL);
+console.log('GENERATE_SITE_CRON', cms_admin_services_1.CMS_ADMIN_ENV.GENERATE_SITE_CRON);
+console.log('UPSTASH_REDIS_REST_URL', cms_admin_services_1.CMS_ADMIN_ENV.UPSTASH_REDIS_REST_URL);
 console.log('---------- ENV --------------');
 function loadModule(container) {
     const prisma = new client_cms_admin_1.PrismaClient({
@@ -822,6 +830,7 @@ exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
     PROXY: zod_1.z.string().default('n'),
     UPSTASH_REDIS_REST_URL: zod_1.z.string().default('n'),
     UPSTASH_REDIS_REST_TOKEN: zod_1.z.string().default('n'),
+    GENERATE_SITE_CRON: zod_1.z.string().default('*/10 * * * *'),
 });
 
 
