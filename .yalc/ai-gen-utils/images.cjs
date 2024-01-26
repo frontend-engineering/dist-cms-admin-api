@@ -171,7 +171,7 @@ async function getCacheImages(tag, cnt) {
                 if (error) {
                     reject(error)
                 } else {
-                    resp.body.forEach(item => {
+                    resp.body?.forEach(item => {
                         const urls = item.urls;
                         Object.entries(urls).map(([key, value]) => {
                             if (!value.startsWith('http')) {

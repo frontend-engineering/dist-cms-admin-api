@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.23.7",
     "@fortaine/fetch-event-source": "^3.0.6",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
@@ -24,5 +25,5 @@
     "open": "^7.4.2",
     "request": "^2.88.2"
   },
-  "yalcSig": "a9f800eb9cfb7a45bd44dd837ca4c55e"
+  "yalcSig": "e0845bbf45d1a639769dcc8b134768d6"
 }

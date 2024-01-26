@@ -80,26 +80,56 @@ function run() {
         .catch(function (error) {
             console.log(error);
         });
-    
+
     if ((window.location.href.startsWith('file://')) || (window.location.search.indexOf('editor_mode') > -1)) {
         loadEditor()
     }
 }
 
+function setupContact() {
+    let submitBtn = document.querySelector('button[type="submit"].btn.btn-outline-light');
+    submitBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        let inputElement = document.getElementById('contact');
+        let inputValue = inputElement.value;
+        addContactApi(inputValue)
+    });
+}
+
+async function addContactApi(contact) {
+    const key = await window.getAccessToken()
+    const siteId = document.body.dataset.site;
+    return fetch('https://api.webinfra.cloud/cms-admin-api/data/contacts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`
+        },
+        body: JSON.stringify({
+            siteId: Number(siteId),
+            contact: contact
+        })
+    })
+        .then(resp => {
+            console.log('contact added: ', resp)
+        })
+}
+
 function getBannerPlatteCss() {
-     // 获取div元素的引用
-     var divElement = document.getElementById('banner');
-     const url = window.getComputedStyle(divElement).backgroundImage.slice(4, -1).replace(/"/g, "");
+    // 获取div元素的引用
+    var divElement = document.getElementById('banner');
+    const url = window.getComputedStyle(divElement).backgroundImage.slice(4, -1).replace(/"/g, "");
     // https://images.unsplash.com/photo-1516216628859-9bccecab13ca?crop=entropy&cs=srgb&fm=jpg&ixid=M3w1NDYzNTl8MHwxfHNlYXJjaHw2fHxpbmR1c3RyeS00LjB8ZW58MHx8fHwxNzA0MTc5OTk2fDA&ixlib=rb-4.0.3&q=85&txt=HELLO%20WORLD&txt-size=48&txt-font=Futura%20Condensed%20Medium&txt-align=left,middle&txt-shad=8.5&&palette=css&colors=4
     fetch(url + '&palette=css&colors=4&prefix=banner')
-    .then(resp => {
-        return resp.text()
-    })
-    .then(data => {
-        const styleNode = document.createElement('style')
-        styleNode.innerHTML = data;
-        document.head.appendChild(styleNode);
-    })
+        .then(resp => {
+            return resp.text()
+        })
+        .then(data => {
+            const styleNode = document.createElement('style')
+            styleNode.innerHTML = data;
+            document.head.appendChild(styleNode);
+        })
 }
 
 function getData() {
@@ -116,6 +146,7 @@ function getData() {
 
 setTimeout(() => {
     run()
-    getBannerPlatteCss()
+    setupContact()
+    // getBannerPlatteCss()
     getData()
 }, 300)

@@ -330,10 +330,16 @@ export type VerificationToken = runtime.Types.DefaultSelection<VerificationToken
 export type ProjectPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
   name: "Project"
   objects: {
+    /**
+     * @schema.model_name ProjectUsers
+     */
     users: ProjectUsersPayload<ExtArgs>[]
     invites: ProjectInvitePayload<ExtArgs>[]
     sentEmails: SentEmailPayload<ExtArgs>[]
     domains: DomainPayload<ExtArgs>[]
+    /**
+     * @schema.model_name Link
+     */
     links: LinkPayload<ExtArgs>[]
     tags: TagPayload<ExtArgs>[]
     site: SitePayload<ExtArgs> | null
@@ -396,7 +402,11 @@ export type ProjectUsersPayload<ExtArgs extends $Extensions.Args = $Extensions.D
     createdAt: Date
     updatedAt: Date
     userId: string | null
+    /**
+     * @schema.reference Project
+     */
     projectId: string
+    isDeleted: boolean
   }, ExtArgs["result"]["projectUsers"]>
   composites: {}
 }
@@ -480,12 +490,16 @@ export type LinkPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultAr
     ios: string | null
     android: string | null
     userId: string | null
+    /**
+     * @schema.reference Project
+     */
     projectId: string | null
     clicks: number
     publicStats: boolean
     createdAt: Date
     updatedAt: Date
     tagId: string | null
+    isDeleted: boolean
   }, ExtArgs["result"]["link"]>
   composites: {}
 }
@@ -15102,6 +15116,7 @@ export namespace Prisma {
     updatedAt: Date | null
     userId: string | null
     projectId: string | null
+    isDeleted: boolean | null
   }
 
   export type ProjectUsersMaxAggregateOutputType = {
@@ -15111,6 +15126,7 @@ export namespace Prisma {
     updatedAt: Date | null
     userId: string | null
     projectId: string | null
+    isDeleted: boolean | null
   }
 
   export type ProjectUsersCountAggregateOutputType = {
@@ -15120,6 +15136,7 @@ export namespace Prisma {
     updatedAt: number
     userId: number
     projectId: number
+    isDeleted: number
     _all: number
   }
 
@@ -15131,6 +15148,7 @@ export namespace Prisma {
     updatedAt?: true
     userId?: true
     projectId?: true
+    isDeleted?: true
   }
 
   export type ProjectUsersMaxAggregateInputType = {
@@ -15140,6 +15158,7 @@ export namespace Prisma {
     updatedAt?: true
     userId?: true
     projectId?: true
+    isDeleted?: true
   }
 
   export type ProjectUsersCountAggregateInputType = {
@@ -15149,6 +15168,7 @@ export namespace Prisma {
     updatedAt?: true
     userId?: true
     projectId?: true
+    isDeleted?: true
     _all?: true
   }
 
@@ -15232,6 +15252,7 @@ export namespace Prisma {
     updatedAt: Date
     userId: string | null
     projectId: string
+    isDeleted: boolean
     _count: ProjectUsersCountAggregateOutputType | null
     _min: ProjectUsersMinAggregateOutputType | null
     _max: ProjectUsersMaxAggregateOutputType | null
@@ -15258,6 +15279,7 @@ export namespace Prisma {
     updatedAt?: boolean
     userId?: boolean
     projectId?: boolean
+    isDeleted?: boolean
     project?: boolean | ProjectArgs<ExtArgs>
   }, ExtArgs["result"]["projectUsers"]>
 
@@ -15268,6 +15290,7 @@ export namespace Prisma {
     updatedAt?: boolean
     userId?: boolean
     projectId?: boolean
+    isDeleted?: boolean
   }
 
   export type ProjectUsersInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -17985,6 +18008,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     tagId: string | null
+    isDeleted: boolean | null
   }
 
   export type LinkMaxAggregateOutputType = {
@@ -18014,6 +18038,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     tagId: string | null
+    isDeleted: boolean | null
   }
 
   export type LinkCountAggregateOutputType = {
@@ -18043,6 +18068,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     tagId: number
+    isDeleted: number
     _all: number
   }
 
@@ -18082,6 +18108,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     tagId?: true
+    isDeleted?: true
   }
 
   export type LinkMaxAggregateInputType = {
@@ -18111,6 +18138,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     tagId?: true
+    isDeleted?: true
   }
 
   export type LinkCountAggregateInputType = {
@@ -18140,6 +18168,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     tagId?: true
+    isDeleted?: true
     _all?: true
   }
 
@@ -18257,6 +18286,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     tagId: string | null
+    isDeleted: boolean
     _count: LinkCountAggregateOutputType | null
     _avg: LinkAvgAggregateOutputType | null
     _sum: LinkSumAggregateOutputType | null
@@ -18305,6 +18335,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     tagId?: boolean
+    isDeleted?: boolean
     project?: boolean | ProjectArgs<ExtArgs>
     projectDomain?: boolean | DomainArgs<ExtArgs>
     tag?: boolean | TagArgs<ExtArgs>
@@ -18337,6 +18368,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     tagId?: boolean
+    isDeleted?: boolean
   }
 
   export type LinkInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -22155,7 +22187,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId',
-    projectId: 'projectId'
+    projectId: 'projectId',
+    isDeleted: 'isDeleted'
   };
 
   export type ProjectUsersScalarFieldEnum = (typeof ProjectUsersScalarFieldEnum)[keyof typeof ProjectUsersScalarFieldEnum]
@@ -22214,7 +22247,8 @@ export namespace Prisma {
     publicStats: 'publicStats',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    tagId: 'tagId'
+    tagId: 'tagId',
+    isDeleted: 'isDeleted'
   };
 
   export type LinkScalarFieldEnum = (typeof LinkScalarFieldEnum)[keyof typeof LinkScalarFieldEnum]
@@ -23313,6 +23347,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
     userId?: StringNullableFilter | string | null
     projectId?: StringFilter | string
+    isDeleted?: BoolFilter | boolean
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
@@ -23323,6 +23358,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrderInput | SortOrder
     projectId?: SortOrder
+    isDeleted?: SortOrder
     project?: ProjectOrderByWithRelationAndSearchRelevanceInput
     _relevance?: ProjectUsersOrderByRelevanceInput
   }
@@ -23339,6 +23375,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrderInput | SortOrder
     projectId?: SortOrder
+    isDeleted?: SortOrder
     _count?: ProjectUsersCountOrderByAggregateInput
     _max?: ProjectUsersMaxOrderByAggregateInput
     _min?: ProjectUsersMinOrderByAggregateInput
@@ -23354,6 +23391,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     userId?: StringNullableWithAggregatesFilter | string | null
     projectId?: StringWithAggregatesFilter | string
+    isDeleted?: BoolWithAggregatesFilter | boolean
   }
 
   export type SentEmailWhereInput = {
@@ -23505,6 +23543,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     tagId?: StringNullableFilter | string | null
+    isDeleted?: BoolFilter | boolean
     project?: XOR<ProjectRelationFilter, ProjectWhereInput> | null
     projectDomain?: XOR<DomainRelationFilter, DomainWhereInput> | null
     tag?: XOR<TagRelationFilter, TagWhereInput> | null
@@ -23537,6 +23576,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tagId?: SortOrderInput | SortOrder
+    isDeleted?: SortOrder
     project?: ProjectOrderByWithRelationAndSearchRelevanceInput
     projectDomain?: DomainOrderByWithRelationAndSearchRelevanceInput
     tag?: TagOrderByWithRelationAndSearchRelevanceInput
@@ -23575,6 +23615,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tagId?: SortOrderInput | SortOrder
+    isDeleted?: SortOrder
     _count?: LinkCountOrderByAggregateInput
     _avg?: LinkAvgOrderByAggregateInput
     _max?: LinkMaxOrderByAggregateInput
@@ -23612,6 +23653,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     tagId?: StringNullableWithAggregatesFilter | string | null
+    isDeleted?: BoolWithAggregatesFilter | boolean
   }
 
   export type TagWhereInput = {
@@ -24803,6 +24845,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
+    isDeleted?: boolean
     project: ProjectCreateNestedOneWithoutUsersInput
   }
 
@@ -24813,6 +24856,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId?: string | null
     projectId: string
+    isDeleted?: boolean
   }
 
   export type ProjectUsersUpdateInput = {
@@ -24821,6 +24865,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     project?: ProjectUpdateOneRequiredWithoutUsersNestedInput
   }
 
@@ -24831,6 +24876,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: StringFieldUpdateOperationsInput | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProjectUsersCreateManyInput = {
@@ -24840,6 +24886,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId?: string | null
     projectId: string
+    isDeleted?: boolean
   }
 
   export type ProjectUsersUpdateManyMutationInput = {
@@ -24848,6 +24895,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProjectUsersUncheckedUpdateManyInput = {
@@ -24857,6 +24905,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: StringFieldUpdateOperationsInput | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SentEmailCreateInput = {
@@ -25032,6 +25081,7 @@ export namespace Prisma {
     publicStats?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    isDeleted?: boolean
     project?: ProjectCreateNestedOneWithoutLinksInput
     projectDomain?: DomainCreateNestedOneWithoutLinksInput
     tag?: TagCreateNestedOneWithoutLinksInput
@@ -25064,6 +25114,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tagId?: string | null
+    isDeleted?: boolean
   }
 
   export type LinkUpdateInput = {
@@ -25090,6 +25141,7 @@ export namespace Prisma {
     publicStats?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     project?: ProjectUpdateOneWithoutLinksNestedInput
     projectDomain?: DomainUpdateOneWithoutLinksNestedInput
     tag?: TagUpdateOneWithoutLinksNestedInput
@@ -25122,6 +25174,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tagId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type LinkCreateManyInput = {
@@ -25151,6 +25204,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tagId?: string | null
+    isDeleted?: boolean
   }
 
   export type LinkUpdateManyMutationInput = {
@@ -25177,6 +25231,7 @@ export namespace Prisma {
     publicStats?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type LinkUncheckedUpdateManyInput = {
@@ -25206,6 +25261,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tagId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TagCreateInput = {
@@ -26437,6 +26493,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     projectId?: SortOrder
+    isDeleted?: SortOrder
   }
 
   export type ProjectUsersMaxOrderByAggregateInput = {
@@ -26446,6 +26503,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     projectId?: SortOrder
+    isDeleted?: SortOrder
   }
 
   export type ProjectUsersMinOrderByAggregateInput = {
@@ -26455,6 +26513,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     projectId?: SortOrder
+    isDeleted?: SortOrder
   }
 
   export type EnumRoleWithAggregatesFilter = {
@@ -26607,6 +26666,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tagId?: SortOrder
+    isDeleted?: SortOrder
   }
 
   export type LinkAvgOrderByAggregateInput = {
@@ -26640,6 +26700,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tagId?: SortOrder
+    isDeleted?: SortOrder
   }
 
   export type LinkMinOrderByAggregateInput = {
@@ -26669,6 +26730,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tagId?: SortOrder
+    isDeleted?: SortOrder
   }
 
   export type LinkSumOrderByAggregateInput = {
@@ -28684,6 +28746,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
+    isDeleted?: boolean
   }
 
   export type ProjectUsersUncheckedCreateWithoutProjectInput = {
@@ -28692,6 +28755,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
+    isDeleted?: boolean
   }
 
   export type ProjectUsersCreateOrConnectWithoutProjectInput = {
@@ -28810,6 +28874,7 @@ export namespace Prisma {
     publicStats?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    isDeleted?: boolean
     projectDomain?: DomainCreateNestedOneWithoutLinksInput
     tag?: TagCreateNestedOneWithoutLinksInput
   }
@@ -28840,6 +28905,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tagId?: string | null
+    isDeleted?: boolean
   }
 
   export type LinkCreateOrConnectWithoutProjectInput = {
@@ -28938,6 +29004,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
     userId?: StringNullableFilter | string | null
     projectId?: StringFilter | string
+    isDeleted?: BoolFilter | boolean
   }
 
   export type ProjectInviteUpsertWithWhereUniqueWithoutProjectInput = {
@@ -29071,6 +29138,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     tagId?: StringNullableFilter | string | null
+    isDeleted?: BoolFilter | boolean
   }
 
   export type TagUpsertWithWhereUniqueWithoutProjectInput = {
@@ -29570,6 +29638,7 @@ export namespace Prisma {
     publicStats?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    isDeleted?: boolean
     project?: ProjectCreateNestedOneWithoutLinksInput
     tag?: TagCreateNestedOneWithoutLinksInput
   }
@@ -29600,6 +29669,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tagId?: string | null
+    isDeleted?: boolean
   }
 
   export type LinkCreateOrConnectWithoutProjectDomainInput = {
@@ -30000,6 +30070,7 @@ export namespace Prisma {
     publicStats?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    isDeleted?: boolean
     project?: ProjectCreateNestedOneWithoutLinksInput
     projectDomain?: DomainCreateNestedOneWithoutLinksInput
   }
@@ -30030,6 +30101,7 @@ export namespace Prisma {
     publicStats?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    isDeleted?: boolean
   }
 
   export type LinkCreateOrConnectWithoutTagInput = {
@@ -30395,6 +30467,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
+    isDeleted?: boolean
   }
 
   export type ProjectInviteCreateManyProjectInput = {
@@ -30448,6 +30521,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tagId?: string | null
+    isDeleted?: boolean
   }
 
   export type TagCreateManyProjectInput = {
@@ -30464,6 +30538,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProjectUsersUncheckedUpdateWithoutProjectInput = {
@@ -30472,6 +30547,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProjectUsersUncheckedUpdateManyWithoutUsersInput = {
@@ -30480,6 +30556,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProjectInviteUpdateWithoutProjectInput = {
@@ -30583,6 +30660,7 @@ export namespace Prisma {
     publicStats?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     projectDomain?: DomainUpdateOneWithoutLinksNestedInput
     tag?: TagUpdateOneWithoutLinksNestedInput
   }
@@ -30613,6 +30691,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tagId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type LinkUncheckedUpdateManyWithoutLinksInput = {
@@ -30641,6 +30720,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tagId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TagUpdateWithoutProjectInput = {
@@ -30695,6 +30775,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     tagId?: string | null
+    isDeleted?: boolean
   }
 
   export type LinkUpdateWithoutProjectDomainInput = {
@@ -30721,6 +30802,7 @@ export namespace Prisma {
     publicStats?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     project?: ProjectUpdateOneWithoutLinksNestedInput
     tag?: TagUpdateOneWithoutLinksNestedInput
   }
@@ -30751,6 +30833,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tagId?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type LinkCreateManyTagInput = {
@@ -30779,6 +30862,7 @@ export namespace Prisma {
     publicStats?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    isDeleted?: boolean
   }
 
   export type LinkUpdateWithoutTagInput = {
@@ -30805,6 +30889,7 @@ export namespace Prisma {
     publicStats?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     project?: ProjectUpdateOneWithoutLinksNestedInput
     projectDomain?: DomainUpdateOneWithoutLinksNestedInput
   }
@@ -30835,6 +30920,7 @@ export namespace Prisma {
     publicStats?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
 

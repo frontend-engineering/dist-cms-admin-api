@@ -1,24 +1,34 @@
 const { patchData, getSelectedData } = require('./utils.js')
 console.log('editor loaded')
+// 本地编辑
+if (!window.getAccessToken) {
+    window.getAccessToken = async () => {
+        return localStorage.getItem('access_token')
+    }
+}
 
 async function uploadData(data) {
+    const siteId = document.body.dataset.site;
+    const key = await window.getAccessToken()
     return fetch('https://api.webinfra.cloud/cms-admin-api/apps/submitPreviewSite', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`
         },
         body: JSON.stringify({
-            siteId: 9,
+            siteId: Number(siteId),
             slotData: data
         })
     })
     .then(resp => {
         console.log('data uploaded: ', resp)
+        alert('发布成功')
     })
 }
 
 async function aiGen(dataPath) {
-    const key = window.localStorage.getItem('access_token')
+    const key = await window.getAccessToken()
     return fetch('https://api.webinfra.cloud/cms-admin-api/apps/generatePartialSlotData', {
         method: 'POST',
         headers: {
@@ -36,8 +46,52 @@ async function aiGen(dataPath) {
     }) 
 }
 
+async function delCacheImage(unsplashId) {
+    // {{url}}/data/image_libraries/1
+    // https://assets-1306445775.cos.ap-shanghai.myqcloud.com/images/unsplash-photo-1536632856133-3a3441454dd5-full.jpeg
+    const key = await window.getAccessToken()
+    return fetch(`https://api.webinfra.cloud/cms-admin-api/data/image_libraries/query`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`
+        },
+        body: JSON.stringify({
+            "filter": [
+                "AND",
+                {
+                    "unsplashId": {
+                        "eq": unsplashId
+                    }
+                }
+            ],
+            "fields": {
+                "imageLibrary": "id"
+            }
+        })
+    })
+    .then(resp => resp.json())
+    .then(resp => {
+        const found = resp?.data && resp.data[0];
+        return found?.id;
+    })
+    .then(id => {
+        if (!id) {
+            return;
+        }
+        return fetch(`https://api.webinfra.cloud/cms-admin-api/data/image_libraries/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${key}`
+            },
+        })
+        .then(resp => resp.json())
+    })    
+}
+
 async function getCacheImages(tag, cnt) {
-    const key = window.localStorage.getItem('access_token')
+    const key = await window.getAccessToken()
     console.log('getting images: ', tag, cnt)
     return fetch(`https://api.webinfra.cloud/cms-admin-api/apps/getRandomImages?tag=${tag}&count=${cnt}`, {
         method: 'GET',
@@ -58,23 +112,6 @@ async function getCacheImages(tag, cnt) {
             })
         })
         return resp;
-    })
-    return new Promise((resolve, reject) => {
-        request({
-            url: `https://api.webinfra.cloud/cms-admin-api/apps/getRandomImages?tag=${tag}&count=${cnt}`, 
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            json:true
-        }, (error, resp) => {
-            if (error) {
-                reject(error)
-            } else {
-                
-            }
-        })
     })
 }
 
@@ -128,6 +165,61 @@ function setupUpdateBtn() {
     })
     document.body.appendChild(btn)
 }
+function getUnsplashIdFromUrl(imgUrl) {
+    const subkeys = imgUrl.split('/').pop().split('.')[0].split('-');
+    subkeys.shift()
+    subkeys.pop()
+    return subkeys.join('-')
+}
+
+function cleanDelBtn() {
+    let existed = document.querySelectorAll('.del-img-btn')
+    if (existed) {
+        existed.forEach(btn => {
+            btn.parentElement.removeChild(btn)
+        })
+    }
+}
+
+function setupDelImgBtn() {
+    cleanDelBtn()
+    const btn = document.createElement('button')
+    btn.innerText = '删除照片'
+    btn.classList.add('del-img-btn')
+    btn.classList.add('btn')
+    btn.addEventListener('click', async () => {
+        if (!window.selected?.dataset.slot) {
+            return;
+        }
+        const dataPath = window.selected.dataset.slot;
+        console.log('delete image', dataPath)
+        const rawData = window._raw || getData()
+
+        if (window.selected.dataset.type === 'img' || window.selected.dataset.type === 'bgImg') {
+            // Del image
+            const unsplashId = getUnsplashIdFromUrl((window.selected.dataset.type === 'img') ? window.selected.src : window.selected.dataset.url)
+            await delCacheImage(unsplashId)
+            const imgs = await getCacheImages('technology%20background,industrial,factory,drone', 1);
+            const size = window.selected.dataset.size || 'full';
+            const path = window.selected.dataset.slot
+            const url = imgs[0].urls[size];
+            const partial = {
+                path,
+                data: url
+            }
+            const rawData = window._raw || getData()
+            window._raw = patchData(rawData, partial)
+            console.log('global data updated - : ', window._raw)
+            if (window.selected.dataset.type === 'img') {
+                window.selected.src = url
+            } else {
+                window.selected.style['backgroundImage'] = `url(${url})`
+            }
+            return;
+        }
+    })
+    document.body.appendChild(btn)
+}
 
 function setupEditable() {
     const elements = document.querySelectorAll('[data-slot]');
@@ -167,6 +259,7 @@ function setupEditable() {
             if (!(item.dataset.type === 'img' || item.dataset.type === 'bgImg')) {
                 event.preventDefault();
                 cleanUpdateBtn();
+                cleanDelBtn();
                 window.selected = null; 
                 return;
             }
@@ -177,10 +270,12 @@ function setupEditable() {
             } else if ((item === event.target)) {
                 window.selected = event.target
                 setupUpdateBtn()
+                setupDelImgBtn()
                 console.log('target selected: ', window.selected);
             } else {
                 event.preventDefault();
                 cleanUpdateBtn();
+                cleanDelBtn()
                 window.selected = null;
             }
         } 
@@ -190,20 +285,21 @@ function setupEditable() {
     document.addEventListener('click', e => {
         e.preventDefault();
         cleanUpdateBtn();
+        cleanDelBtn();
     })
 }
 
 function setupDeploy() {
     const btn = document.createElement('button');
-    btn.innerText = 'Deploy'
+    btn.innerText = '发布'
     btn.id = 'deploy-btn'
     btn.classList.add('btn')
     btn.addEventListener('click', e => {
         e.preventDefault();
-        const toUpload = {};
-        Object.assign(toUpload, window._raw);
-        delete toUpload.raw;
-        uploadData(toUpload)
+        // const toUpload = {};
+        // Object.assign(toUpload, window._raw);
+        // delete toUpload.raw;
+        uploadData(window._raw)
     })
     document.body.insertBefore(btn, document.body.firstChild)
 }

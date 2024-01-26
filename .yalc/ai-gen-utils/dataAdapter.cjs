@@ -654,7 +654,7 @@ const adapter = (generatedData, companyInfo) => {
         },
         "contact": {
             "contact": "Contact Us",
-            "address": contact?.address,
+            "address": contact?.address || '待补充',
             "phone": contact?.phone,
             "email": contact?.email
         },

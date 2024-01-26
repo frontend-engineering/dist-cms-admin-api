@@ -252,7 +252,8 @@ exports.Prisma.ProjectUsersScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId',
-  projectId: 'projectId'
+  projectId: 'projectId',
+  isDeleted: 'isDeleted'
 };
 
 exports.Prisma.SentEmailScalarFieldEnum = {
@@ -302,7 +303,8 @@ exports.Prisma.LinkScalarFieldEnum = {
   publicStats: 'publicStats',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  tagId: 'tagId'
+  tagId: 'tagId',
+  isDeleted: 'isDeleted'
 };
 
 exports.Prisma.TagScalarFieldEnum = {

@@ -51,6 +51,14 @@ body.poster {
     z-index: 9999;
     border: 0px;
 }
+.del-img-btn {
+    position: fixed;
+    top: calc(50% - 40px);
+    right: 10px;
+    z-index: 9999;
+    border: 0px;
+}
+
 
 #deploy-btn {
     border: none;

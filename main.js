@@ -6,7 +6,7 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -69,6 +69,11 @@ let AppController = class AppController {
     getRandomImages(query) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.getRandomImages(query);
+        });
+    }
+    writeProjectSlugToRedis(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.writeProjectSlugToRedis(dto);
         });
     }
 };
@@ -155,6 +160,14 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getRandomImages", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/writeProjectSlugToRedis'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof cms_admin_services_1.writeProjectSlugToRedisSchemaDto !== "undefined" && cms_admin_services_1.writeProjectSlugToRedisSchemaDto) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "writeProjectSlugToRedis", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
@@ -442,7 +455,6 @@ exports.TasksService = TasksService = TasksService_1 = tslib_1.__decorate([
 /* eslint-disable @typescript-eslint/no-var-requires */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.loadModule = void 0;
-const tslib_1 = __webpack_require__("tslib");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const client_cms_admin_1 = __webpack_require__("@prisma/client-cms_admin");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
@@ -465,64 +477,64 @@ function loadModule(container) {
             'warn',
             'error',
         ],
-    }).$extends({
-        name: cms_admin_services_1.DubSyncExtname,
-        query: {
-            site: {
-                $allOperations({ model, operation, args, query }) {
-                    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-                        if (operation === 'update') {
-                            if (typeof args.data.name === 'string' && args.where.id != null) {
-                                const prevRet = yield prisma.site.findUniqueOrThrow({
-                                    where: {
-                                        id: args.where.id,
-                                    },
-                                });
-                                if (prevRet.projectId != null) {
-                                    console.log(`[prisma.$extend] ${model}.${operation}(${JSON.stringify(args, null, 2)})`);
-                                    return prisma.project.update({
-                                        where: {
-                                            id: prevRet.projectId,
-                                        },
-                                        data: {
-                                            name: args.data.name,
-                                        },
-                                    });
-                                }
-                            }
-                        }
-                        return query(args);
-                    });
-                },
-            },
-            project: {
-                $allOperations({ model, operation, args, query }) {
-                    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-                        if (operation === 'update') {
-                            if (typeof args.where.slug === 'string') {
-                                const projectRet = yield this.prisma.project.findUniqueOrThrow({
-                                    where: {
-                                        slug: args.where.slug,
-                                    },
-                                });
-                                console.log(`[prisma.$extend] ${model}.${operation}(${JSON.stringify(args, null, 2)})`);
-                                const ret = yield this.prisma.site.update({
-                                    where: {
-                                        projectId: projectRet.id,
-                                    },
-                                    data: {
-                                        name: args.data.name,
-                                    },
-                                });
-                                return ret;
-                            }
-                        }
-                        return query(args);
-                    });
-                },
-            },
-        },
     });
+    // todo: 似乎在线上多个 connection 会有问题（错位），就是 Site.update 变成了 Project.update 细节就不写了
+    // 总之，这种方法风险高，而且 dub 迁移过来之后不需要考虑了，尽量不做数据同步
+    //   .$extends({
+    //   name: DubSyncExtname,
+    //   query: {
+    // site: {
+    //   async $allOperations({ model, operation, args, query }) {
+    //     if (operation === 'update') {
+    //       if (typeof args.data.name === 'string' && args.where.id != null) {
+    //         const prevRet = await prisma.site.findUniqueOrThrow({
+    //           where: {
+    //             id: args.where.id,
+    //           },
+    //         })
+    //         if (prevRet.projectId != null) {
+    //           console.log(`[prisma.$extend] ${model}.${operation}(${JSON.stringify(args, null, 2)})`)
+    //           return prisma.project.update({
+    //             where: {
+    //               id: prevRet.projectId,
+    //             },
+    //             data: {
+    //               name: args.data.name,
+    //             },
+    //           })
+    //         }
+    //       }
+    //     }
+    //     return query(args)
+    //   },
+    // },
+    // 已经将 dub 迁移，直接在代码里操作即可
+    // project: {
+    //   async $allOperations({ model, operation, args, query }) {
+    //     if (operation === 'update') {
+    //       if (typeof args.where.slug === 'string') {
+    //         const projectRet = await this.prisma.project.findUniqueOrThrow({
+    //           where: {
+    //             slug: args.where.slug,
+    //           },
+    //         })
+    //         console.log(`[prisma.$extend] ${model}.${operation}(${JSON.stringify(args, null, 2)})`)
+    //         const ret = await this.prisma.site.update({
+    //           where: {
+    //             projectId: projectRet.id,
+    //           },
+    //           data: {
+    //             name: args.data.name,
+    //           },
+    //         })
+    //         return ret
+    //       }
+    //     }
+    //     return query(args)
+    //   },
+    // },
+    //   },
+    // }) as PrismaClient
     container.bind(flowda_shared_1.PrismaClientSymbol).toConstantValue(prisma);
     const redis = new redis_1.Redis({
         url: cms_admin_services_1.CMS_ADMIN_ENV.UPSTASH_REDIS_REST_URL,
@@ -876,7 +888,7 @@ exports.CustomerDataDef = zod_1.z.object({
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
+exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.LinkResourceSchema = exports.UserResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const zod_1 = __webpack_require__("zod");
@@ -926,13 +938,39 @@ exports.CustomerRawResourceSchema = prisma_cms_admin_1.CustomerRawSchema.extend(
         route_prefix: '/resources/customer_raws',
     },
 });
-exports.ProjectResourceSchema = prisma_cms_admin_1.ProjectSchema.extend({
+exports.ProjectResourceSchema = prisma_cms_admin_1.ProjectWithRelationsSchema.omit({
+    invites: true,
+    sentEmails: true,
+    domains: true,
+    tags: true,
+    site: true,
+})
+    .extend({
     __meta: (0, flowda_shared_1.meta)({
         extends: 'ProjectSchema',
     }),
+})
+    .openapi({
+    custom: {
+        route_prefix: '/resources/sites',
+    },
+});
+exports.UserResourceSchema = prisma_cms_admin_1.ProjectUsersSchema.extend({
+    __meta: (0, flowda_shared_1.meta)({
+        extends: 'ProjectUsersSchema',
+    }),
 }).openapi({
     custom: {
-        route_prefix: '/resources/dub',
+        route_prefix: '/resources/sites',
+    },
+});
+exports.LinkResourceSchema = prisma_cms_admin_1.LinkSchema.extend({
+    __meta: (0, flowda_shared_1.meta)({
+        extends: 'LinkSchema',
+    }),
+}).openapi({
+    custom: {
+        route_prefix: '/resources/sites',
     },
 });
 exports.ImageLibraryResourceSchema = prisma_cms_admin_1.ImageLibrarySchema.extend({
@@ -1008,7 +1046,7 @@ exports.CmsAdminSchemaService = CmsAdminSchemaService = CmsAdminSchemaService_1 
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GetRandomImagesQuery = exports.DubSyncExtname = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GenerateSiteJobSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+exports.writeProjectSlugToRedisSchemaDto = exports.GetRandomImagesQuery = exports.DubSyncExtname = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GenerateSiteJobSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
@@ -1061,6 +1099,12 @@ tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     tslib_1.__metadata("design:type", String)
 ], GetRandomImagesQuery.prototype, "tag", void 0);
+const writeProjectSlugToRedisSchema = zod_1.z.object({
+    siteId: zod_1.z.number(),
+});
+class writeProjectSlugToRedisSchemaDto extends (0, nestjs_zod_1.createZodDto)(writeProjectSlugToRedisSchema) {
+}
+exports.writeProjectSlugToRedisSchemaDto = writeProjectSlugToRedisSchemaDto;
 
 
 /***/ }),
@@ -1133,6 +1177,7 @@ let CustomService = CustomService_1 = class CustomService {
                             slotData: data,
                         },
                     });
+                    this.logger.debug(`[generateSite] update ${JSON.stringify(ret, null, 2)}`);
                 }
                 else {
                     ret = yield this.prisma.site.create({
@@ -1143,9 +1188,8 @@ let CustomService = CustomService_1 = class CustomService {
                             slotData: data,
                         },
                     });
+                    this.logger.debug(`[generateSite] create ${JSON.stringify(ret, null, 2)}`);
                 }
-                // const htmlRet = ejs.render(tplRet.template, dto.defData)
-                this.logger.debug(`[generateSite] ret ${JSON.stringify(ret, null, 2)}`);
                 return ret;
             }
             catch (e) {
@@ -1367,7 +1411,7 @@ let CustomService = CustomService_1 = class CustomService {
                     },
                 });
                 this.logger.debug(`Project created, id: ${projectRet.id}, siteId: ${siteUpdateRet.id}, user: ${reqUser.uid}`);
-                yield this.redis.set(`site:${slug}`, {
+                yield this.redis.set(`invio:${slug}`, {
                     name: 'site:' + siteUpdateRet.name,
                     password: projectRet.password,
                 });
@@ -1375,6 +1419,34 @@ let CustomService = CustomService_1 = class CustomService {
             }
             return {
                 success: true,
+            };
+        });
+    }
+    writeProjectSlugToRedis(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const siteRet = yield this.prisma.site.findUniqueOrThrow({
+                where: {
+                    id: dto.siteId,
+                },
+                select: {
+                    name: true,
+                    project: {
+                        select: {
+                            slug: true,
+                            password: true,
+                        },
+                    },
+                },
+            });
+            if (siteRet.project == null) {
+                throw new Error(`site ${dto.siteId} has no project`);
+            }
+            yield this.redis.set(`invio:${siteRet.project.slug}`, {
+                name: 'site:' + siteRet.name,
+                password: siteRet.project.password,
+            });
+            return {
+                success: siteRet,
             };
         });
     }
@@ -3496,10 +3568,10 @@ exports.SessionScalarFieldEnumSchema = zod_1.z.enum(['id', 'sessionToken', 'user
 exports.VerificationTokenScalarFieldEnumSchema = zod_1.z.enum(['identifier', 'token', 'expires']);
 exports.ProjectScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'slug', 'logo', 'password', 'type', 'usage', 'usageLimit', 'plan', 'stripeId', 'billingCycleStart', 'region', 'endpoint', 'bucket', 'useHost', 'createdAt', 'updatedAt', 'isDeleted']);
 exports.ProjectInviteScalarFieldEnumSchema = zod_1.z.enum(['email', 'expires', 'projectId', 'createdAt']);
-exports.ProjectUsersScalarFieldEnumSchema = zod_1.z.enum(['id', 'role', 'createdAt', 'updatedAt', 'userId', 'projectId']);
+exports.ProjectUsersScalarFieldEnumSchema = zod_1.z.enum(['id', 'role', 'createdAt', 'updatedAt', 'userId', 'projectId', 'isDeleted']);
 exports.SentEmailScalarFieldEnumSchema = zod_1.z.enum(['id', 'type', 'createdAt', 'projectId']);
 exports.DomainScalarFieldEnumSchema = zod_1.z.enum(['id', 'slug', 'verified', 'target', 'type', 'description', 'projectId', 'primary', 'lastChecked', 'createdAt', 'updatedAt']);
-exports.LinkScalarFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'archived', 'expiresAt', 'password', 'proxy', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'rewrite', 'ios', 'android', 'userId', 'projectId', 'clicks', 'publicStats', 'createdAt', 'updatedAt', 'tagId']);
+exports.LinkScalarFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key', 'url', 'archived', 'expiresAt', 'password', 'proxy', 'title', 'description', 'image', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'rewrite', 'ios', 'android', 'userId', 'projectId', 'clicks', 'publicStats', 'createdAt', 'updatedAt', 'tagId', 'isDeleted']);
 exports.TagScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'createdAt', 'updatedAt', 'projectId']);
 exports.ImageLibraryScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'unsplashId', 'tag', 'urls', 'css']);
 exports.ContactScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteId', 'contact']);
@@ -3718,11 +3790,11 @@ exports.ProjectSchema = zod_1.z.object({
     isDeleted: zod_1.z.boolean(),
 }).openapi({ "display_column": "name" });
 exports.ProjectWithRelationsSchema = exports.ProjectSchema.merge(zod_1.z.object({
-    users: zod_1.z.lazy(() => exports.ProjectUsersWithRelationsSchema).array(),
+    users: zod_1.z.lazy(() => exports.ProjectUsersWithRelationsSchema).array().openapi({ "model_name": "ProjectUsers" }),
     invites: zod_1.z.lazy(() => exports.ProjectInviteWithRelationsSchema).array(),
     sentEmails: zod_1.z.lazy(() => exports.SentEmailWithRelationsSchema).array(),
     domains: zod_1.z.lazy(() => exports.DomainWithRelationsSchema).array(),
-    links: zod_1.z.lazy(() => exports.LinkWithRelationsSchema).array(),
+    links: zod_1.z.lazy(() => exports.LinkWithRelationsSchema).array().openapi({ "model_name": "Link" }),
     tags: zod_1.z.lazy(() => exports.TagWithRelationsSchema).array(),
     site: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).nullable(),
 }));
@@ -3747,7 +3819,8 @@ exports.ProjectUsersSchema = zod_1.z.object({
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
     userId: zod_1.z.string().nullable(),
-    projectId: zod_1.z.string(),
+    projectId: zod_1.z.string().openapi({ "reference": "Project" }),
+    isDeleted: zod_1.z.boolean(),
 });
 exports.ProjectUsersWithRelationsSchema = exports.ProjectUsersSchema.merge(zod_1.z.object({
     project: zod_1.z.lazy(() => exports.ProjectWithRelationsSchema),
@@ -3808,12 +3881,13 @@ exports.LinkSchema = zod_1.z.object({
     ios: zod_1.z.string().nullable(),
     android: zod_1.z.string().nullable(),
     userId: zod_1.z.string().nullable(),
-    projectId: zod_1.z.string().nullable(),
+    projectId: zod_1.z.string().nullable().openapi({ "reference": "Project" }),
     clicks: zod_1.z.number().int(),
     publicStats: zod_1.z.boolean(),
     createdAt: zod_1.z.date(),
     updatedAt: zod_1.z.date(),
     tagId: zod_1.z.string().nullable(),
+    isDeleted: zod_1.z.boolean(),
 });
 exports.LinkWithRelationsSchema = exports.LinkSchema.merge(zod_1.z.object({
     project: zod_1.z.lazy(() => exports.ProjectWithRelationsSchema).nullable(),
