@@ -6,7 +6,7 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -74,6 +74,11 @@ let AppController = class AppController {
     writeProjectSlugToRedis(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.writeProjectSlugToRedis(dto);
+        });
+    }
+    addContact(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.addContact(dto);
         });
     }
 };
@@ -168,6 +173,13 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof cms_admin_services_1.writeProjectSlugToRedisSchemaDto !== "undefined" && cms_admin_services_1.writeProjectSlugToRedisSchemaDto) === "function" ? _k : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "writeProjectSlugToRedis", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/addContact'),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_l = typeof cms_admin_services_1.addContactSchemaDto !== "undefined" && cms_admin_services_1.addContactSchemaDto) === "function" ? _l : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "addContact", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
@@ -888,7 +900,7 @@ exports.CustomerDataDef = zod_1.z.object({
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.LinkResourceSchema = exports.UserResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
+exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.LinkResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const zod_1 = __webpack_require__("zod");
@@ -955,15 +967,15 @@ exports.ProjectResourceSchema = prisma_cms_admin_1.ProjectWithRelationsSchema.om
         route_prefix: '/resources/sites',
     },
 });
-exports.UserResourceSchema = prisma_cms_admin_1.ProjectUsersSchema.extend({
-    __meta: (0, flowda_shared_1.meta)({
-        extends: 'ProjectUsersSchema',
-    }),
-}).openapi({
-    custom: {
-        route_prefix: '/resources/sites',
-    },
-});
+// export const UserResourceSchema = ProjectUsersSchema.extend({
+//   __meta: meta({
+//     extends: 'ProjectUsersSchema',
+//   }),
+// }).openapi({
+//   custom: {
+//     route_prefix: '/resources/sites',
+//   },
+// })
 exports.LinkResourceSchema = prisma_cms_admin_1.LinkSchema.extend({
     __meta: (0, flowda_shared_1.meta)({
         extends: 'LinkSchema',
@@ -1046,7 +1058,7 @@ exports.CmsAdminSchemaService = CmsAdminSchemaService = CmsAdminSchemaService_1 
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.writeProjectSlugToRedisSchemaDto = exports.GetRandomImagesQuery = exports.DubSyncExtname = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GenerateSiteJobSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
+exports.addContactSchemaDto = exports.writeProjectSlugToRedisSchemaDto = exports.GetRandomImagesQuery = exports.DubSyncExtname = exports.GeneratePartialSlotDataSchemaDto = exports.SubmitPreviewSiteSchemaDto = exports.GenerateSiteSchemaDto = exports.GenerateSiteJobSchemaDto = exports.GetTemplateDataDefSchemaDto = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
@@ -1105,6 +1117,13 @@ const writeProjectSlugToRedisSchema = zod_1.z.object({
 class writeProjectSlugToRedisSchemaDto extends (0, nestjs_zod_1.createZodDto)(writeProjectSlugToRedisSchema) {
 }
 exports.writeProjectSlugToRedisSchemaDto = writeProjectSlugToRedisSchemaDto;
+const addContactSchema = zod_1.z.object({
+    siteId: zod_1.z.number(),
+    contact: zod_1.z.string(),
+});
+class addContactSchemaDto extends (0, nestjs_zod_1.createZodDto)(addContactSchema) {
+}
+exports.addContactSchemaDto = addContactSchemaDto;
 
 
 /***/ }),
@@ -1138,6 +1157,7 @@ let CustomService = CustomService_1 = class CustomService {
         this.logger = loggerFactory(CustomService_1.name);
     }
     generateSite(dto) {
+        var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.logger.debug(`[generateSite] ${JSON.stringify(dto, null, 2)}`);
             const cusRet = yield this.prisma.customer.findUniqueOrThrow({
@@ -1156,6 +1176,13 @@ let CustomService = CustomService_1 = class CustomService {
             const { generateData } = __webpack_require__("ai-gen-utils");
             try {
                 const data = yield generateData(companyInfo);
+                // todo: 付费逻辑之前 先写我们的联系信息
+                data.contact = {
+                    email: 'info@webinfra.cloud',
+                    phone: '17621832688',
+                    address: (_a = data.contact) === null || _a === void 0 ? void 0 : _a.address,
+                    contact: 'Contact Us',
+                };
                 this.logger.debug(`[generateSite] end invoke generateData`);
                 const siteRet = yield this.prisma.site.findFirst({
                     where: {
@@ -1514,6 +1541,16 @@ let CustomService = CustomService_1 = class CustomService {
     getCustomerDef() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return (0, zod_openapi_1.generateSchema)(dynamic_schema_1.CustomerDataDef);
+        });
+    }
+    addContact(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.prisma.contact.create({
+                data: {
+                    contact: dto.contact,
+                    siteId: dto.siteId,
+                },
+            });
         });
     }
     generateSiteJob(dto) {
@@ -4197,6 +4234,7 @@ function bootstrap() {
             `/${globalPrefix}/data/dynamic_table_data`,
             `/${globalPrefix}/user/register`,
             `/${globalPrefix}/user/getUserInfo`,
+            `/${globalPrefix}/user/resetPassword`,
             `/${globalPrefix}/data/menus`,
             `/${globalPrefix}/dynamic-table-data`,
             `/${globalPrefix}/menu/getMenu`,
