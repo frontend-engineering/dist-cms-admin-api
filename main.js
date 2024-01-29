@@ -1677,7 +1677,7 @@ exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.alreadyInTeamSchemaDto = exports.alreadyInTeamSchema = exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
+exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.alreadyInTeamSchemaDto = exports.alreadyInTeamSchema = exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const zod_1 = __webpack_require__("zod");
 exports.findUserByEmailSchema = zod_1.z.object({
@@ -1734,6 +1734,12 @@ exports.alreadyInTeamSchema = zod_1.z.object({
 class alreadyInTeamSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.alreadyInTeamSchema) {
 }
 exports.alreadyInTeamSchemaDto = alreadyInTeamSchemaDto;
+exports.sendSmsVerifyCodeSchema = zod_1.z.object({
+    mobile: zod_1.z.string(),
+});
+class sendSmsVerifyCodeSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.sendSmsVerifyCodeSchema) {
+}
+exports.sendSmsVerifyCodeSchemaDto = sendSmsVerifyCodeSchemaDto;
 
 
 /***/ }),
@@ -1839,6 +1845,30 @@ let DubService = DubService_1 = class DubService {
                 },
             });
             return siteRet;
+        });
+    }
+    sendSmsVerifyCode(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.flowdaTrpc.user.sendSmsVerifyCode.mutate(dto);
+            return {};
+        });
+    }
+    verifyMobile(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const userRet = yield this.flowdaTrpc.user.verifyMobile.mutate(dto);
+            const projectRet = yield this.prisma.project.findFirstOrThrow({
+                where: {
+                    slug: dto.slug,
+                },
+            });
+            yield this.prisma.projectUsers.create({
+                data: {
+                    role: 'owner',
+                    userId: String(userRet.id),
+                    projectId: projectRet.id,
+                },
+            });
+            return {};
         });
     }
     alreadyInTeam(dto) {
