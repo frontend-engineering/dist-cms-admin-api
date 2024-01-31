@@ -1677,7 +1677,7 @@ exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.alreadyInTeamSchemaDto = exports.alreadyInTeamSchema = exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
+exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.alreadyInTeamSchemaDto = exports.alreadyInTeamSchema = exports.updateUserInfoSchemaDto = exports.updateUserInfoSchema = exports.queryLinksSchemaDto = exports.queryLinksSchema = exports.updateCustomerSchemaDto = exports.updateCustomerSchema = exports.updateProjectSchemaDto = exports.updateProjectSchema = exports.queryProjectUsersSchemaDto = exports.queryProjectUsersSchema = exports.findProjectOwnerSchemaDto = exports.findProjectOwnerSchema = exports.findUserByIdSchemaDto = exports.findUserByIdSchema = exports.findUserByEmailSchemaDto = exports.findUserByEmailSchema = void 0;
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 const zod_1 = __webpack_require__("zod");
 exports.findUserByEmailSchema = zod_1.z.object({
@@ -1712,6 +1712,13 @@ exports.updateProjectSchema = zod_1.z.object({
 class updateProjectSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.updateProjectSchema) {
 }
 exports.updateProjectSchemaDto = updateProjectSchemaDto;
+exports.updateCustomerSchema = zod_1.z.object({
+    id: zod_1.z.number(),
+    extendData: zod_1.z.any(),
+});
+class updateCustomerSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.updateCustomerSchema) {
+}
+exports.updateCustomerSchemaDto = updateCustomerSchemaDto;
 exports.queryLinksSchema = zod_1.z.object({
     projectId: zod_1.z.string(),
 });
@@ -1833,6 +1840,20 @@ let DubService = DubService_1 = class DubService {
                     slug: dto.previousSlug,
                 },
                 data: Object.assign(Object.assign({}, (dto.name && { name: dto.name })), (dto.slug && { slug: dto.slug })),
+            });
+            return ret;
+        });
+    }
+    updateCustomer(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.logger.debug(`[updateCustomer] invoked, ${JSON.stringify(dto, null, 2)}`);
+            const ret = yield this.prisma.customer.update({
+                where: {
+                    id: dto.id,
+                },
+                data: {
+                    extendData: dto.extendData,
+                },
             });
             return ret;
         });
