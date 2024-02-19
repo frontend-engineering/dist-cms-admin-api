@@ -2646,7 +2646,7 @@ tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared-types/src/zod
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.MenuServiceSymbol = exports.DynamicTableDefServiceSymbol = exports.DynamicTableDataServiceSymbol = exports.WechatOAuthSymbol = exports.SmsClientSymbol = exports.COSSymbol = exports.K3CloudIdentifyInfoSymbol = exports.CustomZodSchemaSymbol = exports.PrismaZodSchemaSymbol = exports.ENVSymbol = exports.URLSymbol = exports.APISymbol = exports.ServiceSymbol = exports.PrismaClientSymbol = exports.FlowdaGatewayTrpcClientSymbol = exports.FlowdaTrpcClientSymbol = exports.DynamicTableSchemaTransformerSymbol = exports.SchemaServiceSymbol = exports.DataServiceSymbol = exports.PrismaUtilsSymbol = exports.SchemaTransformerSymbol = exports.PrismaSchemaServiceSymbol = void 0;
+exports.WechatpayNodeV3FactorySymbol = exports.WechatpayNodeV3Symbol = exports.MenuServiceSymbol = exports.DynamicTableDefServiceSymbol = exports.DynamicTableDataServiceSymbol = exports.WechatOAuthSymbol = exports.SmsClientSymbol = exports.COSSymbol = exports.K3CloudIdentifyInfoSymbol = exports.CustomZodSchemaSymbol = exports.PrismaZodSchemaSymbol = exports.ENVSymbol = exports.URLSymbol = exports.APISymbol = exports.ServiceSymbol = exports.PrismaClientSymbol = exports.FlowdaGatewayTrpcClientSymbol = exports.FlowdaTrpcClientSymbol = exports.DynamicTableSchemaTransformerSymbol = exports.SchemaServiceSymbol = exports.DataServiceSymbol = exports.PrismaUtilsSymbol = exports.SchemaTransformerSymbol = exports.PrismaSchemaServiceSymbol = void 0;
 exports.PrismaSchemaServiceSymbol = Symbol.for('PrismaSchemaService');
 exports.SchemaTransformerSymbol = Symbol.for('SchemaTransformer');
 exports.PrismaUtilsSymbol = Symbol.for('PrismaUtils');
@@ -2673,6 +2673,8 @@ exports.WechatOAuthSymbol = Symbol.for('WechatOAuth');
 exports.DynamicTableDataServiceSymbol = Symbol.for('DynamicTableDataService');
 exports.DynamicTableDefServiceSymbol = Symbol.for('DynamicTableDefService');
 exports.MenuServiceSymbol = Symbol.for('MenuService');
+exports.WechatpayNodeV3Symbol = Symbol.for('WechatpayNodeV3Symbol');
+exports.WechatpayNodeV3FactorySymbol = Symbol.for('WechatpayNodeV3FactorySymbol');
 
 
 /***/ }),
@@ -2699,8 +2701,8 @@ exports.Serial_Max = 99999;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
-exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = void 0;
+exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
+exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const nestjs_zod_1 = __webpack_require__("nestjs-zod");
 exports.selectOptionSchema = zod_1.z.object({
@@ -2849,12 +2851,18 @@ exports.userJwtPayloadSchema = zod_1.z.object({
     uid: zod_1.z.number(),
     tid: zod_1.z.number(),
 });
+class userJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.userJwtPayloadSchema) {
+}
+exports.userJwtPayloadSchemaDto = userJwtPayloadSchemaDto;
 exports.customerPreSignupSchema = zod_1.z.object({
     email: zod_1.z.string(),
 });
 class customerPreSignupSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerPreSignupSchema) {
 }
 exports.customerPreSignupSchemaDto = customerPreSignupSchemaDto;
+class customerPreSignupTenantJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerPreSignupSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.customerPreSignupTenantJwtPayloadSchemaDto = customerPreSignupTenantJwtPayloadSchemaDto;
 exports.customerSignupSchema = zod_1.z.object({
     email: zod_1.z.string(),
     verifyCode: zod_1.z.string(),
@@ -2863,6 +2871,9 @@ exports.customerSignupSchema = zod_1.z.object({
 class customerSignupSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerSignupSchema) {
 }
 exports.customerSignupSchemaDto = customerSignupSchemaDto;
+class customerSignupTenantJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.customerSignupSchema.merge(exports.tenantJwtPayloadSchema)) {
+}
+exports.customerSignupTenantJwtPayloadSchemaDto = customerSignupTenantJwtPayloadSchemaDto;
 exports.wxGetAccessTokenRes = zod_1.z.object({
     access_token: zod_1.z.string(),
     expires_in: zod_1.z.string(),
@@ -2887,9 +2898,9 @@ exports.wxGetUserRes = zod_1.z.object({
 exports.wxValidateUserSchema = zod_1.z.object({
     code: zod_1.z.string(),
 });
-class wxValidateUserSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.wxValidateUserSchema) {
+class wxValidateUserTenantJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.wxValidateUserSchema.merge(exports.tenantJwtPayloadSchema)) {
 }
-exports.wxValidateUserSchemaDto = wxValidateUserSchemaDto;
+exports.wxValidateUserTenantJwtPayloadSchemaDto = wxValidateUserTenantJwtPayloadSchemaDto;
 exports.generateRecoveryCodeSchema = zod_1.z.object({
     email: zod_1.z.string(),
 });
@@ -2976,7 +2987,7 @@ class amountUpdateUserJwtPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)
 }
 exports.amountUpdateUserJwtPayloadSchemaDto = amountUpdateUserJwtPayloadSchemaDto;
 exports.createOrderSchema = zod_1.z.object({
-    productId: zod_1.z.string(),
+    productId: zod_1.z.number(),
     openid: zod_1.z.string().optional(),
 });
 class SdkCreateOrderDto extends (0, nestjs_zod_1.createZodDto)(exports.createOrderSchema) {
@@ -3008,6 +3019,27 @@ exports.SdkCreateQuickOrderDto = SdkCreateQuickOrderDto;
 class createQuickOrderTenantJWTPayloadSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.createQuickOrderSchema.merge(exports.tenantJwtPayloadSchema)) {
 }
 exports.createQuickOrderTenantJWTPayloadSchemaDto = createQuickOrderTenantJWTPayloadSchemaDto;
+exports.appCreateV4Schema = zod_1.z.object({
+    displayName: zod_1.z.string(),
+});
+class appCreateV4SchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.appCreateV4Schema) {
+}
+exports.appCreateV4SchemaDto = appCreateV4SchemaDto;
+exports.validateTenantSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class validateTenantSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.validateTenantSchema) {
+}
+exports.validateTenantSchemaDto = validateTenantSchemaDto;
+exports.validateByEmailSchema = zod_1.z.object({
+    email: zod_1.z.string(),
+    tenantId: zod_1.z.number(),
+    password: zod_1.z.string(),
+});
+class validateByEmailSchemaDto extends (0, nestjs_zod_1.createZodDto)(exports.validateByEmailSchema) {
+}
+exports.validateByEmailSchemaDto = validateByEmailSchemaDto;
 
 
 /***/ }),
@@ -3062,6 +3094,7 @@ tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/utils/bro
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/utils/ag-grid-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/utils/schema-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/utils/custom-error.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/utils/dayjs-utils.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/services/schema/meta.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/services/schema/schemaTransformer.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared/src/services/schema/dynamicTableSchemaTransformer.ts"), exports);
@@ -4312,6 +4345,39 @@ exports.CustomError = CustomError;
 
 /***/ }),
 
+/***/ "../../libs/flowda-shared/src/utils/dayjs-utils.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTimeByDay = exports.getTimeExpire = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const utc_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/utc"));
+const timezone_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/timezone"));
+const advancedFormat_1 = tslib_1.__importDefault(__webpack_require__("dayjs/plugin/advancedFormat"));
+const dayjs_1 = tslib_1.__importDefault(__webpack_require__("dayjs"));
+dayjs_1.default.extend(utc_1.default);
+dayjs_1.default.extend(timezone_1.default);
+dayjs_1.default.extend(advancedFormat_1.default);
+function getTimeExpire(min) {
+    const fmt = (0, dayjs_1.default)().tz('Asia/Shanghai').add(min, 'minute').format('YYYY-MM-DDTHH:mm:ss+z');
+    const ret = fmt.match(/.*(GMT\+(\d))/);
+    if (ret == null) {
+        return '';
+    }
+    else {
+        return ret[0].replace(ret[1], ret[2].padStart(2, '0') + ':00');
+    }
+}
+exports.getTimeExpire = getTimeExpire;
+function getTimeByDay(day) {
+    return (0, dayjs_1.default)().tz('Asia/Shanghai').add(day, 'day').toDate();
+}
+exports.getTimeByDay = getTimeByDay;
+
+
+/***/ }),
+
 /***/ "../../libs/flowda-shared/src/utils/getServices.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -4954,6 +5020,34 @@ module.exports = require("class-validator");
 /***/ ((module) => {
 
 module.exports = require("cos-nodejs-sdk-v5");
+
+/***/ }),
+
+/***/ "dayjs":
+/***/ ((module) => {
+
+module.exports = require("dayjs");
+
+/***/ }),
+
+/***/ "dayjs/plugin/advancedFormat":
+/***/ ((module) => {
+
+module.exports = require("dayjs/plugin/advancedFormat");
+
+/***/ }),
+
+/***/ "dayjs/plugin/timezone":
+/***/ ((module) => {
+
+module.exports = require("dayjs/plugin/timezone");
+
+/***/ }),
+
+/***/ "dayjs/plugin/utc":
+/***/ ((module) => {
+
+module.exports = require("dayjs/plugin/utc");
 
 /***/ }),
 
