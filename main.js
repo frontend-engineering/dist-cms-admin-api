@@ -2480,6 +2480,7 @@ tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared-node/src/flow
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared-node/src/filters/appExceptionFilter.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared-node/src/services/table-filter.service.ts"), exports);
 tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared-node/src/services/audit.service.ts"), exports);
+tslib_1.__exportStar(__webpack_require__("../../libs/flowda-shared-node/src/trpc/trpc-utils.ts"), exports);
 
 
 /***/ }),
@@ -2624,6 +2625,177 @@ exports.TableFilterService = TableFilterService = TableFilterService_1 = tslib_1
     tslib_1.__param(1, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [Object, Function])
 ], TableFilterService);
+
+
+/***/ }),
+
+/***/ "../../libs/flowda-shared-node/src/trpc/trpc-utils.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+/// <reference types="@types/express-serve-static-core" />
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const consola_1 = tslib_1.__importDefault(__webpack_require__("consola"));
+const _ = tslib_1.__importStar(__webpack_require__("radash"));
+const common_1 = __webpack_require__("@nestjs/common");
+exports.REQ_END = '================================================ End ================================================\n';
+exports.ERROR_END = '***************************************** ERROR END *****************************************';
+function logInputSerialize(object) {
+    consola_1.default.info('request args  :');
+    console.log(object);
+    console.log();
+}
+exports.logInputSerialize = logInputSerialize;
+function logOutputSerialize(object) {
+    console.log();
+    if ((object === null || object === void 0 ? void 0 : object.code) < 0) {
+        consola_1.default.info('response error:');
+        console.log(Object.assign(Object.assign({}, object), { message: '<...>', data: Object.assign(Object.assign({}, object.data), { stack: '<...>' }) }));
+    }
+    else {
+        consola_1.default.info('response data :');
+        console.log(object);
+    }
+    console.log(exports.REQ_END);
+}
+exports.logOutputSerialize = logOutputSerialize;
+function logContext(opts) {
+    const req = opts.req;
+    console.log('=============================================== Start ===============================================');
+    consola_1.default.info('url           :', req.url.split('?')[0]);
+    consola_1.default.info('from          :', req.headers['x-from']);
+}
+exports.logContext = logContext;
+function getStatusKeyFromStatus(status) {
+    var _a;
+    return (_a = JSONRPC2_TO_HTTP_STATUS[status]) !== null && _a !== void 0 ? _a : 'INTERNAL_SERVER_ERROR';
+}
+exports.getStatusKeyFromStatus = getStatusKeyFromStatus;
+function getErrorCodeFromKey(key) {
+    var _a;
+    return (_a = TRPC_ERROR_CODES_BY_KEY[key]) !== null && _a !== void 0 ? _a : -32603;
+}
+exports.getErrorCodeFromKey = getErrorCodeFromKey;
+const JSONRPC2_TO_HTTP_CODE = {
+    PARSE_ERROR: 400,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    NOT_FOUND: 404,
+    FORBIDDEN: 403,
+    METHOD_NOT_SUPPORTED: 405,
+    TIMEOUT: 408,
+    CONFLICT: 409,
+    PRECONDITION_FAILED: 412,
+    PAYLOAD_TOO_LARGE: 413,
+    UNPROCESSABLE_CONTENT: 422,
+    TOO_MANY_REQUESTS: 429,
+    CLIENT_CLOSED_REQUEST: 499,
+    INTERNAL_SERVER_ERROR: 500,
+    NOT_IMPLEMENTED: 501,
+};
+const JSONRPC2_TO_HTTP_STATUS = _.invert(JSONRPC2_TO_HTTP_CODE);
+const TRPC_ERROR_CODES_BY_KEY = {
+    /**
+     * Invalid JSON was received by the server.
+     * An error occurred on the server while parsing the JSON text.
+     */
+    PARSE_ERROR: -32700,
+    /**
+     * The JSON sent is not a valid Request object.
+     */
+    BAD_REQUEST: -32600, // 400
+    // Internal JSON-RPC error
+    INTERNAL_SERVER_ERROR: -32603,
+    NOT_IMPLEMENTED: -32603,
+    // Implementation specific errors
+    UNAUTHORIZED: -32001, // 401
+    FORBIDDEN: -32003, // 403
+    NOT_FOUND: -32004, // 404
+    METHOD_NOT_SUPPORTED: -32005, // 405
+    TIMEOUT: -32008, // 408
+    CONFLICT: -32009, // 409
+    PRECONDITION_FAILED: -32012, // 412
+    PAYLOAD_TOO_LARGE: -32013, // 413
+    UNPROCESSABLE_CONTENT: -32022, // 422
+    TOO_MANY_REQUESTS: -32029, // 429
+    CLIENT_CLOSED_REQUEST: -32099, // 499
+};
+function logErrorStart(opts) {
+    consola_1.default.error('**************************************** ERROR START ****************************************');
+    consola_1.default.info(`procedure    :`, `${opts.path}.${opts.type}`);
+    consola_1.default.info(`input        :`);
+    console.log(opts.input);
+}
+exports.logErrorStart = logErrorStart;
+function logErrorEnd(opts) {
+    consola_1.default.info(`message      :`, opts.error.message);
+    consola_1.default.info(`stack        :`, opts.error.stack);
+    consola_1.default.error(exports.ERROR_END);
+}
+exports.logErrorEnd = logErrorEnd;
+function transformHttpException(opts, cause, stack) {
+    const shape = opts.shape;
+    const message = cause.getResponse()['message'];
+    const error = cause.getResponse()['error'];
+    const key = getStatusKeyFromStatus(cause.getStatus());
+    const code = getErrorCodeFromKey(key);
+    consola_1.default.info(`cause`);
+    console.log(`    status     :`, cause.getStatus());
+    console.log(`    message    :`, message);
+    console.log(`    error      :`, error);
+    consola_1.default.info(`stack        :`, stack);
+    consola_1.default.error(exports.ERROR_END);
+    return Object.assign(Object.assign({}, shape), { code, 
+        // message // message 无需替代 throw new ConflictException('<message>') 第一个参数已经替代了 https://docs.nestjs.com/exception-filters#built-in-http-exceptions
+        data: Object.assign(Object.assign({}, shape.data), {
+            code: key, // 替换成 HttpException 对应的 短字符
+            httpStatus: cause.getStatus(), // 替换成 http status code
+            description: {
+                // 详情
+                procedure: `${opts.path}.${opts.type}`,
+                input: opts.input,
+                error,
+            },
+        }) });
+}
+exports.transformHttpException = transformHttpException;
+function errorFormatter(opts) {
+    logErrorStart(opts);
+    // 如果是 nestjs HttpException
+    if (opts.error.cause instanceof common_1.HttpException) {
+        const ret = transformHttpException(opts, opts.error.cause, opts.error.stack);
+        return ret;
+    }
+    else {
+        logErrorEnd(opts);
+        return opts.shape;
+    }
+}
+exports.errorFormatter = errorFormatter;
+// object => object 是默认值
+// https://github.com/trpc/trpc/blob/next/packages/client/src/internals/transformer.ts#L57
+exports.transformer = {
+    input: {
+        // on client
+        serialize: (object) => object,
+        // on server -> resolver
+        deserialize: (object) => {
+            logInputSerialize(object);
+            return object;
+        },
+    },
+    output: {
+        // on server -> client
+        serialize: (object) => {
+            logOutputSerialize(object);
+            return object;
+        },
+        // on client
+        deserialize: (object) => object,
+    },
+};
 
 
 /***/ }),
@@ -5013,6 +5185,13 @@ module.exports = require("class-transformer");
 /***/ ((module) => {
 
 module.exports = require("class-validator");
+
+/***/ }),
+
+/***/ "consola":
+/***/ ((module) => {
+
+module.exports = require("consola");
 
 /***/ }),
 
