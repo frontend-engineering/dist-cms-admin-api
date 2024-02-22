@@ -109,8 +109,14 @@ model Customer {
   /// @schema.title 客户名称
   name String
 
-  /// @schema.title 客户扩展数据
+  /// @schema.title 最终客户扩展数据
   extendData Json?
+
+  /// @schema.title 看准网原始数据
+  kanzhunRaw Json?
+
+  /// @schema.title 被看准网更新前的原始数据
+  prevExtendData Json?
 
   // 一个客户可以创建多个网站
   /// @schema.model_name Site

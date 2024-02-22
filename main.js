@@ -6,17 +6,22 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+/// <reference types="@types/multer" />
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const cms_admin_services_1 = __webpack_require__("../../libs/cms-admin-services/src/index.ts");
 const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts");
+const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
+const express = tslib_1.__importStar(__webpack_require__("express"));
+const platform_express_1 = __webpack_require__("@nestjs/platform-express");
 let AppController = class AppController {
-    constructor(cmsAdminSchemaService, custom) {
+    constructor(cmsAdminSchemaService, custom, data) {
         this.cmsAdminSchemaService = cmsAdminSchemaService;
         this.custom = custom;
+        this.data = data;
     }
     hi() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -81,6 +86,14 @@ let AppController = class AppController {
             return this.custom.addContact(dto);
         });
     }
+    getSites(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.data.get({}, 'sites', req.query);
+        });
+    }
+    uploadFile(files) {
+        return this.custom.parseKanzhun(files);
+    }
 };
 exports.AppController = AppController;
 tslib_1.__decorate([
@@ -95,7 +108,7 @@ tslib_1.__decorate([
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_c = typeof cms_admin_services_1.SubmitPreviewSiteSchemaDto !== "undefined" && cms_admin_services_1.SubmitPreviewSiteSchemaDto) === "function" ? _c : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof cms_admin_services_1.SubmitPreviewSiteSchemaDto !== "undefined" && cms_admin_services_1.SubmitPreviewSiteSchemaDto) === "function" ? _d : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "submitPreviewSite", null);
 tslib_1.__decorate([
@@ -112,7 +125,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof cms_admin_services_1.GetTemplateDataDefSchemaDto !== "undefined" && cms_admin_services_1.GetTemplateDataDefSchemaDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof cms_admin_services_1.GetTemplateDataDefSchemaDto !== "undefined" && cms_admin_services_1.GetTemplateDataDefSchemaDto) === "function" ? _e : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getTemplateDataDef", null);
 tslib_1.__decorate([
@@ -129,7 +142,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_e = typeof cms_admin_services_1.GenerateSiteJobSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteJobSchemaDto) === "function" ? _e : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof cms_admin_services_1.GenerateSiteJobSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteJobSchemaDto) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generateJobSite", null);
 tslib_1.__decorate([
@@ -138,7 +151,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof cms_admin_services_1.GenerateSiteJobSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteJobSchemaDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_g = typeof cms_admin_services_1.GenerateSiteJobSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteJobSchemaDto) === "function" ? _g : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "findToDoCustomers", null);
 tslib_1.__decorate([
@@ -146,7 +159,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_g = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GenerateSiteSchemaDto !== "undefined" && cms_admin_services_1.GenerateSiteSchemaDto) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generateSite", null);
 tslib_1.__decorate([
@@ -154,7 +167,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_h = typeof cms_admin_services_1.GeneratePartialSlotDataSchemaDto !== "undefined" && cms_admin_services_1.GeneratePartialSlotDataSchemaDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof cms_admin_services_1.GeneratePartialSlotDataSchemaDto !== "undefined" && cms_admin_services_1.GeneratePartialSlotDataSchemaDto) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "generatePartialSlotData", null);
 tslib_1.__decorate([
@@ -162,7 +175,7 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Query)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_j = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof cms_admin_services_1.GetRandomImagesQuery !== "undefined" && cms_admin_services_1.GetRandomImagesQuery) === "function" ? _k : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "getRandomImages", null);
 tslib_1.__decorate([
@@ -170,19 +183,35 @@ tslib_1.__decorate([
     (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_k = typeof cms_admin_services_1.writeProjectSlugToRedisSchemaDto !== "undefined" && cms_admin_services_1.writeProjectSlugToRedisSchemaDto) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_l = typeof cms_admin_services_1.writeProjectSlugToRedisSchemaDto !== "undefined" && cms_admin_services_1.writeProjectSlugToRedisSchemaDto) === "function" ? _l : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "writeProjectSlugToRedis", null);
 tslib_1.__decorate([
     (0, common_1.Post)('/addContact'),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_l = typeof cms_admin_services_1.addContactSchemaDto !== "undefined" && cms_admin_services_1.addContactSchemaDto) === "function" ? _l : Object]),
+    tslib_1.__metadata("design:paramtypes", [typeof (_m = typeof cms_admin_services_1.addContactSchemaDto !== "undefined" && cms_admin_services_1.addContactSchemaDto) === "function" ? _m : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "addContact", null);
+tslib_1.__decorate([
+    (0, common_1.Get)('/sites'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_o = typeof express !== "undefined" && express.Request) === "function" ? _o : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "getSites", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.AnyFilesInterceptor)()),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.UploadedFiles)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Array]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AppController.prototype, "uploadFile", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object, typeof (_c = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _c : Object])
 ], AppController);
 
 
@@ -1516,10 +1545,11 @@ exports.addContactSchemaDto = addContactSchemaDto;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+/// <reference types="@types/multer" />
 var CustomService_1;
-var _a, _b;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomService = void 0;
+exports.parseKanzhunDetail = exports.CustomService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
@@ -1533,10 +1563,9 @@ const py_1 = __webpack_require__("../../libs/cms-admin-services/src/utils/py.ts"
 const symbols_1 = __webpack_require__("../../libs/cms-admin-services/src/symbols.ts");
 const BUCKET = 'assets-1306445775';
 let CustomService = CustomService_1 = class CustomService {
-    constructor(prisma, redis, data, cos, loggerFactory) {
+    constructor(prisma, redis, cos, loggerFactory) {
         this.prisma = prisma;
         this.redis = redis;
-        this.data = data;
         this.cos = cos;
         this.logger = loggerFactory(CustomService_1.name);
     }
@@ -2041,17 +2070,119 @@ let CustomService = CustomService_1 = class CustomService {
                 .$queryRaw `SELECT id,unsplashId,tag,urls,css FROM ImageLibrary WHERE IsDeleted = 0 AND tag in (${db.Prisma.join(dto.tag.split(','))}) ORDER BY RAND() LIMIT ${dto.count}`;
         });
     }
+    parseKanzhun(files) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const ret = {
+                fail: [],
+                success: [],
+            };
+            for (const file of files) {
+                try {
+                    const fileJson = JSON.parse(file.buffer.toString());
+                    const jsonRet = flowda_shared_1.kanzhunDataSchema.parse(fileJson);
+                    const data = (jsonRet === null || jsonRet === void 0 ? void 0 : jsonRet.data) || [];
+                    for (const item of data) {
+                        try {
+                            if (item.name == null) {
+                                ret.fail.push({
+                                    fileName: file.filename,
+                                    reason: `name is null, id:${item.id}`,
+                                });
+                                continue;
+                            }
+                            const customerRet = yield this.prisma.customer.findFirst({
+                                where: {
+                                    name: item.name,
+                                },
+                            });
+                            if (customerRet) {
+                                const prevExtendData = flowda_shared_1.customerExtendDataSchema.parse(customerRet.extendData);
+                                const extendData = parseKanzhunDetail(item, prevExtendData);
+                                yield this.prisma.customer.update({
+                                    where: {
+                                        id: customerRet.id,
+                                    },
+                                    data: {
+                                        extendData: extendData,
+                                        prevExtendData: customerRet.extendData == null ? undefined : customerRet.extendData,
+                                        kanzhunRaw: item,
+                                    },
+                                });
+                                ret.success.push({
+                                    fileName: file.filename,
+                                    reason: `update: name:${item.name}, id:${customerRet.id}`,
+                                });
+                            }
+                            else {
+                                const extendData = parseKanzhunDetail(item);
+                                const createRet = yield this.prisma.customer.create({
+                                    data: {
+                                        name: item.name,
+                                        extendData: extendData,
+                                        kanzhunRaw: item,
+                                    },
+                                    select: {
+                                        id: true,
+                                    },
+                                });
+                                ret.success.push({
+                                    fileName: file.filename,
+                                    reason: `create: name:${item.name},id:${createRet.id}`,
+                                });
+                            }
+                        }
+                        catch (e) {
+                            ret.fail.push({ fileName: file.filename, reason: `error: name:${item.name},${e.message}` });
+                        }
+                    }
+                }
+                catch (e) {
+                    ret.fail.push({ fileName: file.filename, reason: `error: ${e.message}` });
+                }
+            }
+            return ret;
+        });
+    }
 };
 exports.CustomService = CustomService;
 exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(symbols_1.DubRedisSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.DataServiceSymbol)),
-    tslib_1.__param(3, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
-    tslib_1.__param(4, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Object, typeof (_b = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _b : Object, Object, Function])
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Object, Object, Function])
 ], CustomService);
+const phoneNumberRegex = /^1[0-9]{10}$/; // 手机
+const landlineRegex = /^\d{3,4}-\d{7,8}$/; // 座机
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 邮箱
+function parseKanzhunDetail(input, prev) {
+    var _a, _b, _c;
+    const contact = ((_a = input.detail) === null || _a === void 0 ? void 0 : _a.联系方式) || [];
+    const email = [];
+    const phone = [];
+    contact.forEach(c => {
+        if (phoneNumberRegex.test(c) || landlineRegex.test(c)) {
+            phone.push(c);
+        }
+        if (emailRegex.test(c)) {
+            email.push(c);
+        }
+    });
+    const ret = {
+        biz: prev === null || prev === void 0 ? void 0 : prev.biz,
+        icp: prev === null || prev === void 0 ? void 0 : prev.icp,
+        contact: {
+            email: email.join(','),
+            phone: phone.join(','),
+            address: ((_b = input.detail) === null || _b === void 0 ? void 0 : _b.地址) || '',
+        },
+        companyName: (prev === null || prev === void 0 ? void 0 : prev.companyName) || (input.name ? input.name.trim() : input.name),
+        description: (prev === null || prev === void 0 ? void 0 : prev.description) || ((_c = input.detail) === null || _c === void 0 ? void 0 : _c.简介),
+    };
+    return ret;
+}
+exports.parseKanzhunDetail = parseKanzhunDetail;
 
 
 /***/ }),
@@ -2205,11 +2336,16 @@ let DubService = DubService_1 = class DubService {
                 },
                 select: {
                     userId: true,
+                    createdAt: true,
                 },
             });
             const userIds = projectUsersRet.filter(i => i.userId != null).map(i => Number(i.userId));
             const usersRet = yield this.flowdaTrpc.user.findMany.query({ userIds: userIds });
-            return projectUsersRet.map(ret => {
+            return projectUsersRet
+                .filter(ret => {
+                return usersRet.findIndex(u => u.id === Number(ret.userId)) > -1;
+            })
+                .map(ret => {
                 return Object.assign(ret, {
                     user: usersRet.find(u => u.id === Number(ret.userId)),
                 });
@@ -2634,7 +2770,7 @@ exports.TableFilterService = TableFilterService = TableFilterService_1 = tslib_1
 
 /// <reference types="@types/express-serve-static-core" />
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.trace = exports.createContext = exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
+exports.diag = exports.createContext = exports.transformer = exports.errorFormatter = exports.transformHttpException = exports.logErrorEnd = exports.logErrorStart = exports.getErrorCodeFromKey = exports.getStatusKeyFromStatus = exports.logContext = exports.logOutputSerialize = exports.logInputSerialize = exports.ERROR_END = exports.REQ_END = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const consola_1 = tslib_1.__importDefault(__webpack_require__("consola"));
 const _ = tslib_1.__importStar(__webpack_require__("radash"));
@@ -2819,10 +2955,13 @@ function createContext(opts) {
     });
 }
 exports.createContext = createContext;
-function trace(ctx, ...message) {
+/**
+ * 一个简单的基于 trpc ctx 的 诊断工具 报错之后会记录手动埋的路径，方便排查错误
+ */
+function diag(ctx, ...message) {
     (ctx === null || ctx === void 0 ? void 0 : ctx._trace) != null && ctx._trace.push(message);
 }
-exports.trace = trace;
+exports.diag = diag;
 
 
 /***/ }),
@@ -2921,8 +3060,8 @@ exports.createZodDto = createZodDto;
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
-exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = void 0;
+exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.validateSchemaDto = exports.validateSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
+exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const zod_utils_1 = __webpack_require__("../../libs/flowda-shared-types/src/zod-utils.ts");
 exports.selectOptionSchema = zod_1.z.object({
@@ -3026,6 +3165,13 @@ exports.accountExistsSchema = zod_1.z.object({
 class AccountExistsSchemaDto extends (0, zod_utils_1.createZodDto)(exports.accountExistsSchema) {
 }
 exports.AccountExistsSchemaDto = AccountExistsSchemaDto;
+exports.validateSchema = zod_1.z.object({
+    username: zod_1.z.string(),
+    password: zod_1.z.string(),
+});
+class validateSchemaDto extends (0, zod_utils_1.createZodDto)(exports.validateSchema) {
+}
+exports.validateSchemaDto = validateSchemaDto;
 exports.getTenantByNameSchema = zod_1.z.object({
     tenantName: zod_1.z.string(),
 });
@@ -3266,6 +3412,59 @@ exports._resetTenantPasswordSchema = zod_1.z.object({
 class _resetTenantPasswordSchemaDto extends (0, zod_utils_1.createZodDto)(exports._resetTenantPasswordSchema) {
 }
 exports._resetTenantPasswordSchemaDto = _resetTenantPasswordSchemaDto;
+exports.customerExtendDataSchema = zod_1.z
+    .object({
+    raw_kanzhun: zod_1.z.any(),
+    biz: zod_1.z.string(),
+    icp: zod_1.z.string().nullable(),
+    contact: zod_1.z.object({
+        email: zod_1.z.string(),
+        phone: zod_1.z.string(),
+        address: zod_1.z.string(),
+    }),
+    companyName: zod_1.z.string(),
+    description: zod_1.z.string(),
+    _prev: zod_1.z.any(),
+})
+    .partial();
+class customerExtendDataSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerExtendDataSchema) {
+}
+exports.customerExtendDataSchemaDto = customerExtendDataSchemaDto;
+exports.kanzhunDetailSchema = zod_1.z
+    .object({
+    公司全称: zod_1.z.string(),
+    联系方式: zod_1.z.array(zod_1.z.string()),
+    地址: zod_1.z.string(),
+    简介: zod_1.z.string(),
+})
+    .partial();
+class kanzhunDetailSchemaDto extends (0, zod_utils_1.createZodDto)(exports.kanzhunDetailSchema) {
+}
+exports.kanzhunDetailSchemaDto = kanzhunDetailSchemaDto;
+exports.kanzhunItemSchema = zod_1.z
+    .object({
+    id: zod_1.z.number(),
+    name: zod_1.z.string(),
+    detail: exports.kanzhunDetailSchema,
+})
+    .partial();
+class kanzhunItemSchemaDto extends (0, zod_utils_1.createZodDto)(exports.kanzhunItemSchema) {
+}
+exports.kanzhunItemSchemaDto = kanzhunItemSchemaDto;
+exports.kanzhunDataSchema = zod_1.z
+    .object({
+    date: zod_1.z.string(),
+    data: zod_1.z.array(exports.kanzhunItemSchema),
+})
+    .partial();
+exports.sendSmsVerifyCodeSchema = zod_1.z.object({ mobile: zod_1.z.string() });
+class sendSmsVerifyCodeSchemaDto extends (0, zod_utils_1.createZodDto)(exports.sendSmsVerifyCodeSchema) {
+}
+exports.sendSmsVerifyCodeSchemaDto = sendSmsVerifyCodeSchemaDto;
+exports.refreshTokenSchema = zod_1.z.object({ rt: zod_1.z.string() });
+class refreshTokenSchemaDto extends (0, zod_utils_1.createZodDto)(exports.refreshTokenSchema) {
+}
+exports.refreshTokenSchemaDto = refreshTokenSchemaDto;
 
 
 /***/ }),
@@ -4763,7 +4962,7 @@ exports.TransactionIsolationLevelSchema = zod_1.z.enum(['ReadUncommitted', 'Read
 exports.AuditsScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'auditId', 'auditType', 'userId', 'username', 'action', 'auditChanges', 'version']);
 exports.SiteTemplateScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'template']);
 exports.SiteTemplateDataDefScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'siteTemplateId', 'defData']);
-exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'extendData']);
+exports.CustomerScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'extendData', 'kanzhunRaw', 'prevExtendData']);
 exports.CustomerRawScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'ref', 'target', 'name', 'address', 'region', 'phone', 'email', 'websites', 'contact', 'mobile', 'qq', 'desc', 'scope', 'biz', 'logo']);
 exports.SiteScalarFieldEnumSchema = zod_1.z.enum(['id', 'createdAt', 'updatedAt', 'isDeleted', 'name', 'status', 'cosUrl', 'siteTemplateId', 'customerId', 'slotData', 'projectId']);
 exports.UserScalarFieldEnumSchema = zod_1.z.enum(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt']);
@@ -4864,6 +5063,8 @@ exports.CustomerSchema = zod_1.z.object({
     isDeleted: zod_1.z.boolean(),
     name: zod_1.z.string().openapi({ "title": "客户名称" }),
     extendData: exports.NullableJsonValue.optional(),
+    kanzhunRaw: exports.NullableJsonValue.optional(),
+    prevExtendData: exports.NullableJsonValue.optional(),
 }).openapi({ "primary_key": "id", "display_name": "客户信息", "display_column": "name", "display_primary_key": "false", "searchable_columns": "name" });
 exports.CustomerWithRelationsSchema = exports.CustomerSchema.merge(zod_1.z.object({
     sites: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).array().openapi({ "model_name": "Site" }),
@@ -5169,6 +5370,13 @@ module.exports = require("@nestjs/core");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/passport");
+
+/***/ }),
+
+/***/ "@nestjs/platform-express":
+/***/ ((module) => {
+
+module.exports = require("@nestjs/platform-express");
 
 /***/ }),
 

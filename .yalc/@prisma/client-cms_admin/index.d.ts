@@ -138,9 +138,17 @@ export type CustomerPayload<ExtArgs extends $Extensions.Args = $Extensions.Defau
      */
     name: string
     /**
-     * @schema.title 客户扩展数据
+     * @schema.title 最终客户扩展数据
      */
     extendData: Prisma.JsonValue | null
+    /**
+     * @schema.title 看准网原始数据
+     */
+    kanzhunRaw: Prisma.JsonValue | null
+    /**
+     * @schema.title 被看准网更新前的原始数据
+     */
+    prevExtendData: Prisma.JsonValue | null
   }, ExtArgs["result"]["customer"]>
   composites: {}
 }
@@ -6131,6 +6139,8 @@ export namespace Prisma {
     isDeleted: number
     name: number
     extendData: number
+    kanzhunRaw: number
+    prevExtendData: number
     _all: number
   }
 
@@ -6166,6 +6176,8 @@ export namespace Prisma {
     isDeleted?: true
     name?: true
     extendData?: true
+    kanzhunRaw?: true
+    prevExtendData?: true
     _all?: true
   }
 
@@ -6263,6 +6275,8 @@ export namespace Prisma {
     isDeleted: boolean
     name: string
     extendData: JsonValue | null
+    kanzhunRaw: JsonValue | null
+    prevExtendData: JsonValue | null
     _count: CustomerCountAggregateOutputType | null
     _avg: CustomerAvgAggregateOutputType | null
     _sum: CustomerSumAggregateOutputType | null
@@ -6291,6 +6305,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name?: boolean
     extendData?: boolean
+    kanzhunRaw?: boolean
+    prevExtendData?: boolean
     sites?: boolean | Customer$sitesArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
@@ -6302,6 +6318,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name?: boolean
     extendData?: boolean
+    kanzhunRaw?: boolean
+    prevExtendData?: boolean
   }
 
   export type CustomerInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -22049,7 +22067,9 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
     name: 'name',
-    extendData: 'extendData'
+    extendData: 'extendData',
+    kanzhunRaw: 'kanzhunRaw',
+    prevExtendData: 'prevExtendData'
   };
 
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
@@ -22725,6 +22745,8 @@ export namespace Prisma {
     isDeleted?: BoolFilter | boolean
     name?: StringFilter | string
     extendData?: JsonNullableFilter
+    kanzhunRaw?: JsonNullableFilter
+    prevExtendData?: JsonNullableFilter
     sites?: SiteListRelationFilter
   }
 
@@ -22735,6 +22757,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     name?: SortOrder
     extendData?: SortOrderInput | SortOrder
+    kanzhunRaw?: SortOrderInput | SortOrder
+    prevExtendData?: SortOrderInput | SortOrder
     sites?: SiteOrderByRelationAggregateInput
     _relevance?: CustomerOrderByRelevanceInput
   }
@@ -22750,6 +22774,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     name?: SortOrder
     extendData?: SortOrderInput | SortOrder
+    kanzhunRaw?: SortOrderInput | SortOrder
+    prevExtendData?: SortOrderInput | SortOrder
     _count?: CustomerCountOrderByAggregateInput
     _avg?: CustomerAvgOrderByAggregateInput
     _max?: CustomerMaxOrderByAggregateInput
@@ -22767,6 +22793,8 @@ export namespace Prisma {
     isDeleted?: BoolWithAggregatesFilter | boolean
     name?: StringWithAggregatesFilter | string
     extendData?: JsonNullableWithAggregatesFilter
+    kanzhunRaw?: JsonNullableWithAggregatesFilter
+    prevExtendData?: JsonNullableWithAggregatesFilter
   }
 
   export type CustomerRawWhereInput = {
@@ -24039,6 +24067,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
     sites?: SiteCreateNestedManyWithoutCustomerInput
   }
 
@@ -24049,6 +24079,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
     sites?: SiteUncheckedCreateNestedManyWithoutCustomerInput
   }
 
@@ -24058,6 +24090,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
     sites?: SiteUpdateManyWithoutCustomerNestedInput
   }
 
@@ -24068,6 +24102,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
     sites?: SiteUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
@@ -24078,6 +24114,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CustomerUpdateManyMutationInput = {
@@ -24086,6 +24124,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CustomerUncheckedUpdateManyInput = {
@@ -24095,6 +24135,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CustomerRawCreateInput = {
@@ -25831,6 +25873,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     name?: SortOrder
     extendData?: SortOrder
+    kanzhunRaw?: SortOrder
+    prevExtendData?: SortOrder
   }
 
   export type CustomerAvgOrderByAggregateInput = {
@@ -28284,6 +28328,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CustomerUncheckedCreateWithoutSitesInput = {
@@ -28293,6 +28339,8 @@ export namespace Prisma {
     isDeleted?: boolean
     name: string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CustomerCreateOrConnectWithoutSitesInput = {
@@ -28419,6 +28467,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CustomerUncheckedUpdateWithoutSitesInput = {
@@ -28428,6 +28478,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     extendData?: NullableJsonNullValueInput | InputJsonValue
+    kanzhunRaw?: NullableJsonNullValueInput | InputJsonValue
+    prevExtendData?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUpsertWithoutSiteInput = {

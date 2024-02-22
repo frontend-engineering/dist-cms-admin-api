@@ -141,7 +141,9 @@ exports.Prisma.CustomerScalarFieldEnum = {
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
   name: 'name',
-  extendData: 'extendData'
+  extendData: 'extendData',
+  kanzhunRaw: 'kanzhunRaw',
+  prevExtendData: 'prevExtendData'
 };
 
 exports.Prisma.CustomerRawScalarFieldEnum = {
