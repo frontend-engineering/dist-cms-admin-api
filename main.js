@@ -1552,7 +1552,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseKanzhunDetail = exports.CustomService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
-const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
+const flowda_shared_types_1 = __webpack_require__("../../libs/flowda-shared-types/src/index.ts");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
 const dynamic_schema_1 = __webpack_require__("../../libs/cms-admin-services/src/lib/dynamic-schema.ts");
@@ -2077,15 +2077,19 @@ let CustomService = CustomService_1 = class CustomService {
                 success: [],
             };
             for (const file of files) {
+                if (file.originalname.indexOf('batch') === -1) {
+                    ret.fail.push({ fileName: file.originalname, reason: `ignored` });
+                    continue;
+                }
                 try {
                     const fileJson = JSON.parse(file.buffer.toString());
-                    const jsonRet = flowda_shared_1.kanzhunDataSchema.parse(fileJson);
+                    const jsonRet = flowda_shared_types_1.kanzhunDataSchema.parse(fileJson);
                     const data = (jsonRet === null || jsonRet === void 0 ? void 0 : jsonRet.data) || [];
                     for (const item of data) {
                         try {
                             if (item.name == null) {
                                 ret.fail.push({
-                                    fileName: file.filename,
+                                    fileName: file.originalname,
                                     reason: `name is null, id:${item.id}`,
                                 });
                                 continue;
@@ -2096,7 +2100,7 @@ let CustomService = CustomService_1 = class CustomService {
                                 },
                             });
                             if (customerRet) {
-                                const prevExtendData = flowda_shared_1.customerExtendDataSchema.parse(customerRet.extendData);
+                                const prevExtendData = flowda_shared_types_1.customerExtendDataSchema.parse(customerRet.extendData);
                                 const extendData = parseKanzhunDetail(item, prevExtendData);
                                 yield this.prisma.customer.update({
                                     where: {
@@ -2109,7 +2113,7 @@ let CustomService = CustomService_1 = class CustomService {
                                     },
                                 });
                                 ret.success.push({
-                                    fileName: file.filename,
+                                    fileName: file.originalname,
                                     reason: `update: name:${item.name}, id:${customerRet.id}`,
                                 });
                             }
@@ -2126,18 +2130,18 @@ let CustomService = CustomService_1 = class CustomService {
                                     },
                                 });
                                 ret.success.push({
-                                    fileName: file.filename,
+                                    fileName: file.originalname,
                                     reason: `create: name:${item.name},id:${createRet.id}`,
                                 });
                             }
                         }
                         catch (e) {
-                            ret.fail.push({ fileName: file.filename, reason: `error: name:${item.name},${e.message}` });
+                            ret.fail.push({ fileName: file.originalname, reason: `error: name:${item.name},${e.message}` });
                         }
                     }
                 }
                 catch (e) {
-                    ret.fail.push({ fileName: file.filename, reason: `error: ${e.message}` });
+                    ret.fail.push({ fileName: file.originalname, reason: `error: ${e.message}` });
                 }
             }
             return ret;
@@ -2147,9 +2151,9 @@ let CustomService = CustomService_1 = class CustomService {
 exports.CustomService = CustomService;
 exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
-    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_1.PrismaClientSymbol)),
+    tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
     tslib_1.__param(1, (0, inversify_1.inject)(symbols_1.DubRedisSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_1.COSSymbol)),
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_types_1.COSSymbol)),
     tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Object, Object, Function])
 ], CustomService);
@@ -2157,7 +2161,7 @@ const phoneNumberRegex = /^1[0-9]{10}$/; // 手机
 const landlineRegex = /^\d{3,4}-\d{7,8}$/; // 座机
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 邮箱
 function parseKanzhunDetail(input, prev) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e, _f;
     const contact = ((_a = input.detail) === null || _a === void 0 ? void 0 : _a.联系方式) || [];
     const email = [];
     const phone = [];
@@ -2173,12 +2177,12 @@ function parseKanzhunDetail(input, prev) {
         biz: prev === null || prev === void 0 ? void 0 : prev.biz,
         icp: prev === null || prev === void 0 ? void 0 : prev.icp,
         contact: {
-            email: email.join(','),
-            phone: phone.join(','),
-            address: ((_b = input.detail) === null || _b === void 0 ? void 0 : _b.地址) || '',
+            email: email.length > 0 ? email.join(',') : (_b = prev === null || prev === void 0 ? void 0 : prev.contact) === null || _b === void 0 ? void 0 : _b.email,
+            phone: phone.length > 0 ? phone.join(',') : (_c = prev === null || prev === void 0 ? void 0 : prev.contact) === null || _c === void 0 ? void 0 : _c.phone,
+            address: ((_d = input.detail) === null || _d === void 0 ? void 0 : _d.地址) || ((_e = prev === null || prev === void 0 ? void 0 : prev.contact) === null || _e === void 0 ? void 0 : _e.address),
         },
         companyName: (prev === null || prev === void 0 ? void 0 : prev.companyName) || (input.name ? input.name.trim() : input.name),
-        description: (prev === null || prev === void 0 ? void 0 : prev.description) || ((_c = input.detail) === null || _c === void 0 ? void 0 : _c.简介),
+        description: (prev === null || prev === void 0 ? void 0 : prev.description) || ((_f = input.detail) === null || _f === void 0 ? void 0 : _f.简介),
     };
     return ret;
 }
@@ -2899,9 +2903,9 @@ function transformHttpException(opts, cause, stack) {
 exports.transformHttpException = transformHttpException;
 function errorFormatter(opts) {
     logErrorStart(opts);
-    if (Array.isArray(opts.ctx._trace) && opts.ctx._trace.length > 0) {
+    if (Array.isArray(opts.ctx._diagnosis) && opts.ctx._diagnosis.length > 0) {
         consola_1.default.info(`trace:`);
-        const msg = opts.ctx._trace
+        const msg = opts.ctx._diagnosis
             .map((m) => {
             const indent = (0, lodash_1.repeat)(' ', 4);
             const msg = m.map(i => (typeof i === 'string' ? i : JSON.stringify(i))).join(', ');
@@ -2950,7 +2954,7 @@ function createContext(opts) {
         return {
             req: opts.req,
             res: opts.res,
-            _trace: [],
+            _diagnosis: [],
         };
     });
 }
@@ -2959,7 +2963,7 @@ exports.createContext = createContext;
  * 一个简单的基于 trpc ctx 的 诊断工具 报错之后会记录手动埋的路径，方便排查错误
  */
 function diag(ctx, ...message) {
-    (ctx === null || ctx === void 0 ? void 0 : ctx._trace) != null && ctx._trace.push(message);
+    (ctx === null || ctx === void 0 ? void 0 : ctx._diagnosis) != null && ctx._diagnosis.push(message);
 }
 exports.diag = diag;
 
@@ -3414,17 +3418,17 @@ class _resetTenantPasswordSchemaDto extends (0, zod_utils_1.createZodDto)(export
 exports._resetTenantPasswordSchemaDto = _resetTenantPasswordSchemaDto;
 exports.customerExtendDataSchema = zod_1.z
     .object({
-    raw_kanzhun: zod_1.z.any(),
     biz: zod_1.z.string(),
     icp: zod_1.z.string().nullable(),
-    contact: zod_1.z.object({
+    contact: zod_1.z
+        .object({
         email: zod_1.z.string(),
         phone: zod_1.z.string(),
         address: zod_1.z.string(),
-    }),
+    })
+        .partial(),
     companyName: zod_1.z.string(),
     description: zod_1.z.string(),
-    _prev: zod_1.z.any(),
 })
     .partial();
 class customerExtendDataSchemaDto extends (0, zod_utils_1.createZodDto)(exports.customerExtendDataSchema) {
