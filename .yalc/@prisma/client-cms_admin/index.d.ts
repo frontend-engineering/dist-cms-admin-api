@@ -342,13 +342,25 @@ export type ProjectPayload<ExtArgs extends $Extensions.Args = $Extensions.Defaul
      * @schema.model_name ProjectUsers
      */
     users: ProjectUsersPayload<ExtArgs>[]
+    /**
+     * @schema.model_name ProjectInvite
+     */
     invites: ProjectInvitePayload<ExtArgs>[]
+    /**
+     * @schema.model_name SentEmail
+     */
     sentEmails: SentEmailPayload<ExtArgs>[]
+    /**
+     * @schema.model_name Domain
+     */
     domains: DomainPayload<ExtArgs>[]
     /**
      * @schema.model_name Link
      */
     links: LinkPayload<ExtArgs>[]
+    /**
+     * @schema.model_name Tag
+     */
     tags: TagPayload<ExtArgs>[]
     site: SitePayload<ExtArgs> | null
   }

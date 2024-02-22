@@ -1313,7 +1313,7 @@ exports.CustomerDataDef = zod_1.z.object({
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.LinkResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
+exports.ProjectUsersSchema = exports.ContactResourceSchema = exports.ImageLibraryResourceSchema = exports.LinkResourceSchema = exports.ProjectResourceSchema = exports.CustomerRawResourceSchema = exports.CustomerResourceSchema = exports.SiteResourceSchema = exports.SiteTemplateDataDefResourceSchema = exports.SiteTemplateResourceSchema = void 0;
 const prisma_cms_admin_1 = __webpack_require__("../../libs/prisma-cms_admin/src/index.ts");
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const zod_1 = __webpack_require__("zod");
@@ -1404,7 +1404,7 @@ exports.ImageLibraryResourceSchema = prisma_cms_admin_1.ImageLibrarySchema.exten
     }),
 }).openapi({
     custom: {
-        route_prefix: '/resources/image_libraries',
+        route_prefix: '/resources/site_templates',
     },
 });
 exports.ContactResourceSchema = prisma_cms_admin_1.ContactWithRelationsSchema.extend({
@@ -1414,6 +1414,15 @@ exports.ContactResourceSchema = prisma_cms_admin_1.ContactWithRelationsSchema.ex
 }).openapi({
     custom: {
         route_prefix: '/resources/contacts',
+    },
+});
+exports.ProjectUsersSchema = prisma_cms_admin_1.ProjectUsersWithRelationsSchema.extend({
+    __meta: (0, flowda_shared_1.meta)({
+        extends: 'ProjectUsersSchema',
+    }),
+}).openapi({
+    custom: {
+        route_prefix: '/resources/sites',
     },
 });
 
@@ -4913,7 +4922,8 @@ const tslib_1 = __webpack_require__("tslib");
 const plur = tslib_1.__importStar(__webpack_require__("pluralize"));
 const _ = tslib_1.__importStar(__webpack_require__("lodash"));
 plur.addSingularRule(/data/i, 'data');
-plur.addSingularRule(/defs/i, 'def');
+plur.addSingularRule(/data/i, 'data');
+plur.addSingularRule(/sms/i, 'sms');
 // s* equipment 不可数
 const REG = /(([a-z_]+s*)\/?([A-Za-z0-9-_:]+)?)+/g;
 const NUM_REG = /^-?\d+(\.\d+)?$/;
@@ -5276,11 +5286,11 @@ exports.ProjectSchema = zod_1.z.object({
 }).openapi({ "display_column": "name" });
 exports.ProjectWithRelationsSchema = exports.ProjectSchema.merge(zod_1.z.object({
     users: zod_1.z.lazy(() => exports.ProjectUsersWithRelationsSchema).array().openapi({ "model_name": "ProjectUsers" }),
-    invites: zod_1.z.lazy(() => exports.ProjectInviteWithRelationsSchema).array(),
-    sentEmails: zod_1.z.lazy(() => exports.SentEmailWithRelationsSchema).array(),
-    domains: zod_1.z.lazy(() => exports.DomainWithRelationsSchema).array(),
+    invites: zod_1.z.lazy(() => exports.ProjectInviteWithRelationsSchema).array().openapi({ "model_name": "ProjectInvite" }),
+    sentEmails: zod_1.z.lazy(() => exports.SentEmailWithRelationsSchema).array().openapi({ "model_name": "SentEmail" }),
+    domains: zod_1.z.lazy(() => exports.DomainWithRelationsSchema).array().openapi({ "model_name": "Domain" }),
     links: zod_1.z.lazy(() => exports.LinkWithRelationsSchema).array().openapi({ "model_name": "Link" }),
-    tags: zod_1.z.lazy(() => exports.TagWithRelationsSchema).array(),
+    tags: zod_1.z.lazy(() => exports.TagWithRelationsSchema).array().openapi({ "model_name": "Tag" }),
     site: zod_1.z.lazy(() => exports.SiteWithRelationsSchema).nullable(),
 }));
 /////////////////////////////////////////
@@ -5753,10 +5763,15 @@ function bootstrap() {
             `/${globalPrefix}/data/dynamic_table_defs`,
             `/${globalPrefix}/data/dynamic_table_def_columns`,
             `/${globalPrefix}/data/dynamic_table_data`,
+            `/${globalPrefix}/data/menus`,
+            `/${globalPrefix}/data/request_error_logs`,
+            `/${globalPrefix}/data/products`,
+            `/${globalPrefix}/data/orders`,
+            `/${globalPrefix}/data/pays`,
+            `/${globalPrefix}/data/sent_sms`,
             `/${globalPrefix}/user/register`,
             `/${globalPrefix}/user/getUserInfo`,
             `/${globalPrefix}/user/resetPassword`,
-            `/${globalPrefix}/data/menus`,
             `/${globalPrefix}/dynamic-table-data`,
             `/${globalPrefix}/menu/getMenu`,
             `/${globalPrefix}/table-filter`,

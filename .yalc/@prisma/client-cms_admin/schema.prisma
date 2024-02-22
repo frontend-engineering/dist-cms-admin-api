@@ -257,6 +257,7 @@ model Project {
   /// @schema.model_name ProjectUsers
   users ProjectUsers[]
 
+  /// @schema.model_name ProjectInvite
   invites           ProjectInvite[]
   usage             Int             @default(0)
   usageLimit        Int             @default(1000)
@@ -269,10 +270,13 @@ model Project {
   bucket   String? @default("invio-public-store") // COS info
   useHost  String? @default("turbosite.cloud") // 默认的host域名
 
+  /// @schema.model_name SentEmail
   sentEmails SentEmail[]
+  /// @schema.model_name Domain
   domains    Domain[]
   /// @schema.model_name Link
   links      Link[]
+  /// @schema.model_name Tag
   tags       Tag[]
 
   createdAt DateTime @default(now())
