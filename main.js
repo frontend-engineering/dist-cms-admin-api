@@ -1531,7 +1531,8 @@ class writeProjectSlugToRedisSchemaDto extends (0, nestjs_zod_1.createZodDto)(wr
 }
 exports.writeProjectSlugToRedisSchemaDto = writeProjectSlugToRedisSchemaDto;
 const addContactSchema = zod_1.z.object({
-    siteId: zod_1.z.number(),
+    siteId: zod_1.z.number().optional(),
+    siteName: zod_1.z.string().optional(),
     contact: zod_1.z.string(),
 });
 class addContactSchemaDto extends (0, nestjs_zod_1.createZodDto)(addContactSchema) {
@@ -1553,6 +1554,7 @@ exports.parseKanzhunDetail = exports.CustomService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_types_1 = __webpack_require__("../../libs/flowda-shared-types/src/index.ts");
+const common_1 = __webpack_require__("@nestjs/common");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
 const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
 const dynamic_schema_1 = __webpack_require__("../../libs/cms-admin-services/src/lib/dynamic-schema.ts");
@@ -1958,12 +1960,30 @@ let CustomService = CustomService_1 = class CustomService {
     }
     addContact(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.prisma.contact.create({
-                data: {
-                    contact: dto.contact,
-                    siteId: dto.siteId,
-                },
-            });
+            if (dto.siteId) {
+                return this.prisma.contact.create({
+                    data: {
+                        contact: dto.contact,
+                        siteId: dto.siteId,
+                    },
+                });
+            }
+            else if (dto.siteName) {
+                const siteRet = yield this.prisma.site.findFirstOrThrow({
+                    where: {
+                        name: dto.siteName,
+                    },
+                });
+                return this.prisma.contact.create({
+                    data: {
+                        contact: dto.contact,
+                        siteId: siteRet.id,
+                    },
+                });
+            }
+            else {
+                throw new common_1.BadRequestException(`siteId or siteName provide at lease one`);
+            }
         });
     }
     generateSiteJob(dto) {
@@ -2780,6 +2800,7 @@ const consola_1 = tslib_1.__importDefault(__webpack_require__("consola"));
 const _ = tslib_1.__importStar(__webpack_require__("radash"));
 const common_1 = __webpack_require__("@nestjs/common");
 const lodash_1 = __webpack_require__("lodash");
+const cuid2_1 = __webpack_require__("@paralleldrive/cuid2");
 exports.REQ_END = '================================================ End ================================================\n';
 exports.ERROR_END = '***************************************** ERROR END *****************************************';
 function logInputSerialize(object) {
@@ -2875,34 +2896,43 @@ function logErrorEnd(opts) {
     consola_1.default.error(exports.ERROR_END);
 }
 exports.logErrorEnd = logErrorEnd;
-function transformHttpException(opts, cause, stack) {
+function transformHttpException(opts, json) {
     const shape = opts.shape;
-    const message = cause.getResponse()['message'];
-    const error = cause.getResponse()['error'];
-    const key = getStatusKeyFromStatus(cause.getStatus());
+    const key = getStatusKeyFromStatus(json.status);
     const code = getErrorCodeFromKey(key);
     consola_1.default.info(`cause`);
-    console.log(`    status     :`, cause.getStatus());
-    console.log(`    message    :`, message);
-    console.log(`    error      :`, error);
-    consola_1.default.info(`stack        :`, stack);
+    console.log(`    status     :`, json.status);
+    console.log(`    message    :`, json.message);
+    console.log(`    error      :`, json.error);
+    consola_1.default.info(`stack        :`, json.stack);
     consola_1.default.error(exports.ERROR_END);
     return Object.assign(Object.assign({}, shape), { code, 
         // message // message 无需替代 throw new ConflictException('<message>') 第一个参数已经替代了 https://docs.nestjs.com/exception-filters#built-in-http-exceptions
         data: Object.assign(Object.assign({}, shape.data), {
             code: key, // 替换成 HttpException 对应的 短字符
-            httpStatus: cause.getStatus(), // 替换成 http status code
+            httpStatus: json.status, // 替换成 http status code
             description: {
                 // 详情
                 procedure: `${opts.path}.${opts.type}`,
                 input: opts.input,
-                error,
+                error: json.error,
             },
         }) });
 }
 exports.transformHttpException = transformHttpException;
-function errorFormatter(opts) {
+function errorFormatter(opts, handlers) {
+    var _a, _b, _c;
+    let json = {
+        procedure: `${opts.path}.${opts.type}`,
+        input: opts.input,
+        diagnosis: opts.ctx._diagnosis,
+    };
+    const requestId = opts.ctx.requestId;
+    const tenantId = ((_a = opts.ctx.user) === null || _a === void 0 ? void 0 : _a.tenantId) || ((_b = opts.ctx.tenant) === null || _b === void 0 ? void 0 : _b.id);
+    const userId = (_c = opts.ctx.user) === null || _c === void 0 ? void 0 : _c.id;
     logErrorStart(opts);
+    consola_1.default.info(`tenantId     :`, tenantId);
+    consola_1.default.info(`userId       :`, userId);
     if (Array.isArray(opts.ctx._diagnosis) && opts.ctx._diagnosis.length > 0) {
         consola_1.default.info(`trace:`);
         const msg = opts.ctx._diagnosis
@@ -2917,11 +2947,38 @@ function errorFormatter(opts) {
     }
     // 如果是 nestjs HttpException
     if (opts.error.cause instanceof common_1.HttpException) {
-        const ret = transformHttpException(opts, opts.error.cause, opts.error.stack);
+        const json2 = {
+            status: opts.error.cause.getStatus(),
+            message: opts.error.cause.getResponse()['message'],
+            error: opts.error.cause.getResponse()['error'],
+            stack: opts.error.stack,
+        };
+        json = Object.assign(json, json2);
+        const ret = transformHttpException(opts, json2);
+        if (typeof handlers.log === 'function') {
+            handlers.log({
+                requestId,
+                tenantId,
+                userId,
+                log: json,
+            });
+        }
         return ret;
     }
     else {
         logErrorEnd(opts);
+        json = Object.assign(json, {
+            message: opts.error.message,
+            stack: opts.error.stack,
+        });
+        if (typeof handlers.log === 'function') {
+            handlers.log({
+                requestId,
+                tenantId,
+                userId,
+                log: json,
+            });
+        }
         return opts.shape;
     }
 }
@@ -2949,14 +3006,18 @@ exports.transformer = {
     },
 };
 function createContext(opts) {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        logContext(opts);
-        return {
-            req: opts.req,
-            res: opts.res,
-            _diagnosis: [],
-        };
-    });
+    logContext(opts);
+    const requestId = (0, cuid2_1.createId)();
+    opts.res.setHeader('x-request-id', requestId);
+    consola_1.default.info('x-request-id  :', requestId);
+    return {
+        req: opts.req,
+        res: opts.res,
+        requestId,
+        _diagnosis: [],
+        user: undefined,
+        tenant: undefined,
+    };
 }
 exports.createContext = createContext;
 /**
@@ -3065,7 +3126,7 @@ exports.createZodDto = createZodDto;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.validateSchemaDto = exports.validateSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
-exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
+exports.ctxUserSchemaDto = exports.ctxUserSchema = exports.ctxTenantSchemaDto = exports.ctxTenantSchema = exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const zod_utils_1 = __webpack_require__("../../libs/flowda-shared-types/src/zod-utils.ts");
 exports.selectOptionSchema = zod_1.z.object({
@@ -3469,6 +3530,21 @@ exports.refreshTokenSchema = zod_1.z.object({ rt: zod_1.z.string() });
 class refreshTokenSchemaDto extends (0, zod_utils_1.createZodDto)(exports.refreshTokenSchema) {
 }
 exports.refreshTokenSchemaDto = refreshTokenSchemaDto;
+exports.ctxTenantSchema = zod_1.z.object({
+    id: zod_1.z.number(),
+    name: zod_1.z.string(),
+});
+class ctxTenantSchemaDto extends (0, zod_utils_1.createZodDto)(exports.ctxTenantSchema) {
+}
+exports.ctxTenantSchemaDto = ctxTenantSchemaDto;
+exports.ctxUserSchema = zod_1.z.object({
+    id: zod_1.z.number(),
+    tenantId: zod_1.z.number(),
+    username: zod_1.z.string(),
+});
+class ctxUserSchemaDto extends (0, zod_utils_1.createZodDto)(exports.ctxUserSchema) {
+}
+exports.ctxUserSchemaDto = ctxUserSchemaDto;
 
 
 /***/ }),
@@ -5388,6 +5464,13 @@ module.exports = require("@nestjs/platform-express");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/schedule");
+
+/***/ }),
+
+/***/ "@paralleldrive/cuid2":
+/***/ ((module) => {
+
+module.exports = require("@paralleldrive/cuid2");
 
 /***/ }),
 
