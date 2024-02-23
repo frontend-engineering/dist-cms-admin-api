@@ -7,7 +7,7 @@
 
 
 /// <reference types="@types/multer" />
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -93,6 +93,11 @@ let AppController = class AppController {
     }
     uploadFile(files) {
         return this.custom.parseKanzhun(files);
+    }
+    updateSlotDataContact(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.updateSlotDataContact();
+        });
     }
 };
 exports.AppController = AppController;
@@ -209,6 +214,14 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Array]),
     tslib_1.__metadata("design:returntype", void 0)
 ], AppController.prototype, "uploadFile", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/updateSlotDataContact'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_p = typeof express !== "undefined" && express.Request) === "function" ? _p : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "updateSlotDataContact", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object, typeof (_c = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _c : Object])
@@ -2176,6 +2189,54 @@ let CustomService = CustomService_1 = class CustomService {
             return ret;
         });
     }
+    updateSlotDataContact() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const rets = {
+                fail: [],
+                success: [],
+            };
+            const siteRets = yield this.prisma.site.findMany({
+                where: {
+                    isDeleted: false,
+                },
+                select: {
+                    id: true,
+                    slotData: true,
+                    customer: {
+                        select: {
+                            id: true,
+                            extendData: true,
+                        },
+                    },
+                },
+            });
+            const toUpdateRets = siteRets.map(item => {
+                const slotData = combineSlotData(item);
+                return {
+                    id: item.id,
+                    slotData,
+                };
+            });
+            for (const item of toUpdateRets) {
+                try {
+                    yield this.prisma.site.update({
+                        where: {
+                            id: item.id,
+                        },
+                        data: {
+                            slotData: item.slotData,
+                        },
+                    });
+                    rets.success.push(item.id);
+                }
+                catch (e) {
+                    rets.fail.push({ id: item.id, reason: e.message });
+                    continue;
+                }
+            }
+            return rets;
+        });
+    }
 };
 exports.CustomService = CustomService;
 exports.CustomService = CustomService = CustomService_1 = tslib_1.__decorate([
@@ -2216,6 +2277,11 @@ function parseKanzhunDetail(input, prev) {
     return ret;
 }
 exports.parseKanzhunDetail = parseKanzhunDetail;
+function combineSlotData(siteRet) {
+    const contactRet = Object.assign({}, siteRet.slotData.contact, siteRet.customer.extendData.contact);
+    const slotData = Object.assign(siteRet.slotData, { id: siteRet.id, contact: contactRet });
+    return slotData;
+}
 
 
 /***/ }),
