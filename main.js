@@ -1178,9 +1178,13 @@ exports.TrpcService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const server_1 = __webpack_require__("@trpc/server");
 const inversify_1 = __webpack_require__("inversify");
+const flowda_shared_node_1 = __webpack_require__("../../libs/flowda-shared-node/src/index.ts");
 let TrpcService = class TrpcService {
     constructor() {
-        this.trpc = server_1.initTRPC.create();
+        this.trpc = server_1.initTRPC.create({
+            transformer: flowda_shared_node_1.transformer,
+            errorFormatter: flowda_shared_node_1.errorFormatter,
+        });
         this.procedure = this.trpc.procedure;
         this.router = this.trpc.router;
         this.mergeRouters = this.trpc.mergeRouters;
@@ -3142,7 +3146,7 @@ function errorFormatter(opts, handlers) {
         };
         json = Object.assign(json, json2);
         const ret = transformHttpException(opts, json2);
-        if (typeof handlers.log === 'function') {
+        if (typeof (handlers === null || handlers === void 0 ? void 0 : handlers.log) === 'function') {
             handlers.log({
                 requestId,
                 tenantId,
@@ -3158,7 +3162,7 @@ function errorFormatter(opts, handlers) {
             message: opts.error.message,
             stack: opts.error.stack,
         });
-        if (typeof handlers.log === 'function') {
+        if (typeof (handlers === null || handlers === void 0 ? void 0 : handlers.log) === 'function') {
             handlers.log({
                 requestId,
                 tenantId,
