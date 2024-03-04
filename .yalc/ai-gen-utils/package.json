@@ -19,11 +19,12 @@
   "dependencies": {
     "@babel/core": "^7.23.7",
     "@fortaine/fetch-event-source": "^3.0.6",
+    "@paralleldrive/cuid2": "^2.2.2",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
     "nanoid": "^3.1.25",
     "open": "^7.4.2",
     "request": "^2.88.2"
   },
-  "yalcSig": "6b10daddbcb6543a11d3ebda2a9540f3"
+  "yalcSig": "9b407bab84a2a35b956f0c28339e734f"
 }

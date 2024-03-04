@@ -34,6 +34,7 @@ importers:
       passport: ^0.6.0
       passport-jwt: ^4.0.1
       passport-local: ^1.0.0
+      path: 0.12.7
       pinyin-pro: ^3.19.3
       pluralize: ^8.0.0
       prisma: ^4.16.2
@@ -42,6 +43,7 @@ importers:
       reflect-metadata: ^0.1.13
       rxjs: ^7.0.0
       tencentcloud-sdk-nodejs: ^4.0.789
+      trpc-panel: ^1.3.4
       tslib: ^2.3.0
       typescript: ^5.1.6
       wechat-oauth: ^1.5.0
@@ -79,6 +81,7 @@ importers:
       passport: 0.6.0
       passport-jwt: 4.0.1
       passport-local: 1.0.0
+      path: 0.12.7
       pinyin-pro: 3.19.3
       pluralize: 8.0.0
       prisma: 4.16.2
@@ -87,6 +90,7 @@ importers:
       reflect-metadata: 0.1.13
       rxjs: 7.5.7
       tencentcloud-sdk-nodejs: 4.0.791
+      trpc-panel: 1.3.4_cejkzo3xi32y4wflh2esgt5ctu
       tslib: 2.4.1
       typescript: 5.3.3
       wechat-oauth: 1.5.0
@@ -1294,6 +1298,10 @@ packages:
     resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
     dev: false
 
+  /fuzzysort/2.0.4:
+    resolution: {integrity: sha512-Api1mJL+Ad7W7vnDZnWq5pGaXJjyencT+iKGia2PlHUcSsSzWwIQ3S1isiMpwpavjYtGd2FzhUIhnnhOULZgDw==}
+    dev: false
+
   /gauge/3.0.2:
     resolution: {integrity: sha512-+5J6MS/5XksCuXq++uFRsnUd7Ovu1XenbeuIuNRJxYWjgQbPuFhT14lAvsWfqfAmnwluf1OwMjz39HjfLPci0Q==}
     engines: {node: '>=10'}
@@ -1504,6 +1512,10 @@ packages:
     dependencies:
       once: 1.4.0
       wrappy: 1.0.2
+    dev: false
+
+  /inherits/2.0.1:
+    resolution: {integrity: sha512-8nWq2nLTAwd02jTqJExUYFSD/fKq6VH9Y/oG2accc/kdI0V98Bag8d5a4gi3XHz73rDWa2PvTtvcWYquKqSENA==}
     dev: false
 
   /inherits/2.0.4:
@@ -2189,6 +2201,13 @@ packages:
     resolution: {integrity: sha512-jczvQbCUS7XmS7o+y1aEO9OBVFeZBQ1MDSEqmO7xSoPgOPoowY/SxLpZ6Vh97/8qHZOteiCKb7gkG9gA2ZUxJA==}
     dev: false
 
+  /path/0.12.7:
+    resolution: {integrity: sha512-aXXC6s+1w7otVF9UletFkFcDsJeO7lSZBPUQhtb5O0xJe8LtYhj/GxldoL09bBj9+ZmE2hNoHqQSFMN5fikh4Q==}
+    dependencies:
+      process: 0.11.10
+      util: 0.10.3
+    dev: false
+
   /pause-stream/0.0.11:
     resolution: {integrity: sha512-e3FBlXLmN/D1S+zHzanP4E/4Z60oFAa3O051qt1pxa7DEJWKAyil6upYVXCWadEnuoqa4Pkc9oUx9zsxYeRv8A==}
     dependencies:
@@ -2242,6 +2261,11 @@ packages:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
     dev: false
 
+  /process/0.11.10:
+    resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
+    engines: {node: '>= 0.6.0'}
+    dev: false
+
   /proxy-addr/2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
@@ -2281,6 +2305,10 @@ packages:
       once: 1.4.0
     dev: false
 
+  /punycode/1.3.2:
+    resolution: {integrity: sha512-RofWgt/7fL5wP1Y7fxE7/EmTLzQVnB0ycyibJ0OOHIlJqTNzglYFxVwETOcIoJqJmpDXJ9xImDv+Fq34F/d4Dw==}
+    dev: false
+
   /punycode/2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -2303,6 +2331,12 @@ packages:
   /qs/6.5.3:
     resolution: {integrity: sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==}
     engines: {node: '>=0.6'}
+    dev: false
+
+  /querystring/0.2.0:
+    resolution: {integrity: sha512-X/xY82scca2tau62i9mDyU9K+I+djTMUsvwf7xnUX5GLvVzgJybOJf4Y6o9Zx3oJK/LSXg5tTZBjwzqVPaPO2g==}
+    engines: {node: '>=0.4.x'}
+    deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
     dev: false
 
   /radash/11.0.0:
@@ -2699,6 +2733,20 @@ packages:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
     dev: false
 
+  /trpc-panel/1.3.4_cejkzo3xi32y4wflh2esgt5ctu:
+    resolution: {integrity: sha512-u5/dCi/AAp2tpJcCL5ZCfrdJtHHu8hrtm2hzSBZCE7z9Tw6MB1rCcliSQvgMPIEXMQrgwXk4t4IedfWkxioKng==}
+    peerDependencies:
+      '@trpc/server': ^10.0.0
+      zod: ^3.19.1
+    dependencies:
+      '@trpc/server': 10.44.1
+      fuzzysort: 2.0.4
+      path: 0.12.7
+      url: 0.11.0
+      zod: 3.21.1
+      zod-to-json-schema: 3.22.4_zod@3.21.1
+    dev: false
+
   /tslib/1.13.0:
     resolution: {integrity: sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==}
     dev: false
@@ -2784,6 +2832,13 @@ packages:
       punycode: 2.3.1
     dev: false
 
+  /url/0.11.0:
+    resolution: {integrity: sha512-kbailJa29QrtXnxgq+DdCEGlbTeYM2eJUxsz6vjZavrCYPMIFHMKQmSKYAIuUK2i7hgPm28a8piX5NTUtM/LKQ==}
+    dependencies:
+      punycode: 1.3.2
+      querystring: 0.2.0
+    dev: false
+
   /urllib/2.40.0:
     resolution: {integrity: sha512-XDZjoijtzsbkXTXgM+A/sJM002nwoYsc46YOYr6MNH2jUUw1nCBf2ywT1WaPsVEWJX4Yr+9isGmYj4+yofFn9g==}
     engines: {node: '>= 0.10.0'}
@@ -2809,6 +2864,12 @@ packages:
 
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: false
+
+  /util/0.10.3:
+    resolution: {integrity: sha512-5KiHfsmkqacuKjkRkdV7SsfDJ2EGiPsK92s2MhNSY0craxjTdKTtqKsJaCWp4LW33ZZ0OPUv1WO/TFvNQRiQxQ==}
+    dependencies:
+      inherits: 2.0.1
     dev: false
 
   /utility/1.17.0:
@@ -2970,6 +3031,14 @@ packages:
       zod: ^3.13.2
     dependencies:
       colorette: 2.0.19
+      zod: 3.21.1
+    dev: false
+
+  /zod-to-json-schema/3.22.4_zod@3.21.1:
+    resolution: {integrity: sha512-2Ed5dJ+n/O3cU383xSY28cuVi0BCQhF8nYqWU5paEpl7fVdqdAmiLdqLyfblbNdfOFwFfi/mqU4O1pwc60iBhQ==}
+    peerDependencies:
+      zod: ^3.22.4
+    dependencies:
       zod: 3.21.1
     dev: false
 

@@ -513,6 +513,7 @@ exports.Prisma.ContactOrderByRelevanceFieldEnum = {
   contact: 'contact'
 };
 exports.SiteStatus = {
+  redeploy: 'redeploy',
   generated: 'generated',
   passed: 'passed',
   failed: 'failed'

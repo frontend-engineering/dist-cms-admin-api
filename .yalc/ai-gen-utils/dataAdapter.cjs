@@ -1,4 +1,4 @@
-const nano = require('nanoid')
+const { createId } = require('@paralleldrive/cuid2')
 const fse = require('fs-extra');
 const { getCacheImages } = require('./images.cjs')
 
@@ -519,7 +519,7 @@ const adapter = (generatedData, companyInfo) => {
     if (!generatedData) {
         throw new Error('Please input valid init data')
     }
-    const { companyName, slogan, description, vision, keywords, products, news, contact, icp, story } = Object.assign(companyInfo || {}, generatedData)
+    const { slogan, description, vision, keywords, products, news, story, contact, icp, companyName } = Object.assign(companyInfo || {}, generatedData)
 
     if (!companyName || !slogan || !description || !keywords || !products || !(news)) {
         throw new Error('invalid init data')
@@ -611,7 +611,7 @@ const adapter = (generatedData, companyInfo) => {
     }
 
     return {
-        "id": nano.nanoid(),
+        "id": createId(),
         "title": `${companyName} - turbosite.cloud`,
         "companyName": companyName,
         "banner": {
@@ -658,7 +658,8 @@ const adapter = (generatedData, companyInfo) => {
         "contact": {
             "contact": "Contact Us",
             "address": contact?.address || '--',
-            "phone": contact.phone,
+            "phone": contact?.phone || '--',
+            "qq": contact?.qq,
             "email": contact?.email // Default: 'info@webinfra.cloud'
         },
         "footer": {

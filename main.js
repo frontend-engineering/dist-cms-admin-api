@@ -7,7 +7,7 @@
 
 
 /// <reference types="@types/multer" />
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -17,6 +17,7 @@ const userJwtAuth_guard_1 = __webpack_require__("./src/user/userJwtAuth.guard.ts
 const flowda_shared_1 = __webpack_require__("../../libs/flowda-shared/src/index.ts");
 const express = tslib_1.__importStar(__webpack_require__("express"));
 const platform_express_1 = __webpack_require__("@nestjs/platform-express");
+const flowda_shared_types_1 = __webpack_require__("../../libs/flowda-shared-types/src/index.ts");
 let AppController = class AppController {
     constructor(cmsAdminSchemaService, custom, data) {
         this.cmsAdminSchemaService = cmsAdminSchemaService;
@@ -117,6 +118,16 @@ let AppController = class AppController {
     updateCustomersContact(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.custom.updateCustomersContact();
+        });
+    }
+    deploySiteToCos(dto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.deploySiteToCos(dto);
+        });
+    }
+    requestRedeployAllSites() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.custom.requestRedeployAllSites();
         });
     }
 };
@@ -274,6 +285,21 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_t = typeof express !== "undefined" && express.Request) === "function" ? _t : Object]),
     tslib_1.__metadata("design:returntype", Promise)
 ], AppController.prototype, "updateCustomersContact", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/deploySiteToCos'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_u = typeof flowda_shared_types_1.deploySiteToCosSchemaDto !== "undefined" && flowda_shared_types_1.deploySiteToCosSchemaDto) === "function" ? _u : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "deploySiteToCos", null);
+tslib_1.__decorate([
+    (0, common_1.Post)('/requestRedeployAllSites'),
+    (0, common_1.UseGuards)(userJwtAuth_guard_1.UserJwtAuthGuard),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:returntype", Promise)
+], AppController.prototype, "requestRedeployAllSites", null);
 exports.AppController = AppController = tslib_1.__decorate([
     (0, common_1.Controller)('/apps'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CmsAdminSchemaService !== "undefined" && cms_admin_services_1.CmsAdminSchemaService) === "function" ? _a : Object, typeof (_b = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _b : Object, typeof (_c = typeof flowda_shared_1.DataService !== "undefined" && flowda_shared_1.DataService) === "function" ? _c : Object])
@@ -532,20 +558,28 @@ let TasksService = TasksService_1 = class TasksService {
         this.customService = customService;
         this.logger = new common_1.Logger(TasksService_1.name);
     }
-    handleCron() {
+    //
+    // @Cron(CMS_ADMIN_ENV.GENERATE_SITE_CRON)
+    // async generateSiteJob() {
+    //   this.logger.debug('Called generateSiteJob')
+    //   const ret = await this.customService.generateSiteJob({})
+    //   this.logger.log(`generateSiteJob ${JSON.stringify(ret)}`)
+    // }
+    deployAllSitesToCosJob() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            this.logger.debug('Called generateSiteJob');
-            yield this.customService.generateSiteJob({});
+            this.logger.debug('Called deployAllSitesToCosJob');
+            const ret = yield this.customService.deployAllSitesToCosJob();
+            this.logger.log(`deployAllSitesToCosJob ${JSON.stringify(ret)}`);
         });
     }
 };
 exports.TasksService = TasksService;
 tslib_1.__decorate([
-    (0, schedule_1.Cron)(cms_admin_services_1.CMS_ADMIN_ENV.GENERATE_SITE_CRON),
+    (0, schedule_1.Cron)(cms_admin_services_1.CMS_ADMIN_ENV.DEPLOY_ALL_SITES_CRON),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", Promise)
-], TasksService.prototype, "handleCron", null);
+], TasksService.prototype, "deployAllSitesToCosJob", null);
 exports.TasksService = TasksService = TasksService_1 = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof cms_admin_services_1.CustomService !== "undefined" && cms_admin_services_1.CustomService) === "function" ? _a : Object])
@@ -1340,6 +1374,7 @@ exports.CMS_ADMIN_ENV = (0, znv_1.parseEnv)(process.env, {
     UPSTASH_REDIS_REST_URL: zod_1.z.string().default('n'),
     UPSTASH_REDIS_REST_TOKEN: zod_1.z.string().default('n'),
     GENERATE_SITE_CRON: zod_1.z.string().default('*/10 * * * *'),
+    DEPLOY_ALL_SITES_CRON: zod_1.z.string().default('*/11 * * * *'),
 });
 
 
@@ -1885,7 +1920,7 @@ let CustomService = CustomService_1 = class CustomService {
                 },
             });
             // 发 cos
-            const cosUrl = yield this.deploySiteToCos(siteRet.id);
+            const cosUrl = yield this.deploySiteToCos({ siteId: siteRet.id });
             const siteUpdateRet = yield this.prisma.site.update({
                 where: {
                     id: dto.siteId,
@@ -1972,11 +2007,11 @@ let CustomService = CustomService_1 = class CustomService {
             };
         });
     }
-    deploySiteToCos(siteId) {
+    deploySiteToCos(dto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const siteRet = yield this.prisma.site.findUniqueOrThrow({
                 where: {
-                    id: siteId,
+                    id: dto.siteId,
                 },
                 include: {
                     siteTemplate: true,
@@ -2007,8 +2042,46 @@ let CustomService = CustomService_1 = class CustomService {
                     }
                 });
             });
-            this.logger.debug(`Cos url: ${cosUrl}, siteId: ${siteId}`);
+            this.logger.debug(`Cos url: ${cosUrl}, siteId: ${dto.siteId}`);
+            yield this.prisma.site.update({
+                where: {
+                    id: siteRet.id,
+                },
+                data: {
+                    status: db.SiteStatus.generated,
+                },
+            });
             return cosUrl;
+        });
+    }
+    deployAllSitesToCosJob() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const ret = {
+                fail: [],
+                pass: [],
+            };
+            const siteRet = yield this.prisma.site.findMany({
+                where: {
+                    isDeleted: false,
+                    status: db.SiteStatus.redeploy,
+                },
+                take: 100,
+                orderBy: {
+                    id: 'desc',
+                },
+            });
+            for (const siteItem of siteRet) {
+                try {
+                    this.deploySiteToCos({
+                        siteId: siteItem.id,
+                    });
+                    ret.pass.push(siteItem.id);
+                }
+                catch (e) {
+                    ret.fail.push({ siteId: siteItem.id, reason: e.message });
+                }
+            }
+            return ret;
         });
     }
     getTemplateDataDef(dto) {
@@ -2095,7 +2168,7 @@ let CustomService = CustomService_1 = class CustomService {
                         if (!siteRet) {
                             throw new Error('[generateSite] failed');
                         }
-                        const cosUrl = yield this.deploySiteToCos(siteRet.id);
+                        const cosUrl = yield this.deploySiteToCos({ siteId: siteRet.id });
                         yield this.prisma.site.update({
                             where: {
                                 id: siteRet.id,
@@ -2125,6 +2198,18 @@ let CustomService = CustomService_1 = class CustomService {
                 success: passCnt,
                 fail: failCnt,
             };
+        });
+    }
+    requestRedeployAllSites() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.prisma.site.updateMany({
+                where: {
+                    isDeleted: false,
+                },
+                data: {
+                    status: db.SiteStatus.redeploy,
+                },
+            });
         });
     }
     findToDoCustomers(dto) {
@@ -2654,16 +2739,18 @@ exports.sendSmsVerifyCodeSchemaDto = sendSmsVerifyCodeSchemaDto;
 
 
 var DubService_1;
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DubService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const inversify_1 = __webpack_require__("inversify");
 const flowda_shared_types_1 = __webpack_require__("../../libs/flowda-shared-types/src/index.ts");
 const db = tslib_1.__importStar(__webpack_require__("@prisma/client-cms_admin"));
+const custom_service_1 = __webpack_require__("../../libs/cms-admin-services/src/services/custom.service.ts");
 let DubService = DubService_1 = class DubService {
-    constructor(prisma, flowdaTrpc, loggerFactory) {
+    constructor(prisma, custom, flowdaTrpc, loggerFactory) {
         this.prisma = prisma;
+        this.custom = custom;
         this.flowdaTrpc = flowdaTrpc;
         this.logger = loggerFactory(DubService_1.name);
     }
@@ -2756,6 +2843,9 @@ let DubService = DubService_1 = class DubService {
                     slotData: dto.slotData,
                 },
             });
+            yield this.custom.deploySiteToCos({
+                siteId: dto.id,
+            });
             return ret;
         });
     }
@@ -2811,9 +2901,10 @@ exports.DubService = DubService;
 exports.DubService = DubService = DubService_1 = tslib_1.__decorate([
     (0, inversify_1.injectable)(),
     tslib_1.__param(0, (0, inversify_1.inject)(flowda_shared_types_1.PrismaClientSymbol)),
-    tslib_1.__param(1, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
-    tslib_1.__param(2, (0, inversify_1.inject)('Factory<Logger>')),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, Object, Function])
+    tslib_1.__param(1, (0, inversify_1.inject)(custom_service_1.CustomService)),
+    tslib_1.__param(2, (0, inversify_1.inject)(flowda_shared_types_1.FlowdaTrpcClientSymbol)),
+    tslib_1.__param(3, (0, inversify_1.inject)('Factory<Logger>')),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof db !== "undefined" && db.PrismaClient) === "function" ? _a : Object, typeof (_b = typeof custom_service_1.CustomService !== "undefined" && custom_service_1.CustomService) === "function" ? _b : Object, Object, Function])
 ], DubService);
 
 
@@ -3161,29 +3252,39 @@ const cuid2_1 = __webpack_require__("@paralleldrive/cuid2");
 exports.REQ_END = '================================================ End ================================================\n';
 exports.ERROR_END = '***************************************** ERROR END *****************************************';
 function logInputSerialize(object) {
-    consola_1.default.info('request args  :');
-    console.log(object);
-    console.log();
+    setTimeout(function () {
+        consola_1.default.info('request args  :');
+        console.log(object);
+        console.log();
+    }, 0);
 }
 exports.logInputSerialize = logInputSerialize;
 function logOutputSerialize(object) {
-    console.log();
-    if ((object === null || object === void 0 ? void 0 : object.code) < 0) {
-        consola_1.default.info('response error:');
-        console.log(Object.assign(Object.assign({}, object), { message: '<...>', data: Object.assign(Object.assign({}, object.data), { stack: '<...>' }) }));
-    }
-    else {
-        consola_1.default.info('response data :');
-        console.log(object);
-    }
-    console.log(exports.REQ_END + '\n');
+    setTimeout(function () {
+        console.log();
+        if ((object === null || object === void 0 ? void 0 : object.code) < 0) {
+            consola_1.default.info('response error:');
+            console.log(Object.assign(Object.assign({}, object), { message: '<...>', data: Object.assign(Object.assign({}, object.data), { stack: '<...>' }) }));
+        }
+        else {
+            consola_1.default.info('response data :');
+            const resp = JSON.stringify(object);
+            if (resp.length > 1000)
+                console.log(resp.slice(0, 1000) + '...');
+            else
+                console.log(object);
+        }
+        console.log(exports.REQ_END + '\n');
+    }, 0);
 }
 exports.logOutputSerialize = logOutputSerialize;
 function logContext(opts) {
-    const req = opts.req;
-    console.log('=============================================== Start ===============================================');
-    consola_1.default.info('url           :', req.url.split('?')[0]);
-    consola_1.default.info('from          :', req.headers['x-from']);
+    setTimeout(function () {
+        const req = opts.req;
+        console.log('=============================================== Start ===============================================');
+        consola_1.default.info('url           :', req.url.split('?')[0]);
+        consola_1.default.info('from          :', req.headers['x-from']);
+    }, 0);
 }
 exports.logContext = logContext;
 function getStatusKeyFromStatus(status) {
@@ -3241,28 +3342,34 @@ const TRPC_ERROR_CODES_BY_KEY = {
     CLIENT_CLOSED_REQUEST: -32099, // 499
 };
 function logErrorStart(opts) {
-    consola_1.default.error('**************************************** ERROR START ****************************************');
-    consola_1.default.info(`procedure    :`, `${opts.path}.${opts.type}`);
-    consola_1.default.info(`input        :`);
-    console.log(opts.input);
+    setTimeout(function () {
+        consola_1.default.error('**************************************** ERROR START ****************************************');
+        consola_1.default.info(`procedure    :`, `${opts.path}.${opts.type}`);
+        consola_1.default.info(`input        :`);
+        console.log(opts.input);
+    }, 0);
 }
 exports.logErrorStart = logErrorStart;
 function logErrorEnd(opts) {
-    consola_1.default.info(`message      :`, opts.error.message);
-    consola_1.default.info(`stack        :`, opts.error.stack);
-    consola_1.default.error(exports.ERROR_END);
+    setTimeout(function () {
+        consola_1.default.info(`message      :`, opts.error.message);
+        consola_1.default.info(`stack        :`, opts.error.stack);
+        consola_1.default.error(exports.ERROR_END);
+    }, 0);
 }
 exports.logErrorEnd = logErrorEnd;
 function transformHttpException(opts, json) {
     const shape = opts.shape;
     const key = getStatusKeyFromStatus(json.status);
     const code = getErrorCodeFromKey(key);
-    consola_1.default.info(`cause`);
-    console.log(`    status     :`, json.status);
-    console.log(`    message    :`, json.message);
-    console.log(`    error      :`, json.error);
-    consola_1.default.info(`stack        :`, json.stack);
-    consola_1.default.error(exports.ERROR_END);
+    setTimeout(function () {
+        consola_1.default.info(`cause`);
+        console.log(`    status     :`, json.status);
+        console.log(`    message    :`, json.message);
+        console.log(`    error      :`, json.error);
+        consola_1.default.info(`stack        :`, json.stack);
+        consola_1.default.error(exports.ERROR_END);
+    }, 0);
     return Object.assign(Object.assign({}, shape), { code, 
         // message // message 无需替代 throw new ConflictException('<message>') 第一个参数已经替代了 https://docs.nestjs.com/exception-filters#built-in-http-exceptions
         data: Object.assign(Object.assign({}, shape.data), {
@@ -3486,9 +3593,13 @@ exports.createZodDto = createZodDto;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SdkProductCreateManyItemDto = exports.productCreateManyItemSchema = exports.ResetPasswordDto = exports.resetPasswordWithRecoveryCodeTenantJwtSchemaDto = exports.resetPasswordWithRecoveryCodeSchemaDto = exports.resetPasswordWithRecoveryCodeSchema = exports.GenerateRecoveryCodeDto = exports.generateRecoveryCodeTenantJwtSchemaDto = exports.generateRecoveryCodeSchemaDto = exports.generateRecoveryCodeSchema = exports.wxValidateUserTenantJwtPayloadSchemaDto = exports.wxValidateUserSchema = exports.wxGetUserRes = exports.wxGetAccessTokenRes = exports.customerSignupTenantJwtPayloadSchemaDto = exports.customerSignupSchemaDto = exports.customerSignupSchema = exports.customerPreSignupTenantJwtPayloadSchemaDto = exports.customerPreSignupSchemaDto = exports.customerPreSignupSchema = exports.userJwtPayloadSchemaDto = exports.userJwtPayloadSchema = exports.tenantJwtPayloadSchema = exports.verifyMobileSchemaDto = exports.verifyMobileSchema = exports.resetPasswordSchemaDto = exports.resetPasswordSchema = exports.RegisterByUnionIdSchemaDto = exports.registerByUnionIdSchema = exports.FindByUnionIdAndTenantIdSchemaDto = exports.findByUnionIdAndTenantIdSchema = exports.GetTenantByNameSchemaDto = exports.getTenantByNameSchema = exports.validateSchemaDto = exports.validateSchema = exports.AccountExistsSchemaDto = exports.accountExistsSchema = exports.RegisterDto = exports.registerSchema = exports.prismaFilterSchema = exports.agSortSchema = exports.agFilterSchema = exports.agFilter2Schema = exports.agFilter1Schema = exports.agFilterInner2Schema = exports.agFilterInnerSchema = exports.resourceSchema = exports.resourceColumnSchema = exports.resourceAssociationSchema = exports.selectOptionSchema = void 0;
-exports.loginSchemaDto = exports.loginSchema = exports.ctxUserSchemaDto = exports.ctxUserSchema = exports.ctxTenantSchemaDto = exports.ctxTenantSchema = exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
+exports.wmsCustomerSchema = exports.gatewayTenantNameSchema = exports.menuItemSchemaDto = exports.menuItemSchema = exports.baseMenuItemSchema = exports.getMenuSchemaDto = exports.getMenuSchema = exports.loginSchemaDto = exports.loginSchema = exports.ctxUserSchemaDto = exports.ctxUserSchema = exports.ctxTenantSchemaDto = exports.ctxTenantSchema = exports.refreshTokenSchemaDto = exports.refreshTokenSchema = exports.sendSmsVerifyCodeSchemaDto = exports.sendSmsVerifyCodeSchema = exports.kanzhunDataSchema = exports.kanzhunItemSchemaDto = exports.kanzhunItemSchema = exports.kanzhunDetailSchemaDto = exports.kanzhunDetailSchema = exports.customerExtendDataSchemaDto = exports.customerExtendDataSchema = exports._resetTenantPasswordSchemaDto = exports._resetTenantPasswordSchema = exports.validateByEmailSchemaDto = exports.validateByEmailSchema = exports.validateTenantSchemaDto = exports.validateTenantSchema = exports.appCreateV4SchemaDto = exports.appCreateV4Schema = exports.createQuickOrderTenantJWTPayloadSchemaDto = exports.SdkCreateQuickOrderDto = exports.createQuickOrderSchema = exports.SdkCreateOrderInJSAPIDto = exports.createOrderJSAPISchema = exports.transactionsNativeSchemaDto = exports.transactionsNativeSchema = exports.createOrderUserJwtPayloadSchemaDto = exports.SdkCreateOrderDto = exports.createOrderSchema = exports.amountUpdateUserJwtPayloadSchemaDto = exports.amountUpdateSchemaDto = exports.amountUpdateSchema = exports.fwhLoginTenantJwtPayloadSchemaDto = exports.fwhLoginSchema = exports.wxPayQuerySchema = exports.updateFreeProfileSchema = exports.updatePaidProfileSchema = void 0;
+exports.deploySiteToCosSchemaDto = exports.deploySiteToCosSchema = exports.wmsSaleOutWarehouseSchema = exports.wmsPurchaseReturnOutWarehouseSchema = exports.wmsProduceOutWarehouseSchema = exports.wmsOtherOutWarehouseSchema = exports.wmsOEMOutWarehouseSchema = exports.wmsOEMAddOutWarehouseSchema = exports.wmsUpdateWarehousingAuditToErpSchema = exports.wmsPRDFeedMtrlSchema = exports.wmsSubReturnWarehousingSchema = exports.wmsPurchaseWarehousingSchema = exports.wmsProduceWarehousingSchema = exports.wmsProduceReturnWarehousingSchema = exports.wmsOtherWarehousingSchema = exports.wmsOEMWarehousingSchema = exports.wmsOEMReturnSchema = exports.wmsWarehousingItemSchema = exports.wmsGoodsTypeSchema = exports.wmsSupplierSchema = exports.wmsStockSchema = exports.wmsGoodsUtilSchema = exports.wmsGoodsMslSchema = exports.wmsGoodsSchema = void 0;
 const zod_1 = __webpack_require__("zod");
 const zod_utils_1 = __webpack_require__("../../libs/flowda-shared-types/src/zod-utils.ts");
+const zod_openapi_1 = __webpack_require__("@anatine/zod-openapi");
+// import { extendZodWithOpenApi } from 'zod-openapi'
+(0, zod_openapi_1.extendZodWithOpenApi)(zod_1.z);
 exports.selectOptionSchema = zod_1.z.object({
     value: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]),
     label: zod_1.z.string(),
@@ -3591,6 +3702,7 @@ class AccountExistsSchemaDto extends (0, zod_utils_1.createZodDto)(exports.accou
 }
 exports.AccountExistsSchemaDto = AccountExistsSchemaDto;
 exports.validateSchema = zod_1.z.object({
+    tenantId: zod_1.z.number().optional(),
     username: zod_1.z.string(),
     password: zod_1.z.string(),
 });
@@ -3778,7 +3890,7 @@ class amountUpdateUserJwtPayloadSchemaDto extends (0, zod_utils_1.createZodDto)(
 }
 exports.amountUpdateUserJwtPayloadSchemaDto = amountUpdateUserJwtPayloadSchemaDto;
 exports.createOrderSchema = zod_1.z.object({
-    productId: zod_1.z.number(),
+    productId: zod_1.z.string(),
     openid: zod_1.z.string().optional(),
 });
 class SdkCreateOrderDto extends (0, zod_utils_1.createZodDto)(exports.createOrderSchema) {
@@ -3912,6 +4024,257 @@ exports.loginSchema = zod_1.z.object({
 class loginSchemaDto extends (0, zod_utils_1.createZodDto)(exports.loginSchema) {
 }
 exports.loginSchemaDto = loginSchemaDto;
+exports.getMenuSchema = zod_1.z.object({
+    tenantId: zod_1.z.number(),
+});
+class getMenuSchemaDto extends (0, zod_utils_1.createZodDto)(exports.getMenuSchema) {
+}
+exports.getMenuSchemaDto = getMenuSchemaDto;
+// https://github.com/colinhacks/zod/discussions/2245
+exports.baseMenuItemSchema = zod_1.z.object({
+    name: zod_1.z.string(),
+    slug: zod_1.z.string(),
+    id: zod_1.z.string(),
+});
+exports.menuItemSchema = exports.baseMenuItemSchema.extend({
+    children: zod_1.z.lazy(() => exports.menuItemSchema.array().optional()),
+});
+class menuItemSchemaDto extends (0, zod_utils_1.createZodDto)(exports.menuItemSchema) {
+}
+exports.menuItemSchemaDto = menuItemSchemaDto;
+exports.gatewayTenantNameSchema = zod_1.z.enum(['flowda', 'cmsAdmin']);
+exports.wmsCustomerSchema = zod_1.z.object({
+    customerCode: zod_1.z.string().openapi({
+        description: '客户编号',
+    }),
+    customerName: zod_1.z.string().openapi({
+        description: '客户名称',
+    }),
+    masterId: zod_1.z.string().openapi({
+        description: '货主id',
+    }),
+    contact: zod_1.z.string().openapi({
+        description: '联系人',
+    }),
+    contactInfo: zod_1.z.string().openapi({
+        description: '联系方式',
+    }),
+    status: zod_1.z.union([zod_1.z.literal(1), zod_1.z.literal(9)]).openapi({
+        description: '状态1、启用 0、禁用',
+    }),
+    organizationId: zod_1.z.string().openapi({
+        description: '组织Id',
+    }),
+});
+exports.wmsGoodsSchema = zod_1.z.object({
+    goodsCode: zod_1.z.string().openapi({
+        description: '货物编号',
+    }),
+    goodsName: zod_1.z.string().openapi({
+        description: '货物名称',
+    }),
+    goodsTypeId: zod_1.z.string().openapi({
+        description: '货物类型id',
+    }),
+    goodsAttribute: zod_1.z.string().openapi({
+        description: '货物属性',
+    }),
+    masterId: zod_1.z.string().openapi({
+        description: '货主信息',
+    }),
+    specification: zod_1.z.string().openapi({
+        description: '规格型号',
+    }),
+    measurementUnit: zod_1.z.string().openapi({
+        description: '计量单位',
+    }),
+    goodsPackageId: zod_1.z.string().openapi({
+        description: '包装规格id',
+    }),
+    batchId: zod_1.z.string().openapi({
+        description: '批次id',
+    }),
+    goodsInspectMode: zod_1.z.number().openapi({
+        description: '货物检验方式1、全检2、抽检3、免检',
+    }),
+    length: zod_1.z.number().openapi({
+        description: '长',
+    }),
+    width: zod_1.z.number().openapi({
+        description: '宽',
+    }),
+    high: zod_1.z.number().openapi({
+        description: '高',
+    }),
+    volume: zod_1.z.number().openapi({
+        description: '体积',
+    }),
+    grossWeight: zod_1.z.number().openapi({
+        description: '毛重',
+    }),
+    netWeight: zod_1.z.number().openapi({
+        description: '净重',
+    }),
+    minStock: zod_1.z.number().openapi({
+        description: '最低库存',
+    }),
+    maxStock: zod_1.z.number().openapi({
+        description: '最高库存',
+    }),
+    maxStorageTime: zod_1.z.number().openapi({
+        description: '最长储存时间',
+    }),
+    isAuto: zod_1.z.number().openapi({
+        description: '是否自动化1、是 0、否',
+    }),
+    choppedQuantity: zod_1.z.number().openapi({
+        description: '剁型每层数量',
+    }),
+    choppedLayer: zod_1.z.number().openapi({
+        description: '剁型层数',
+    }),
+    goodsPicture: zod_1.z.string().openapi({
+        description: '货物图片',
+    }),
+    fSeitBrand: zod_1.z.string().openapi({
+        description: '品牌',
+    }),
+    fSeitCasePackage: zod_1.z.string().openapi({
+        description: '封装',
+    }),
+    fSeitMsl: zod_1.z.string().openapi({
+        description: 'MSL',
+    }),
+    fRefCost: zod_1.z.string().openapi({
+        description: '单位成本',
+    }),
+    fSeitMpn: zod_1.z.string().openapi({
+        description: 'MPN',
+    }),
+    status: zod_1.z.number().openapi({
+        description: '状态1、启用 0、禁用',
+    }),
+    organizationId: zod_1.z.number().openapi({
+        description: '组织id',
+    }),
+});
+exports.wmsGoodsMslSchema = zod_1.z.object({
+    mslCode: zod_1.z.string().openapi({ description: 'MSL' }),
+});
+exports.wmsGoodsUtilSchema = zod_1.z.object({
+    unitId: zod_1.z.string().openapi({ description: '计量单位id' }),
+    name: zod_1.z.string().openapi({ description: '计量单位名称' }),
+    code: zod_1.z.string().openapi({ description: '计量单位code' }),
+});
+exports.wmsStockSchema = zod_1.z.object({
+    id: zod_1.z.string().openapi({ description: 'erp仓库id' }),
+    code: zod_1.z.string().openapi({ description: 'erp仓库编码' }),
+});
+exports.wmsSupplierSchema = zod_1.z.object({
+    supplierCode: zod_1.z.string().openapi({ description: '供应商编号' }),
+    supplierName: zod_1.z.string().openapi({ description: '供应商名称' }),
+    masterId: zod_1.z.string().openapi({ description: '货主id' }),
+    contact: zod_1.z.string().openapi({ description: '联系人' }),
+    contactInfo: zod_1.z.string().openapi({ description: '联系方式' }),
+    remark: zod_1.z.string().openapi({ description: '备注' }),
+    status: zod_1.z.number().openapi({ description: '状态1、启用 0、禁用' }),
+    organizationId: zod_1.z.string().openapi({ description: '组织Id' }),
+});
+exports.wmsGoodsTypeSchema = zod_1.z.object({
+    goodsTypeCode: zod_1.z.string().openapi({ description: '货物类型编号' }),
+    goodsTypeName: zod_1.z.string().openapi({ description: '货物类型名称' }),
+    status: zod_1.z.number().openapi({ description: '状态1、启用 0、禁用' }),
+    organizationId: zod_1.z.string().openapi({ description: '组织Id' }),
+});
+exports.wmsWarehousingItemSchema = zod_1.z.object({
+    FBillNo: zod_1.z.string().openapi({ description: '单据号' }),
+    FDate: zod_1.z.string().openapi({ description: '入库日期' }),
+    FDocumentStatus: zod_1.z.string().openapi({ description: '单据状态 Z：暂存，A：创建，B：审核，C：已审核，D：重新审核' }),
+    FMaterialId: zod_1.z.string().openapi({ description: '物料编码' }),
+    FQty: zod_1.z.string().openapi({ description: '数量' }),
+    FLot: zod_1.z.string().openapi({ description: '批次号' }),
+    FStockId: zod_1.z.string().openapi({ description: '仓库编码' }),
+});
+exports.wmsOEMReturnSchema = zod_1.z.array(exports.wmsWarehousingItemSchema);
+exports.wmsOEMWarehousingSchema = zod_1.z.array(exports.wmsWarehousingItemSchema);
+exports.wmsOtherWarehousingSchema = zod_1.z.array(exports.wmsWarehousingItemSchema.extend({
+    FSupplierId: zod_1.z.string().openapi({ description: '供应商编码' }),
+}));
+exports.wmsProduceReturnWarehousingSchema = zod_1.z.array(exports.wmsWarehousingItemSchema.extend({
+    FAPPQty: zod_1.z.string().openapi({ description: '申请数量' }),
+    FQty: zod_1.z.string().openapi({ description: '实退数量' }),
+}));
+exports.wmsProduceWarehousingSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FMustQty: zod_1.z.string().openapi({ description: '应收数量' }),
+    FRealQty: zod_1.z.string().openapi({ description: '实收数量' }),
+}));
+exports.wmsPurchaseWarehousingSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FMustQty: zod_1.z.string().openapi({ description: '应收数量' }),
+    FRealQty: zod_1.z.string().openapi({ description: '实收数量' }),
+    FSupplierId: zod_1.z.string().openapi({ description: '供应商编码' }),
+}));
+exports.wmsSubReturnWarehousingSchema = zod_1.z.array(exports.wmsWarehousingItemSchema.extend({
+    FAPPQty: zod_1.z.string().openapi({ description: '申请数量' }),
+    FQty: zod_1.z.string().openapi({ description: '实退数量' }),
+}));
+exports.wmsPRDFeedMtrlSchema = zod_1.z.array(exports.wmsWarehousingItemSchema.extend({
+    FActualQty: zod_1.z.string().openapi({ description: '实发数量' }),
+}));
+exports.wmsUpdateWarehousingAuditToErpSchema = zod_1.z.object({
+    orderType: zod_1.z.number().openapi({ description: '单据类型' }),
+    sourceOrderCode: zod_1.z.string().openapi({ description: '来源单据' }),
+});
+exports.wmsOEMAddOutWarehouseSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FActualQty: zod_1.z.string().openapi({ description: '实发数量' }),
+}));
+exports.wmsOEMOutWarehouseSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FActualQty: zod_1.z.string().openapi({ description: '实发数量' }),
+}));
+exports.wmsOtherOutWarehouseSchema = zod_1.z.array(exports.wmsWarehousingItemSchema);
+exports.wmsProduceOutWarehouseSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FActualQty: zod_1.z.string().openapi({ description: '实发数量' }),
+}));
+exports.wmsPurchaseReturnOutWarehouseSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FRMREALQTY: zod_1.z.string().openapi({ description: '实退数量' }),
+}));
+exports.wmsSaleOutWarehouseSchema = zod_1.z.array(exports.wmsWarehousingItemSchema
+    .omit({
+    FQty: true,
+})
+    .extend({
+    FCustomerID: zod_1.z.string().openapi({ description: '客户编码' }),
+    FRealQty: zod_1.z.string().openapi({ description: '实发数量' }),
+}));
+exports.deploySiteToCosSchema = zod_1.z.object({
+    siteId: zod_1.z.number(),
+});
+class deploySiteToCosSchemaDto extends (0, zod_utils_1.createZodDto)(exports.deploySiteToCosSchema) {
+}
+exports.deploySiteToCosSchemaDto = deploySiteToCosSchemaDto;
 
 
 /***/ }),
@@ -5278,9 +5641,12 @@ exports.matchPath = exports.toSchemaName = exports.toPath = exports.toModelName 
 const tslib_1 = __webpack_require__("tslib");
 const plur = tslib_1.__importStar(__webpack_require__("pluralize"));
 const _ = tslib_1.__importStar(__webpack_require__("lodash"));
-plur.addSingularRule(/data/i, 'data');
-plur.addSingularRule(/data/i, 'data');
-plur.addSingularRule(/sms/i, 'sms');
+plur.addSingularRule(/data$/i, 'data');
+plur.addPluralRule(/data$/i, 'data');
+plur.addSingularRule(/def$/i, 'def');
+plur.addPluralRule(/def$/i, 'def');
+plur.addSingularRule(/sms$/i, 'sms');
+plur.addPluralRule(/sms$/i, 'sms');
 // s* equipment 不可数
 const REG = /(([a-z_]+s*)\/?([A-Za-z0-9-_:]+)?)+/g;
 const NUM_REG = /^-?\d+(\.\d+)?$/;
@@ -5448,7 +5814,7 @@ exports.LinkOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'domain', 'key
 exports.TagOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['id', 'name', 'color', 'projectId']);
 exports.ImageLibraryOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['unsplashId', 'tag', 'css']);
 exports.ContactOrderByRelevanceFieldEnumSchema = zod_1.z.enum(['contact']);
-exports.SiteStatusSchema = zod_1.z.enum(['generated', 'passed', 'failed']).openapi({ "x-enumNames": "已生成,审核通过,审核不通过" });
+exports.SiteStatusSchema = zod_1.z.enum(['redeploy', 'generated', 'passed', 'failed']).openapi({ "x-enumNames": "待重新部署COS,已生成,审核通过,审核不通过" });
 exports.RoleSchema = zod_1.z.enum(['owner', 'member']);
 exports.EmailTypeSchema = zod_1.z.enum(['firstDomainInvalidEmail', 'secondDomainInvalidEmail', 'firstUsageLimitEmail', 'secondUsageLimitEmail']);
 /////////////////////////////////////////

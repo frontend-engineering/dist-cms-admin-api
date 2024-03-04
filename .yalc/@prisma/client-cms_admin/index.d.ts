@@ -609,6 +609,7 @@ export type Contact = runtime.Types.DefaultSelection<ContactPayload>
  */
 
 export const SiteStatus: {
+  redeploy: 'redeploy',
   generated: 'generated',
   passed: 'passed',
   failed: 'failed'

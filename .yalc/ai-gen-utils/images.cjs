@@ -150,13 +150,14 @@ async function auth() {
             if (error) {
                 reject(error)
             } else {
-                resolve(resp?.body?.access_token)
+                resolve(resp?.body?.at.token)
             }
         })
     })
 }
 async function getCacheImages(tag, cnt) {
     return auth().then(token => {
+        console.log('token: ', token)
         console.log('getting images: ', tag, cnt)
         return new Promise((resolve, reject) => {
             request({

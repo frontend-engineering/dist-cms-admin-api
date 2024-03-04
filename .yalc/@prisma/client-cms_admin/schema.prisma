@@ -185,8 +185,9 @@ model Site {
   contacts Contact[]
 }
 
-/// @schema.x-enumNames 已生成,审核通过,审核不通过
+/// @schema.x-enumNames 待重新部署COS,已生成,审核通过,审核不通过
 enum SiteStatus {
+  redeploy
   generated
   passed
   failed
