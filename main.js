@@ -2048,6 +2048,7 @@ let CustomService = CustomService_1 = class CustomService {
                     id: siteRet.id,
                 },
                 data: {
+                    cosUrl: cosUrl,
                     status: db.SiteStatus.generated,
                 },
             });
